@@ -74,9 +74,7 @@ const ControlPanel = () => {
   const getAllFloodDataEntries = async () => {
     setIsApiProcessing(true)
     try {
-      const response = await axios.get(
-        'https://flood-tracker-app-api.onrender.com/api/flood-data'
-      )
+      const response = await axios.get('/api/flood-data')
       console.log(response)
     } catch (error) {
       console.log(error)

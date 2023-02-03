@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 
 import { refresh, setAccessToken } from '../features/auth/authSlice'
 
-const baseURL = 'https://flood-tracker-app-api.onrender.com/api/'
+const baseURL = '/api/'
 
 const useAxios = () => {
   const dispatch = useDispatch()
