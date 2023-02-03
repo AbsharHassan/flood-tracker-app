@@ -42,6 +42,7 @@ function App() {
   const location = useLocation()
   const dispatch = useDispatch()
   const {
+    districtNames,
     isLoading,
     isLoadingPolygons,
     isLoadingFloodData,
@@ -50,6 +51,10 @@ function App() {
     geoFormattedApiData,
     maxFlood,
   } = useSelector((state) => state.apiData)
+
+  useEffect(() => {
+    console.log(districtNames)
+  }, [districtNames])
 
   // const { sidebarIsOpen } = useSelector((state) => state.sidebar)
 
@@ -162,7 +167,7 @@ function App() {
     dispatch(getApiKey())
     dispatch(checkAdmin())
     dispatch(persistLogin())
-    dispatch(getPolygons())
+    // dispatch(getPolygons())
     dispatch(getFloodData())
 
     // fetchData()

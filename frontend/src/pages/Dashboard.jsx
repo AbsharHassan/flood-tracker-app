@@ -22,9 +22,13 @@ const Dashboard = () => {
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
   const [isScreenLg, setIsScreenLg] = useState(innerWidth > 1024 ? true : false)
 
+  // useEffect(() => {
+  //   setLoadingData(isLoadingPolygons || isLoadingPolygons || isAuthLoading)
+  // }, [isLoadingPolygons, isLoadingFloodData, isAuthLoading])
+
   useEffect(() => {
-    setLoadingData(isLoadingPolygons || isLoadingPolygons || isAuthLoading)
-  }, [isLoadingPolygons, isLoadingFloodData, isAuthLoading])
+    setLoadingData(isLoadingFloodData || isAuthLoading)
+  }, [isLoadingFloodData, isAuthLoading])
 
   useEffect(() => {
     const handleResize = () => {

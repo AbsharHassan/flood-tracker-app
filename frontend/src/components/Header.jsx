@@ -15,10 +15,13 @@ const Header = ({ extraTitle }) => {
   const dispatch = useDispatch()
   const location = useLocation()
 
+  const { geoFormattedPolygons } = useSelector((state) => state.apiData)
+
   const [isFocused, setIsFocused] = useState(false)
   const [isOpen, setIsOpen] = useState(true)
   const [darkMode, setDarkMode] = useState(true)
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
+  const [blobVar, setBlobVar] = useState(geoFormattedPolygons)
 
   // const [sidebarOpen, setSidebarOpen] = useState(false)
   // const sidebarOpen = useSelector((state) => state.sidebar.isOpen)
@@ -45,6 +48,10 @@ const Header = ({ extraTitle }) => {
       setIsOpen(true)
     }
   }, [innerWidth])
+
+  useEffect(() => {
+    console.log(geoFormattedPolygons)
+  }, [geoFormattedPolygons])
 
   return (
     <nav className="fixed h-[50px] top-0 left-0 right-0 z-50 flex items-center justify-between py-2  px-4 border-b sm:pr-7 sm:pl-4 border-blue-600/20 bg-opacity-80 bg-clip-padding backdrop-blur-md navbar">

@@ -1,13 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import apiDataService from './apiDataService'
 
+import { districtNames } from '../../MapModification/districtNames'
+import { geoFormattedPolygons } from '../../MapModification/geoFormattedPolygon'
+
 const initialState = {
   dataDate: '2022-08-30',
   isLoadingPolygons: true,
   isLoadingFloodData: true,
   isLoading: true,
-  geoFormattedPolygons: null,
-  districtNames: null,
+  geoFormattedPolygons: geoFormattedPolygons,
+  districtNames: districtNames,
   selectedPeriod: 7,
   completeFloodData: null,
   selectedFloodData: null,
