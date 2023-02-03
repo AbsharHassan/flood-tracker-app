@@ -1,0 +1,122 @@
+import React, { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import axios from 'axios'
+
+import Map from './components/Map'
+import MapSpinner from './components/MapSpinner'
+import Loader from './components/Loader'
+import { AiOutlineLoading } from 'react-icons/ai'
+
+function App() {
+  const [tempLoading, setTempLoading] = useState(false)
+  const [mapData, setMapData] = useState([])
+  const [shouldMapLoad, setShouldMapLoad] = useState(true)
+  const [isbPolygonDisplay, setIsbPolygonDisplay] = useState(true)
+  const [chitralPolygonDisplay, setChitralPolygonDisplay] = useState(true)
+  const [polygonControlObject, setPolygonControlObject] = useState({
+    ICT: true,
+    Chitral: true,
+  })
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setTempLoading(true)
+      setShouldMapLoad(false)
+      console.log('fetching data...')
+      await axios
+        .get('http://127.0.0.1:5000/api/')
+        .then((response) => {
+          setMapData(response.data.districts)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      setTempLoading(false)
+      setShouldMapLoad(true)
+    }
+
+    // fetchData()
+  }, [])
+
+  const togglePolygonDisplay = () => {
+    setIsbPolygonDisplay(!isbPolygonDisplay)
+  }
+  const toggleChitralPolygonDisplay = () => {
+    setChitralPolygonDisplay(!chitralPolygonDisplay)
+  }
+
+  return (
+    <div>
+      <div className="custom-bg-svg -z-10 transform-gpu overflow-hidden blur-xl sm:blur-3xl">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="url(#45de2b6b-92d5-4d68-a6a0-9b9b2abad533)"
+            fillOpacity="0.6"
+            d="M0,0V7.23C0,65.52,268.63,112.77,600,112.77S1200,65.52,1200,7.23V0Z"
+            className="shape-fill"
+          />
+          <defs>
+            <linearGradient
+              id="45de2b6b-92d5-4d68-a6a0-9b9b2abad533"
+              x1="1155.49"
+              x2="-78.208"
+              y1=".177"
+              y2="474.645"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stopColor="#000088"></stop>
+              <stop
+                offset="1"
+                stopColor="#000088"
+              ></stop>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <Loader />
+    </div>
+    // <div></div>
+    // <div className="flex items-center justify-center h-screen w-screen">
+    //   <div className="w-[500px] h-[500px] testing"></div>
+    // </div>
+
+    // <div>
+    //   {tempLoading ? (
+    //     <div className="loading">
+    //       Loading... <AiOutlineLoading />
+    //     </div>
+    //   ) : (
+    //     // <MapSpinner />
+    //     <div>
+    //       {/* <button
+    //         className="btn"
+    //         onClick={togglePolygonDisplay}
+    //         // onClick={testFunction}
+    //       >
+    //         isb
+    //       </button>
+    //       <button
+    //         className="btn"
+    //         onClick={toggleChitralPolygonDisplay}
+    //         // onClick={testFunction}
+    //       >
+    //         chitral
+    //       </button> */}
+    //       <Map
+    //         center={{ lat: 30.3753, lng: 69.3451 }}
+    //         isbDisplayPolygon={isbPolygonDisplay}
+    //         chitralDisplayPolygon={chitralPolygonDisplay}
+    //         shouldMapLoad={shouldMapLoad}
+    //         backendData={mapData}
+    //       />
+    //     </div>
+    //   )}
+    // </div>
+  )
+}
+
+export default App

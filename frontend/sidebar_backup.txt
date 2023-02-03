@@ -1,0 +1,1111 @@
+import { useState, useEffect, useRef } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { toggleSidebar } from '../features/sidebar/sidebarSlice'
+import { CSSTransition } from 'react-transition-group'
+
+import { TextField } from '@mui/material'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import ToggleButton from '@mui/material/ToggleButton'
+import Switch from '@mui/material/Switch'
+import Box from '@mui/material/Box'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
+import { CompactPicker, SliderPicker } from 'react-color'
+
+import { BsArrowBarLeft, BsMapFill } from 'react-icons/bs'
+import { HiX, HiSearch } from 'react-icons/hi'
+import { RiDashboardFill, RiPaletteFill, RiMap2Fill } from 'react-icons/ri'
+import { AiFillControl, AiFillInfoCircle } from 'react-icons/ai'
+import { GoCalendar } from 'react-icons/go'
+import { TbMapPins } from 'react-icons/tb'
+import { IoWater } from 'react-icons/io5'
+
+import dayjs from 'dayjs'
+
+const Sidebar = () => {
+  const { isOpen } = useSelector((state) => state.sidebar)
+  const dispatch = useDispatch()
+
+  const [isSearchOpen, setIsSearchOpen] = useState(true)
+  const [dateValue, setDateValue] = useState(dayjs(new Date()))
+  const [startDate, setStartDate] = useState('2022/01/01')
+  const [isDateDialogOpen, setIsDateDialogOpen] = useState(false)
+  // const [endDate, setStartDate] = useState('2022/01/01')
+  const [mapTheme, setMapTheme] = useState('dark')
+  const [roadSwitch, setRoadSwitch] = useState(true)
+  const [pixelsSwitch, setPixelsSwitch] = useState(true)
+  const [disableRoadSwitch, setDisableRoadSwitch] = useState(true)
+  const [floodColor, setFloodColor] = useState('blue')
+  const [innerWidth, setInnerWidth] = useState(window.innerWidth)
+  const [searchIsFocused, setSearchIsFocused] = useState(false)
+  const [menuLinks, setMenuLinks] = useState([
+    {
+      title: 'Dashboard',
+      icon: <RiDashboardFill />,
+    },
+    {
+      title: 'Control Panel',
+      icon: <AiFillControl />,
+    },
+    {
+      title: 'About',
+      icon: <AiFillInfoCircle />,
+    },
+  ])
+
+  const handleMapThemeChange = (e, newTheme) => {
+    // if (mapTheme == 'dark') {
+    //   setMapTheme('light')
+    // } else {
+    //   setMapTheme('dark')
+    // }
+    console.log(newTheme)
+    if (newTheme !== null) {
+      setMapTheme(newTheme)
+    }
+  }
+
+  const handleColorChange = (event) => {
+    setFloodColor(event.target.value)
+  }
+
+  let searchInputRef = useRef()
+  let mobileSidebarRef = useRef()
+  let desktopSidebarRef = useRef()
+
+  useEffect(() => {
+    const handleResize = () => {
+      setInnerWidth(window.innerWidth)
+    }
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  useEffect(() => {
+    let closeHandler = (e) => {
+      if (isOpen && innerWidth < 1024 && !isDateDialogOpen) {
+        if (!mobileSidebarRef.current.contains(e.target)) {
+          dispatch(toggleSidebar())
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', closeHandler)
+
+    return () => {
+      document.removeEventListener('mousedown', closeHandler)
+    }
+  }, [isOpen, innerWidth, dispatch, isDateDialogOpen])
+
+  useEffect(() => {
+    console.log(roadSwitch)
+  }, [roadSwitch])
+
+  return (
+    <>
+      <aside
+        key="desktop-sidemenu"
+        ref={desktopSidebarRef}
+        // style={{ backgroundColor: 'rgb(25 120 200 / 0.2)' }}
+        className={`hidden lg:block duration-500 bg-black/20 border-r border-blue-600/20 bg-clip-padding backdrop-blur-md ${
+          isOpen ? 'w-56' : 'w-10'
+        } `}
+      >
+        <div className={` pr-2.5 pt-2 flex items-center justify-end  `}>
+          <BsArrowBarLeft
+            className={` text-xl duration-500 cursor-pointer text-slate-500 hover:text-slate-300 ${
+              !isOpen && 'rotate-180'
+            }`}
+            onClick={() => {
+              // setIsOpen((v) => !v)
+              dispatch(toggleSidebar())
+              setSearchIsFocused(false)
+            }}
+          />
+          {/* <div
+            className={`text-xs px-3 text-slate-400 font-medium ${
+              isOpen ? '-translate-x-28' : '-translate-x-20'
+            } duration-1000`}
+          >
+            Menu
+          </div>
+
+          <div className="">
+            <BsArrowBarLeft
+              className={` text-xl duration-500 cursor-pointer text-slate-500 hover:text-slate-300 ${
+                !isOpen && 'rotate-180'
+              }`}
+              onClick={() => {
+                // setIsOpen((v) => !v)
+                dispatch(toggleSidebar())
+                setSearchIsFocused(false)
+              }}
+            />
+          </div> */}
+        </div>
+
+        <div className={` ${isOpen ? 'px-1 mt-3' : 'px-0 mt-4'} duration-200`}>
+          <CSSTransition
+            in={searchIsFocused}
+            timeout={500}
+            classNames="search-border"
+            key="desktop"
+          >
+            <div
+              id="searchinput"
+              className={`flex items-center justify-between py-0.5  bg-slate-600/50 border-transparent ${
+                isOpen
+                  ? 'px-1.5 border-[2px] rounded-md'
+                  : 'pl-[9px] w-full rounded-sm'
+              } duration-200`}
+            >
+              <div className="py-1 text-lg transition-colors duration-500 md:text-xl text-slate-400 hover:text-slate-200">
+                <HiSearch
+                  className="hover:cursor-pointer"
+                  onClick={() => {
+                    // setIsSearchOpen((v) => !v)
+                    if (!isOpen) {
+                      dispatch(toggleSidebar())
+                      searchInputRef.current.focus()
+                      setSearchIsFocused(true)
+                    }
+                  }}
+                />
+              </div>
+              <form className="flex items-center">
+                <input
+                  ref={searchInputRef}
+                  onFocus={() => {
+                    setSearchIsFocused(true)
+                  }}
+                  onBlur={() => {
+                    setSearchIsFocused(false)
+                  }}
+                  className={`text-xs  text-slate-300 focus:outline-none bg-transparent border-l-2 border-slate-600 ${
+                    isOpen ? 'pl-1.5 ml-1' : 'scale-0'
+                  } transition-transform duration-200 `}
+                  placeholder="Search for a District..."
+                />
+              </form>
+            </div>
+          </CSSTransition>
+        </div>
+
+        <ul className={`${isOpen ? 'px-1 pt-3' : 'px-0 pt-4'} duration-200`}>
+          {menuLinks.map((item) => (
+            <li
+              key={item.title}
+              className={`text-slate-400 text-xs flex items-center gap-x-3 cursor-pointer   hover:bg-sky-900/50 mb-3 hover:text-slate-300 duration-200 py-2 overflow-hidden whitespace-nowrap ${
+                isOpen
+                  ? 'gap-x-3 px-2 rounded-md'
+                  : 'gap-x-0 pl-[9px] rounded-sm'
+              } duration-200`}
+            >
+              <span
+                className={`${isOpen ? 'text-lg' : 'text-xl'} duration-200`}
+              >
+                {item.icon}
+              </span>
+              <span
+                className={`text-sm  ${isOpen ? '' : 'scale-0'} duration-200`}
+              >
+                {item.title}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <hr
+          className={` mx-4 ${
+            isOpen ? '' : 'scale-0'
+          }   bg-sky-800/50 h-[1px] border-none`}
+        />
+
+        <div
+          className={`mt-5 text-slate-500 px-3 font-bold text-xs whitespace-nowrap overflow-hidden ${
+            isOpen ? 'scale-x-100' : 'scale-x-0'
+          } duration-200`}
+        >
+          Map & Data Options
+        </div>
+
+        <div
+          className={` ${isOpen ? 'mt-8 px-2' : 'mt-0 px-0'}   duration-200`}
+          onClick={() => {
+            if (!isOpen) dispatch(toggleSidebar())
+          }}
+        >
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Select Date"
+              disableFuture={true}
+              minDate={'2022/01/01'}
+              views={['day', 'month']}
+              // openTo="month"
+              showDaysOutsideCurrentMonth={true}
+              value={dateValue}
+              onChange={(newDateValue) => {
+                setDateValue(newDateValue)
+              }}
+              components={{
+                OpenPickerIcon: GoCalendar,
+              }}
+              PopperProps={{
+                sx: {
+                  '& .MuiPaper-root': {
+                    // maxHeight: '200px',
+                    // marginLeft: '75px',
+                    marginTop: '5px',
+                    backgroundColor: 'rgb(25 120 200 / 0.2)',
+                    boxShadow: '0px 0px 10px 3px rgba(34, 76, 143, 0.5)',
+                    color: 'rgb(148 163 184)',
+                    backdropFilter: 'blur(7px)',
+                    overflow: 'hidden',
+                    borderRadius: '12px',
+                    border: '2px solid rgb(0 130 255 / 0.3)',
+                  },
+                  '& .MuiButtonBase-root': {
+                    transition: 'color 0.2s',
+                    color: 'rgb(148 163 184)',
+                    ':hover': {
+                      color: 'rgb(203 213 225)',
+                    },
+                    // '&.MuiPickersCalendarHeader-switchViewButton': {
+                    //   color: 'red',
+                    // },
+                  },
+                  '& .MuiDayPicker-header': {
+                    '& .MuiTypography-root': {
+                      color: 'rgb(148 163 184)',
+                    },
+                  },
+                  '& .MuiDayPicker-monthContainer': {
+                    backgroundColor: '',
+                    '& .MuiButtonBase-root': {
+                      backgroundColor: 'black',
+                      color: 'rgb(148 163 184)',
+                      ':hover': {
+                        backgroundColor: 'rgb(33 33 33)',
+                      },
+                    },
+                    '& .Mui-selected': {
+                      backgroundColor: 'rgb(0 130 200)',
+                      color: 'black',
+                      fontWeight: '900',
+                      ':hover': {
+                        backgroundColor: 'rgb(0 130 255)',
+                      },
+                    },
+                    '& .MuiPickersDay-dayOutsideMonth': {
+                      color: 'rgb(71 85 105)',
+                    },
+                  },
+                  '& .MuiMonthPicker-root': {
+                    color: 'rgb(148 163 184)',
+                    '& .Mui-selected': {
+                      backgroundColor: 'rgb(25 118 210 / 0.7)',
+                      color: 'black',
+                      fontWeight: '900',
+                    },
+                  },
+                  '& .MuiPickersArrowSwitcher-root': {
+                    '& .Mui-disabled': {
+                      color: 'rgb(71 85 105)',
+                    },
+                  },
+                },
+                hidden: innerWidth < 1024 ? true : false,
+              }}
+              InputProps={{
+                hidden: true,
+                sx: {
+                  '&.MuiInputBase-root': {
+                    padding: `${isOpen ? '' : '0px'}`,
+                    marginLeft: `${isOpen ? '' : '-1px'}`,
+                    transition: 'all 0.3s',
+                    cursor: `${isOpen ? 'text' : 'pointer'}`,
+                  },
+                  '& .MuiInputBase-input': {
+                    width: `${isOpen ? '100%' : '0'}`,
+                    color: `${
+                      isOpen ? 'rgb(100 116 139)' : 'rgb(148 163 184 / 0)'
+                    }`,
+                    fontSize: '15px',
+                    padding: `${isOpen ? '8px 14px' : '0px'}`,
+                    transition: 'all 0.3s',
+                  },
+                  '& .MuiButtonBase-root': {
+                    transition: 'all ease-in 0.3s',
+                    color: `${
+                      isOpen ? 'rgb(148 163 184)' : 'rgb(203 213 225)'
+                    }`,
+                    fontSize: `${isOpen ? '19px' : '21px'}`,
+                    padding: `${isOpen ? '' : '0px'}`,
+                    marginRight: `${isOpen ? '0px' : '0px'}`,
+                    ':hover': {
+                      color: 'rgb(2 132 199 / 0.8)',
+                    },
+                  },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    width: `${isOpen ? '100%' : '0'}`,
+                    border: `${
+                      isOpen ? '2px solid rgb(148 163 184 / 0.3)' : '0px'
+                    }`,
+                    transition: 'all ease-in 0.3s',
+                    borderRadius: '12px',
+                  },
+                  '& .MuiOutlinedInput-notchedOutline:hover': {},
+                  '&.MuiOutlinedInput-root:hover': {
+                    '&:hover fieldset': {
+                      borderColor: `${isOpen ? 'rgb(2 132 199 / 0.5)' : ''}`,
+                    },
+                  },
+                },
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  size="small"
+                  sx={{
+                    '&.MuiFormControl-root': {},
+                    '& .MuiInputLabel-root': {
+                      width: `${isOpen ? '100%' : '0px'}`,
+                      display: `${isOpen ? 'block' : 'none'}`,
+                      color: 'rgb(100 116 139)',
+                      fontSize: '13px',
+                      fontWeight: '1000',
+                      transition: 'all 0.3s',
+                      left: '8px',
+                      top: '-2px',
+                      '&.Mui-focused': {
+                        color: '#1976d2',
+                        fontSize: '13px',
+                        fontWeight: '1000',
+
+                        left: '9px',
+                        top: '-2px',
+                        backgroundColor: 'transparent',
+                      },
+                      marginTop: '3.75px',
+                    },
+                    '& .MuiFormLabel-root': {},
+                  }}
+                />
+              )}
+            />
+          </LocalizationProvider>
+        </div>
+
+        <div
+          className={` text-slate-400 text-[10px] font-bold flex items-center justify-between ${
+            isOpen ? 'mt-7 pl-3 pr-1' : 'mt-6 px-2 ml-[1px]'
+          } duration-200`}
+        >
+          <div className="whitespace-nowrap ">
+            <div
+              className={`${
+                isOpen ? 'text-slate-400' : 'text-transparent w-0 scale-0 h-0'
+              } transition-all duration-200`}
+            >
+              MAP THEME
+            </div>
+            <div
+              onClick={() => {
+                if (!isOpen) dispatch(toggleSidebar())
+              }}
+              className={`${
+                isOpen
+                  ? 'text-transparent w-0 scale-0 h-0'
+                  : 'text-slate-400 text-xl hover:cursor-pointer hover:text-sky-500/60'
+              } transition-all duration-200`}
+            >
+              <RiMap2Fill />
+            </div>
+          </div>
+          <div
+            className={`${
+              isOpen ? 'scale-100' : 'scale-0 -translate-x-40'
+            } duration-300`}
+          >
+            <ToggleButtonGroup
+              color="primary"
+              value={mapTheme}
+              exclusive
+              onChange={handleMapThemeChange}
+              aria-label="Platform"
+              sx={{
+                '&.MuiToggleButtonGroup-root': {
+                  '& .MuiButtonBase-root': {
+                    color: 'rgb(148 163 184)',
+                    fontSize: '10px',
+                    padding: '5px',
+                    borderColor: 'transparent',
+                    fontWeight: '500',
+                    backgroundColor: 'rgb(33 33 33)',
+                    ':hover': {
+                      backgroundColor: 'rgb(20 20 20)',
+                      color: 'rgb(168 183 204)',
+                    },
+                    '&.Mui-selected': {
+                      color: '#1976d2',
+                      backgroundColor: '#225ad355',
+                    },
+                  },
+                },
+              }}
+            >
+              <ToggleButton
+                value="dark"
+                disableRipple
+              >
+                Dark
+              </ToggleButton>
+              <ToggleButton
+                value="light"
+                disableRipple
+              >
+                Light
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </div>
+        </div>
+
+        <div
+          className={` text-slate-400 text-[10px] font-bold flex items-center justify-between ${
+            isOpen ? 'mt-5 pl-3 pr-1' : 'mt-5 px-1.5'
+          } duration-200`}
+        >
+          <div className="whitespace-nowrap">
+            <div
+              className={`${
+                isOpen ? 'text-slate-400' : 'text-transparent w-0 scale-0 h-0'
+              } transition-all duration-200`}
+            >
+              ROADS AFFECTED
+            </div>
+            <div
+              className={`${
+                isOpen
+                  ? 'text-transparent w-0 scale-0 h-0'
+                  : 'text-slate-400 text-2xl hover:cursor-pointer hover:text-sky-500/60'
+              } transition-all duration-200`}
+              onClick={() => {
+                setRoadSwitch((v) => !v)
+                dispatch(toggleSidebar())
+              }}
+            >
+              <TbMapPins />
+            </div>
+          </div>
+
+          <div
+            className={`${
+              isOpen ? 'scale-100' : 'scale-0 -translate-x-40'
+            } duration-300 `}
+          >
+            <Switch
+              onChange={() => setRoadSwitch((v) => !v)}
+              value={roadSwitch}
+              checked={roadSwitch}
+              disableRipple
+              sx={{
+                '&.MuiSwitch-root': {
+                  // width: '100px',
+                },
+                '& .MuiSwitch-track': {
+                  transition: 'all 0.1s',
+                  backgroundColor: isOpen
+                    ? 'rgb(55 65 81)'
+                    : 'rgb(55 65 81 / 0)',
+                  opacity: '1',
+                },
+                '& .MuiButtonBase-root': {
+                  '&.Mui-checked': {
+                    transition: 'all 0.1s',
+                    color: isOpen ? '#1976d2' : '#1976d200',
+                  },
+                  transition: 'all 0.1s',
+                  color: isOpen ? 'rgb(107 114 128)' : 'rgb(107 114 128 / 0)',
+                },
+
+                // '& .Mui-disabled': {
+                //   '& .MuiSwitch-track': {
+                //     backgroundColor: 'red',
+                //     opacity: '1',
+                //   },
+                // },
+              }}
+            />
+          </div>
+        </div>
+
+        <div
+          className={` text-slate-400 text-[10px] font-bold flex items-center justify-between ${
+            isOpen ? 'mt-4 pl-3 pr-1' : 'mt-4 px-1.5'
+          } duration-200 `}
+        >
+          <div className="whitespace-nowrap ">
+            <div
+              className={`${
+                isOpen ? 'text-slate-400' : 'text-transparent w-0 scale-0 h-0'
+              } transition-all duration-200`}
+            >
+              FLOOD PIXELS
+            </div>
+            <div
+              className={`${
+                isOpen
+                  ? 'text-transparent w-0 scale-0 h-0'
+                  : 'text-slate-400 text-2xl hover:cursor-pointer hover:text-sky-500/60'
+              } transition-all duration-200`}
+              onClick={() => {
+                setPixelsSwitch((v) => !v)
+                dispatch(toggleSidebar())
+              }}
+            >
+              <IoWater />
+            </div>
+          </div>
+          <div
+            className={`${
+              isOpen ? 'scale-100' : 'scale-0 -translate-x-40'
+            } duration-300 `}
+          >
+            <Switch
+              onChange={() => setPixelsSwitch((v) => !v)}
+              value={pixelsSwitch}
+              checked={pixelsSwitch}
+              disableRipple
+              sx={{
+                '&.MuiSwitch-root': {
+                  // width: '100px',
+                },
+                '& .MuiSwitch-track': {
+                  transition: 'all 0.1s',
+                  backgroundColor: isOpen
+                    ? 'rgb(55 65 81)'
+                    : 'rgb(55 65 81 / 0)',
+                  opacity: '1',
+                },
+                '& .MuiButtonBase-root': {
+                  '&.Mui-checked': {
+                    transition: 'all 0.1s',
+                    color: isOpen ? '#1976d2' : '#1976d200',
+                  },
+                  transition: 'all 0.1s',
+                  color: isOpen ? 'rgb(107 114 128)' : 'rgb(107 114 128 / 0)',
+                },
+
+                // '& .Mui-disabled': {
+                //   '& .MuiSwitch-track': {
+                //     backgroundColor: 'red',
+                //     opacity: '1',
+                //   },
+                // },
+              }}
+            />
+          </div>
+        </div>
+
+        {/* <div
+          className={` text-slate-400 text-[10px] font-bold flex items-center justify-between ${
+            isOpen ? 'mt-4 pl-3 pr-1' : 'mt-4 px-1.5'
+          } duration-200 `}
+        >
+          <div className="whitespace-nowrap ">
+            <div
+              className={`${
+                isOpen ? 'text-slate-400' : 'text-transparent w-0 scale-0 h-0'
+              } transition-all duration-200`}
+            >
+              FLOOD PIXELS
+            </div>
+            <div
+              className={`${
+                isOpen
+                  ? 'text-transparent w-0 scale-0 h-0'
+                  : 'text-slate-400 text-2xl hover:cursor-pointer hover:text-sky-500/60'
+              } transition-all duration-200`}
+              onClick={() => {
+                setRoadSwitch((v) => !v)
+                dispatch(toggleSidebar())
+              }}
+            >
+              <IoWater />
+            </div>
+          </div>
+          <div
+            className={`${
+              isOpen ? 'scale-100' : 'scale-0 -translate-x-40'
+            } duration-300 `}
+          >
+            <Switch
+              onChange={() => setPixelsSwitch((v) => !v)}
+              value={pixelsSwitch}
+              checked={pixelsSwitch}
+              disableRipple
+              sx={{
+                '&.MuiSwitch-root': {
+                  // width: '100px',
+                },
+                '& .MuiSwitch-track': {
+                  transition: 'all 0.1s',
+                  backgroundColor: isOpen
+                    ? 'rgb(55 65 81)'
+                    : 'rgb(55 65 81 / 0)',
+                  opacity: '1',
+                },
+                '& .MuiButtonBase-root': {
+                  '&.Mui-checked': {
+                    transition: 'all 0.1s',
+                    color: isOpen ? '#1976d2' : '#1976d200',
+                  },
+                  transition: 'all 0.1s',
+                  color: isOpen ? 'rgb(107 114 128)' : 'rgb(107 114 128 / 0)',
+                },
+
+                // '& .Mui-disabled': {
+                //   '& .MuiSwitch-track': {
+                //     backgroundColor: 'red',
+                //     opacity: '1',
+                //   },
+                // },
+              }}
+            />
+          </div>
+        </div> */}
+
+        <div
+          className={` text-slate-400 text-[10px] font-bold flex items-center justify-between ${
+            isOpen ? 'mt-4 pl-3 pr-1' : 'mt-5 px-1.5'
+          } duration-200 `}
+        >
+          <div className="whitespace-nowrap ">
+            <div
+              className={`${
+                isOpen ? 'text-slate-400' : 'text-transparent w-0 scale-0 h-0'
+              } transition-all duration-200`}
+            >
+              FLOOD PIXELS COLOR
+            </div>
+            <div
+              className={`${
+                isOpen
+                  ? 'text-transparent w-0 scale-0 h-0'
+                  : 'text-slate-400 text-2xl hover:cursor-pointer hover:text-sky-500/60'
+              } transition-all duration-200`}
+              onClick={() => {
+                dispatch(toggleSidebar())
+              }}
+            >
+              <RiPaletteFill />
+            </div>
+          </div>
+          <div
+            className={`${
+              isOpen ? 'scale-100' : 'scale-0 -translate-x-40'
+            } duration-300 `}
+          >
+            <FormControl
+              variant="standard"
+              sx={{
+                width: '50px',
+                transform: 'translateY(0px)',
+                marginRight: '8px',
+                '& .MuiInputBase-root': {
+                  ':hover': {
+                    ':before': {
+                      borderColor: 'rgb(27 109 153)',
+                      // border: '0px',
+                    },
+                  },
+                  ':before': {
+                    borderColor: 'rgb(7 89 133)',
+                    // border: '0px',
+                  },
+                  ':after': {
+                    // border: '0px',
+                  },
+                },
+                '& .MuiSvgIcon-root': {
+                  color: 'rgb(7 89 133)',
+                  fontSize: '20px',
+                },
+                '& .MuiSelect-select': {
+                  fontSize: '12px',
+                  overflow: 'visible',
+                  padding: '0',
+                  color: 'rgb(148 163 184)',
+                  textOverflow: 'initial',
+                },
+                '& .MuiInput-input': {
+                  overflow: 'visible',
+                },
+              }}
+            >
+              <Select
+                labelId="demo-simple-select-standard-label"
+                id="demo-simple-select-standard"
+                value={floodColor}
+                onChange={handleColorChange}
+                // label="Age"
+                inputProps={{ 'aria-label': 'Without label' }}
+                MenuProps={{
+                  sx: {
+                    '& .MuiPaper-root': {
+                      marginTop: '5px',
+                      backgroundColor: 'rgb(25 120 200 / 0.2)',
+                      boxShadow: '0px 0px 10px 3px rgba(34, 76, 143, 0.5)',
+                      color: 'rgb(148 163 184)',
+                      backdropFilter: 'blur(7px)',
+                      overflow: 'hidden',
+                      borderRadius: '12px',
+                      border: '2px solid rgb(0 130 255 / 0.3)',
+                      // paddingX: '30px',
+                    },
+                  },
+                }}
+              >
+                <MenuItem value={'red'}>Red</MenuItem>
+                <MenuItem value={'blue'}>Blue</MenuItem>
+              </Select>
+            </FormControl>
+            {/* <Box
+              sx={{
+                width: '50px',
+                // height: '30px',
+                // backgroundColor: 'red',
+              }}
+            >
+              <FormControl
+                size="small"
+                fullWidth
+                // variant="standard"
+                sx={{
+                  // m: 1,
+                  // height: '30px',
+                  // backgroundColor: 'blue',
+                  '& .MuiFormLabel-root': {
+                    fontSize: '12px',
+                    top: '4px',
+                    color: 'rgb(148 163 184)',
+                  },
+
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgb(148 163 184)',
+                  },
+                  '&.MuiOutlinedInput-root': {
+                    ':hover': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgb(148 163 184)',
+                      },
+                    },
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: 'rgb(148 163 184)',
+                  },
+                }}
+              >
+                <InputLabel id="demo-simple-select-label">Color</InputLabel>
+                <Select
+                  value={floodColor}
+                  label="Color"
+                  onChange={handleColorChange}
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Without label' }}
+                >
+                  <MenuItem value={'red'}>Red</MenuItem>
+                  <MenuItem value={'blue'}>Blue</MenuItem>
+                </Select>
+              </FormControl>
+            </Box> */}
+          </div>
+        </div>
+      </aside>
+
+      <aside
+        key="mobile-sidemenu"
+        ref={mobileSidebarRef}
+        // style={{ backgroundColor: 'rgb(25 120 200 / 0.2)' }}
+
+        className={`lg:hidden fixed top-0 right-0 duration-1000  z-50 h-[100vh] text-white bg-black/60 ${
+          isOpen ? 'w-full sm:w-72' : 'w-0'
+        }  backdrop-blur-sm `}
+      >
+        <div className="w-full h-[50px] text-white flex items-center px-6 text-xl  ">
+          <HiX
+            className="cursor-pointer"
+            onClick={() => {
+              dispatch(toggleSidebar())
+            }}
+          />
+        </div>
+
+        <div className={` ${isOpen ? 'px-3 mt-3' : 'px-0 mt-4'} duration-200`}>
+          <CSSTransition
+            in={searchIsFocused}
+            timeout={500}
+            classNames="search-border"
+            key="mobile"
+          >
+            <div
+              className={`flex items-center w-52 overflow-hidden py-0.5  bg-slate-600/50 border-transparent ${
+                isOpen
+                  ? 'px-3 border-[2px] rounded-md'
+                  : 'pl-[9px] w-full rounded-sm'
+              } duration-200`}
+            >
+              <div className="py-1 text-lg transition-colors duration-500 md:text-xl text-slate-400 hover:text-slate-200">
+                <HiSearch
+                  className="hover:cursor-pointer"
+                  onClick={() => {
+                    if (!isOpen) {
+                      dispatch(toggleSidebar())
+                      searchInputRef.current.focus()
+                      setSearchIsFocused(true)
+                    }
+                  }}
+                />
+              </div>
+              <form className="flex items-center">
+                <input
+                  ref={searchInputRef}
+                  onFocus={() => {
+                    setSearchIsFocused(true)
+                  }}
+                  onBlur={() => {
+                    setSearchIsFocused(false)
+                  }}
+                  className={`text-xs  text-slate-300 focus:outline-none bg-transparent border-l-2 border-slate-600 ${
+                    isOpen ? 'pl-1.5 ml-1' : 'scale-0'
+                  } transition-transform duration-200 w-52`}
+                  placeholder="Search for a District..."
+                />
+              </form>
+            </div>
+          </CSSTransition>
+        </div>
+
+        <ul
+          className={`${
+            isOpen ? ' pt-3' : 'px-0 pt-4'
+          } duration-200 w-52  ml-3 `}
+        >
+          {menuLinks.map((item, index) => (
+            <li
+              key={item.title + index}
+              className={`text-slate-400 text-xs flex items-center gap-x-3 cursor-pointer   hover:bg-sky-900/50 mb-3 hover:text-slate-300 duration-200 py-2 overflow-hidden whitespace-nowrap ${
+                isOpen
+                  ? 'gap-x-3 px-4 rounded-md'
+                  : 'gap-x-0 pl-[9px] rounded-sm'
+              } duration-200`}
+            >
+              <span
+                className={`${isOpen ? 'text-lg' : 'text-xl'} duration-200`}
+              >
+                {item.icon}
+              </span>
+              <span
+                className={`text-sm  ${isOpen ? '' : 'scale-0'} duration-200`}
+              >
+                {item.title}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <hr
+          className={` mx-4 ${
+            isOpen ? '' : 'scale-0'
+          }   bg-sky-800/50 h-[1px] border-none`}
+        />
+
+        <div
+          className={`${
+            isOpen ? 'mt-5 ' : 'mt-5 '
+          } mt-5 duration-200 ml-3 w-52 `}
+          onClick={() => {
+            if (!isOpen) dispatch(toggleSidebar())
+          }}
+        >
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <MobileDatePicker
+              onOpen={() => setIsDateDialogOpen(true)}
+              onClose={() => setIsDateDialogOpen(false)}
+              label="Select Date"
+              disableFuture={true}
+              minDate={'2022/01/01'}
+              views={['day', 'month']}
+              showDaysOutsideCurrentMonth={true}
+              value={dateValue}
+              onChange={(newDateValue) => {
+                setDateValue(newDateValue)
+              }}
+              components={{
+                OpenPickerIcon: GoCalendar,
+              }}
+              DialogProps={{
+                sx: {
+                  '& .MuiDialogContent-root': {
+                    overflowX: 'hidden',
+                  },
+                  '& .MuiPaper-root': {
+                    // maxHeight: '200px',
+                    // marginLeft: '75px',
+                    // marginTop: '5px',
+
+                    backgroundColor: 'rgb(25 120 200 / 0.2)',
+                    boxShadow: '0px 0px 10px 3px rgba(34, 76, 143, 0.5)',
+                    color: 'rgb(148 163 184)',
+                    backdropFilter: 'blur(7px)',
+                    overflow: 'hidden',
+                    borderRadius: '12px',
+                    border: '2px solid rgb(0 130 255 / 0.3)',
+
+                    '& .MuiTypography-root': {
+                      color: 'inherit',
+                    },
+                  },
+                  '& .MuiButtonBase-root': {
+                    transition: 'color 0.2s',
+                    color: 'rgb(148 163 184)',
+                    ':hover': {
+                      color: 'rgb(203 213 225)',
+                    },
+                    // '&.MuiPickersCalendarHeader-switchViewButton': {
+                    //   color: 'red',
+                    // },
+                  },
+                  '& .MuiDayPicker-header': {
+                    '& .MuiTypography-root': {
+                      color: 'rgb(148 163 184)',
+                    },
+                  },
+                  '& .MuiDayPicker-monthContainer': {
+                    backgroundColor: '',
+                    '& .MuiButtonBase-root': {
+                      backgroundColor: 'black',
+                      color: 'rgb(148 163 184)',
+                      ':hover': {
+                        backgroundColor: 'rgb(33 33 33)',
+                      },
+                    },
+                    '& .Mui-selected': {
+                      backgroundColor: 'rgb(0 130 200)',
+                      color: 'black',
+                      fontWeight: '900',
+                      ':hover': {
+                        backgroundColor: 'rgb(0 130 255)',
+                      },
+                    },
+                    '& .MuiPickersDay-dayOutsideMonth': {
+                      color: 'rgb(71 85 105)',
+                    },
+                  },
+                  '& .MuiMonthPicker-root': {
+                    color: 'rgb(148 163 184)',
+                    '& .Mui-selected': {
+                      backgroundColor: 'rgb(25 118 210 / 0.7)',
+                      color: 'black',
+                      fontWeight: '900',
+                    },
+                  },
+                  '& .MuiPickersArrowSwitcher-root': {
+                    '& .Mui-disabled': {
+                      color: 'rgb(71 85 105)',
+                    },
+                  },
+                },
+                // hidden: true,
+              }}
+              InputProps={{
+                hidden: true,
+                sx: {
+                  '&.MuiInputBase-root': {
+                    padding: `${isOpen ? '' : '0px'}`,
+                    marginLeft: `${isOpen ? '' : '-1px'}`,
+                    transition: 'all 0.3s',
+                    cursor: `${isOpen ? 'text' : 'pointer'}`,
+                  },
+                  '& .MuiInputBase-input': {
+                    width: `${isOpen ? '100%' : '0'}`,
+                    color: `${
+                      isOpen ? 'rgb(148 163 184)' : 'rgb(203 213 225)'
+                    }`,
+                    padding: `${isOpen ? '8px 14px' : '0px'}`,
+                    transition: 'all 0.3s',
+                  },
+                  '& .MuiButtonBase-root': {
+                    transition: 'all ease-in 0.3s',
+                    color: `${
+                      isOpen ? 'rgb(148 163 184)' : 'rgb(203 213 225)'
+                    }`,
+                    fontSize: `${isOpen ? '19px' : '21px'}`,
+                    padding: `${isOpen ? '' : '0px'}`,
+                    marginRight: `${isOpen ? '0px' : '0px'}`,
+                    ':hover': {
+                      color: 'rgb(2 132 199 / 0.8)',
+                    },
+                  },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    width: `${isOpen ? '100%' : '0'}`,
+                    border: `${
+                      isOpen ? '2px solid rgb(148 163 184 / 0.3)' : '0px'
+                    }`,
+                    transition: 'all ease-in 0.3s',
+                    borderRadius: '12px',
+                  },
+                  '& .MuiOutlinedInput-notchedOutline:hover': {},
+                  '&.MuiOutlinedInput-root:hover': {
+                    '&:hover fieldset': {
+                      borderColor: `${isOpen ? 'rgb(2 132 199 / 0.5)' : ''}`,
+                    },
+                  },
+                },
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  size="small"
+                  sx={{
+                    '&.MuiFormControl-root': {},
+                    '& .MuiInputLabel-root': {
+                      width: `${isOpen ? '100%' : '0px'}`,
+                      display: `${isOpen ? 'block' : 'none'}`,
+                      color: 'rgb(148 163 184)',
+                      fontSize: '11px',
+                      transition: 'all 0.3s',
+                      left: '9px',
+                      top: '-1px',
+                      '&.Mui-focused': {
+                        color: '#1976d2',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        left: '9px',
+                        top: '-1px',
+                        backgroundColor: 'transparent',
+                      },
+                      marginTop: '3.75px',
+                    },
+                    '& .MuiFormLabel-root': {},
+                  }}
+                />
+              )}
+            />
+          </LocalizationProvider>
+        </div>
+      </aside>
+    </>
+  )
+}
+
+export default Sidebar

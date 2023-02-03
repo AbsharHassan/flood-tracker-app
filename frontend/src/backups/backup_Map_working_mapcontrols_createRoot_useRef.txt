@@ -1,0 +1,443 @@
+import React, { useState, useEffect, useRef } from 'react'
+import * as ReactDOM from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
+import GoogleMapReact from 'google-map-react'
+import ee from '@google/earthengine'
+import axios, { Axios } from 'axios'
+import mapStyles from '../MapModification/mapStyles'
+import TestMarker from './TestMarker'
+import MapSpinner from './MapSpinner'
+import coordinatesObject from '../MapModification/tempGeoCoords'
+import newCoordsPak from '../MapModification/newCoordsPak'
+import LoadingPage from './Loader'
+import CustomControl from './CustomControl'
+import { CSSTransition, SwitchTransition } from 'react-transition-group'
+import { useMapControl } from '../utils/mapControl'
+import { render } from 'react-dom'
+
+const Map = ({ center, zoom, backendData, shouldMapLoad, loadingData }) => {
+  const [apiDataArray, setApiDataArray] = useState([])
+  const [apiRoadCoords, setApiRoadCoords] = useState([])
+  const [nativeMap, setNativeMap] = useState(null)
+  const [nativeMaps, setNativeMaps] = useState(null)
+  const [polygonArray, setPolygonArray] = useState([])
+  const [currentRoads, setCurrentRoads] = useState(null)
+  const [customZoom, setCustomZoom] = useState(null)
+  const [customCenter, setCustomCenter] = useState({})
+  const [selectedDistrict, setSelectedDistrict] = useState(null)
+  // const controlRef = useRef()
+  let testerRef = useRef()
+  // const [customEl, setCustomEl] = useState(
+  //   <div
+  //     id="tester"
+  //     ref={testerRef}
+  //   ></div>
+  // )
+
+  function elementGenerate(map, maps) {
+    let mapControlEl = document.createElement('div')
+    mapControlEl.setAttribute('id', 'map-control-el')
+
+    const mapContainer = document.getElementById('map-control-el')
+
+    const mapRoot = createRoot(mapContainer)
+
+    mapRoot.render(<CustomControl onClick={() => console.log('hi')} />)
+
+    // render(
+    //   <div ref={(el) => map.controls[maps.ControlPosition.TOP_LEFT].push(el)}>
+    //     {component}
+    //   </div>,
+    //   document.createElement('div')
+    // )
+    // console.log('hey from generator')
+  }
+
+  useEffect(() => {
+    // let source = axios.CancelToken.source()
+    // console.log(source)
+    console.log('this is a mount')
+
+    // console.dir(testerRef.current)
+
+    // let testEl = document.createElement('div')
+    // testEl.setAttribute('id', 'help')
+
+    // <div ref={controlRef}></div>
+  }, [])
+
+  useEffect(() => {
+    if (backendData.length) {
+      sortBackendData(backendData)
+    }
+  }, [backendData])
+
+  useEffect(() => {
+    if (nativeMap && nativeMaps) {
+      nativeApiHandler(nativeMap, nativeMaps)
+    }
+  }, [nativeMap, nativeMaps])
+
+  useEffect(() => {
+    const districtObject = apiDataArray.find(
+      (district) => district.name === currentRoads
+    )
+    if (districtObject) {
+      // console.log(districtObject.results.roads)
+      setApiRoadCoords(districtObject.results.roads)
+    }
+  }, [currentRoads])
+
+  const sortBackendData = (data) => {
+    const intermediateArray1 = data.map((innerObject) => {
+      if (innerObject.geometry.type === 'Polygon') {
+        const coordinates = innerObject.geometry.coordinates[0].map(
+          (coords) => {
+            return { lat: coords[1], lng: coords[0] }
+          }
+        )
+        const roadCoords = innerObject.results.roads.map((coords) => {
+          return { lat: coords[1], lng: coords[0] }
+        })
+        innerObject.results.roads = roadCoords
+        const centerCoords = {
+          lat: innerObject.center.coordinates[1],
+          lng: innerObject.center.coordinates[0],
+        }
+        return {
+          name: innerObject.district,
+          results: innerObject.results,
+          center: centerCoords,
+          coordinates: coordinates,
+        }
+      } else if (innerObject.geometry.type === 'MultiPolygon') {
+        const coordinates = innerObject.geometry.coordinates[
+          innerObject.geometry.coordinates.length - 1
+        ][0].map((coords) => {
+          return { lat: coords[1], lng: coords[0] }
+        })
+        const roadCoords = innerObject.results.roads.map((coords) => {
+          return { lat: coords[1], lng: coords[0] }
+        })
+        innerObject.results.roads = roadCoords
+        const centerCoords = {
+          lat: innerObject.center.coordinates[1],
+          lng: innerObject.center.coordinates[0],
+        }
+        return {
+          name: innerObject.district,
+          results: innerObject.results,
+          center: centerCoords,
+          coordinates: coordinates,
+        }
+      } else if (innerObject.geometry.type === 'GeometryCollection') {
+        if (
+          !(
+            innerObject.geometry.geometries[
+              innerObject.geometry.geometries.length - 1
+            ].coordinates.length > 1
+          )
+        ) {
+          const coordinates = innerObject.geometry.geometries[
+            innerObject.geometry.geometries.length - 1
+          ].coordinates[0].map((coords) => {
+            return { lat: coords[1], lng: coords[0] }
+          })
+          const roadCoords = innerObject.results.roads.map((coords) => {
+            return { lat: coords[1], lng: coords[0] }
+          })
+          innerObject.results.roads = roadCoords
+          const centerCoords = {
+            lat: innerObject.center.coordinates[1],
+            lng: innerObject.center.coordinates[0],
+          }
+          return {
+            name: innerObject.district,
+            results: innerObject.results,
+            center: centerCoords,
+            coordinates: coordinates,
+          }
+        } else {
+          const coordinates = innerObject.geometry.geometries[
+            innerObject.geometry.geometries.length - 1
+          ].coordinates[0].map((coords) => {
+            return { lat: coords[1], lng: coords[0] }
+          })
+          const roadCoords = innerObject.results.roads.map((coords) => {
+            return { lat: coords[1], lng: coords[0] }
+          })
+          innerObject.results.roads = roadCoords
+          const centerCoords = {
+            lat: innerObject.center.coordinates[1],
+            lng: innerObject.center.coordinates[0],
+          }
+          return {
+            name: innerObject.district,
+            results: innerObject.results,
+            center: centerCoords,
+            coordinates: coordinates,
+          }
+        }
+      }
+    })
+    setApiDataArray(intermediateArray1)
+    const intermediateArray2 = intermediateArray1.map((innerArray) => {
+      return innerArray.results.roads
+    })
+    const intermediateArray3 = [].concat(...intermediateArray2)
+    // setApiRoadCoords(intermediateArray3)
+  }
+
+  const nativeApiHandler = (map, maps) => {
+    // elementGenerate(map, maps, <CustomControl />)
+    let source
+    polygonArray.map((polygon) => {
+      polygon.setMap(map)
+      polygon.addListener('click', async () => {
+        const districtObject = apiDataArray.find(
+          (district) => district.name === polygon.name
+        )
+        setSelectedDistrict(districtObject)
+        map.overlayMapTypes.clear()
+        map.setZoom(8)
+        setCurrentRoads(polygon.name)
+        setCustomCenter(polygon.center)
+
+        if (source) {
+          source.cancel()
+        }
+        source = axios.CancelToken.source()
+
+        polygonArray.forEach((district) => {
+          district.setOptions({
+            visible: true,
+          })
+        })
+        polygon.setOptions({
+          visible: false,
+        })
+
+        await axios
+          .post(
+            `http://127.0.0.1:5000/api/district`,
+            {
+              district: polygon.name,
+            },
+            {
+              cancelToken: source.token,
+            }
+          )
+          .then((response) => {
+            console.log(`${polygon.name} data recieved`)
+            const mapid = response.data
+            const tileSource = new ee.layers.EarthEngineTileSource({
+              mapid,
+            })
+            const overlay = new ee.layers.ImageOverlay(tileSource)
+            map.overlayMapTypes.push(overlay)
+            setSelectedDistrict(null)
+          })
+          .catch((error) => {
+            if (axios.isCancel(error)) {
+              console.log('Request cancelled.')
+            } else {
+              console.log(error)
+            }
+          })
+      })
+      // polygon.addListener('mouseover', () => {
+      //   console.log(polygon.name)
+      //   someIndex++
+      // })
+    })
+    // console.log(controlRef.current)
+    let someEl = document.getElementById('tester')
+    console.log(someEl)
+    console.log(testerRef.current)
+
+    const mapContainer = document.getElementById('tester')
+
+    const mapRoot = createRoot(testerRef.current)
+
+    console.log(mapRoot)
+    // console.log('help')
+
+    mapRoot.render(<CustomControl />)
+    // console.log('just pain')
+  }
+
+  const handleApiLoaded = (map, maps) => {
+    const newCoordsPakArrayReducedArray = [].concat(...newCoordsPak)
+
+    const holePolygonCoords = newCoordsPakArrayReducedArray.map(
+      (innerArrays) => {
+        return innerArrays.map((coords) => {
+          return { lat: coords[1], lng: coords[0] }
+        })
+      }
+    )
+
+    const coverPolygonCoords = [
+      //anti-clockwise
+      { lat: -89, lng: 0 },
+      { lat: -89, lng: 179 },
+      { lat: 89, lng: 179 },
+      { lat: 89, lng: 0 },
+      { lat: -89, lng: 0 },
+    ]
+
+    holePolygonCoords.unshift(coverPolygonCoords)
+
+    map.data.add({
+      geometry: new maps.Data.Polygon(holePolygonCoords),
+    })
+
+    map.data.setStyle({
+      fillColor: '#020416',
+      // fillColor: 'red',
+
+      strokeWeight: 1,
+      fillOpacity: 1,
+    })
+
+    const districtPolygons = apiDataArray.map((districtObject) => {
+      return new maps.Polygon({
+        paths: districtObject.coordinates,
+        strokeColor: 'black',
+        strokeOpacity: 1,
+        strokeWeight: 0.2,
+        // fillColor: '#00FFFF88',
+        fillColor: '#33aaffaa',
+        fillOpacity:
+          districtObject.results.after.floodWater / 47.884848397951224,
+        name: districtObject.name,
+        center: districtObject.center,
+        uncovered: false,
+      })
+    })
+
+    // const someElement = document.createElement('div')
+    // console.log(someElement)
+
+    // const controlButtonDiv = ReactDOM.createRoot(someElement)
+    // controlButtonDiv.render(<CustomControl onClick={() => console.log('hi')} />)
+    // map.controls[maps.ControlPosition.TOP_LEFT].push(controlButtonDiv)
+
+    // const controlButtonDiv = document.createElement('div')
+    // ReactDOM.render(
+    //   <CustomControl onClick={() => console.log('hi')} />,
+    //   controlButtonDiv
+    // )
+    // map.controls[maps.ControlPosition.TOP_LEFT].push(controlButtonDiv)
+
+    // let controlEl = document.createElement('div')
+    // controlEl.setAttribute('id', 'control')
+
+    // document.appendChild(controlEl)
+
+    // console.log(document.getElementById('control'))
+
+    // map.controls[maps.ControlPosition.TOP_LEFT].push(controlEl)
+
+    let please = document.getElementById('tester')
+    // console.log(please)
+    map.controls[maps.ControlPosition.TOP_LEFT].push(please)
+
+    setPolygonArray(districtPolygons)
+    setNativeMap(map)
+    setNativeMaps(maps)
+  }
+  return (
+    <>
+      <div
+        id="tester"
+        ref={testerRef}
+      ></div>
+      <div className="map">
+        <GoogleMapReact
+          bootstrapURLKeys={{
+            key: 'AIzaSyB2p2Qz--7VtnL-nfjknSoWl4wfUKaj024',
+          }}
+          options={{
+            styles: mapStyles.testTheme,
+            restriction: {
+              latLngBounds: {
+                north: 40,
+                south: 20,
+                west: 55,
+                east: 82,
+              },
+              strictBounds: false,
+            },
+          }}
+          defaultCenter={{ lat: 30.3753, lng: 69.3451 }}
+          center={Object.keys(customCenter).length ? customCenter : center}
+          defaultZoom={zoom}
+          disableDefaultUI={true}
+          disableDoubleClickZoom={true}
+          zoom={customZoom ? customZoom : zoom}
+          yesIWantToUseGoogleMapApiInternals
+          onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+        >
+          {/* <MapSpinner
+          lat={center.lat}
+          lng={center.lng}
+        /> */}
+          {/* <TestMarker
+          lat={center.lat}
+          lng={center.lng}
+        /> */}
+          {selectedDistrict && customCenter && (
+            <MapSpinner
+              lat={customCenter.lat}
+              lng={customCenter.lng}
+            />
+          )}
+          {!selectedDistrict &&
+            currentRoads &&
+            apiRoadCoords.map((coordinates, i) => (
+              <TestMarker
+                key={i}
+                lat={coordinates.lat}
+                lng={coordinates.lng}
+              />
+            ))}
+          {/* <TestMarker
+          lat={Object.keys(customCenter).length ? customCenter.lat : center.lat}
+          lng={Object.keys(customCenter).length ? customCenter.lng : center.lng}
+        /> */}
+          {/* {apiDataArray.map((districtArray) => {
+          // if(districtArray[1].roads.length) {console.log(districtArray[1].roads.length)}
+          if (districtArray[1].roads.length) {
+            districtArray[1].roads.map((coords, i) => (
+              <TestMarker
+                key={i}
+                lat={coords.lat}
+                lng={coords.lng}
+              />
+            ))
+          } else {
+            // console.log('nothing here')
+          }
+        })} */}
+          {/* {apiRoadCoords.map((coordinates, i) => (
+          <TestMarker
+            key={i}
+            lat={coordinates.lat}
+            lng={coordinates.lng}
+          />
+        ))} */}
+        </GoogleMapReact>
+      </div>
+    </>
+  )
+}
+
+Map.defaultProps = {
+  zoom: 6,
+  // center: { lat: 30.3753, lng: 69.3451 },
+  isbDisplayPolygon: true,
+  chitralDisplayPolygon: true,
+}
+
+export default Map

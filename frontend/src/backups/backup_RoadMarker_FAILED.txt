@@ -1,0 +1,40 @@
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  setShowInfoWindow,
+  setSelectedMarkerCoords,
+} from '../features/map/mapSlice'
+
+import { AiFillWarning } from 'react-icons/ai'
+import MapMarkerDetails from './MapMarkerDetails'
+
+const TestMarker = ({ lat, lng, size }) => {
+  const dispatch = useDispatch()
+
+  const { showInfoWindow, selectedMarkerCoords } = useSelector(
+    (state) => state.map
+  )
+  //-translate-x-1/2 -translate-y-1/2
+  return (
+    <>
+      <div
+        className="hover:cursor-pointer test-marker"
+        onClick={() => {
+          dispatch(setShowInfoWindow(!showInfoWindow))
+          dispatch(setSelectedMarkerCoords({ lat, lng }))
+        }}
+      >
+        <div className=" text-yellow-600">
+          <AiFillWarning className={`${size} text-2xl`} />
+        </div>
+      </div>
+      {showInfoWindow && (
+        <MapMarkerDetails
+          lat={selectedMarkerCoords.lat}
+          lng={selectedMarkerCoords.lng}
+        />
+      )}
+    </>
+  )
+}
+
+export default TestMarker
