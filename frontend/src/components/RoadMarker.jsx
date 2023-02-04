@@ -1,18 +1,6 @@
-import { useSelector, useDispatch } from 'react-redux'
-import {
-  setShowInfoWindow,
-  setSelectedMarkerCoords,
-} from '../features/map/mapSlice'
-
 import { AiFillWarning } from 'react-icons/ai'
-import MapMarkerDetails from './MapMarkerDetails'
 
-const TestMarker = ({ lat, lng, size }) => {
-  const dispatch = useDispatch()
-
-  const { showInfoWindow, selectedMarkerCoords } = useSelector(
-    (state) => state.map
-  )
+const RoadMarker = ({ lat, lng, size }) => {
   return (
     <>
       <div className="test-marker text-yellow-600">
@@ -22,4 +10,4 @@ const TestMarker = ({ lat, lng, size }) => {
   )
 }
 
-export default TestMarker
+export default RoadMarker

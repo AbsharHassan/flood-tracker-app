@@ -26,6 +26,7 @@ import MapMarkersLegend from './MapMarkersLegend'
 
 const Map = ({ center, zoom, backendData }) => {
   const dispatch = useDispatch()
+  const axiosAbortController = new AbortController()
 
   const {
     selectedFloodData,
@@ -48,6 +49,7 @@ const Map = ({ center, zoom, backendData }) => {
   const [nativeMaps, setNativeMaps] = useState(null)
   const [polygonArray, setPolygonArray] = useState([])
   const [showRoadsFor, setShowRoadsFor] = useState(null)
+  const [roadSwitch, setRoadSwitch] = useState(showRoads)
   const [customZoom, setCustomZoom] = useState(null)
   const [customCenter, setCustomCenter] = useState({})
   const [selectedDistrict, setSelectedDistrict] = useState(null)
@@ -71,6 +73,8 @@ const Map = ({ center, zoom, backendData }) => {
   }
 
   const getFloodPixels = async (afterStart, afterEnd) => {
+    if (showMapSpinner) axiosAbortController.abort()
+
     setShowMapSpinner(true)
 
     await axios
@@ -78,7 +82,6 @@ const Map = ({ center, zoom, backendData }) => {
         // `http://127.0.0.1:5000/api/district`,
         // `https://flood-tracker-app-api.onrender.com/api/flood-data/district`,
         '/api/flood-data/district',
-
         {
           afterStart,
           afterEnd,
@@ -86,6 +89,7 @@ const Map = ({ center, zoom, backendData }) => {
         },
         {
           // cancelToken: source.token,
+          signal: axiosAbortController.signal,
         }
       )
       .then((response) => {
@@ -114,6 +118,10 @@ const Map = ({ center, zoom, backendData }) => {
     // console.log(isInfoWindowOpen)
     nativeApiHandler(nativeMap, nativeMaps)
   }, [isInfoWindowOpen])
+
+  useEffect(() => {
+    setRoadSwitch(showRoads)
+  }, [showRoads])
 
   // useEffect(() => {
   //   if (!globalSelectedDistrict && nativeMap) {
@@ -154,6 +162,10 @@ const Map = ({ center, zoom, backendData }) => {
   useEffect(() => {
     setApiPolygonArray(geoFormattedPolygons)
   }, [geoFormattedPolygons])
+
+  useEffect(() => {
+    console.log(apiRoadCoords)
+  }, [apiRoadCoords])
 
   useEffect(() => {
     setApiFloodDataArray(selectedFloodData.results.resultsArray)
@@ -210,6 +222,7 @@ const Map = ({ center, zoom, backendData }) => {
       nativeMap.setZoom(8)
       setShowRoadsFor(globalSelectedGeometry.name)
       setCustomCenter(globalSelectedGeometry.center)
+      console.log('this was called too')
       getFloodPixels(selectedFloodData.after_START, selectedFloodData.after_END)
     }
   }, [selectedFloodData, globalSelectedDistrict, globalSelectedGeometry])
@@ -266,39 +279,39 @@ const Map = ({ center, zoom, backendData }) => {
 
         setShowMapSpinner(true)
 
-        await axios
-          .post(
-            // `http://127.0.0.1:5000/api/district`,
-            // `https://flood-tracker-app-api.onrender.com/api/flood-data/district`,
-            '/api/flood-data/district',
-            {
-              afterStart: selectedPeriodDates[0],
-              afterEnd: selectedPeriodDates[1],
-              district: polygon.name,
-            },
-            {
-              cancelToken: source.token,
-            }
-          )
-          .then((response) => {
-            console.log(`${polygon.name} data recieved`)
-            const mapid = response.data
-            const tileSource = new ee.layers.EarthEngineTileSource({
-              mapid,
-            })
-            const overlay = new ee.layers.ImageOverlay(tileSource)
-            dispatch(setShowOverlay(true))
-            dispatch(setOverlay(overlay))
-            map.overlayMapTypes.push(overlay)
-            // setSelectedDistrict(null)
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              console.log('Request cancelled.')
-            } else {
-              console.log(error)
-            }
-          })
+        // await axios
+        //   .post(
+        //     // `http://127.0.0.1:5000/api/district`,
+        //     // `https://flood-tracker-app-api.onrender.com/api/flood-data/district`,
+        //     '/api/flood-data/district',
+        //     {
+        //       afterStart: selectedPeriodDates[0],
+        //       afterEnd: selectedPeriodDates[1],
+        //       district: polygon.name,
+        //     },
+        //     {
+        //       cancelToken: source.token,
+        //     }
+        //   )
+        //   .then((response) => {
+        //     console.log(`${polygon.name} data recieved`)
+        //     const mapid = response.data
+        //     const tileSource = new ee.layers.EarthEngineTileSource({
+        //       mapid,
+        //     })
+        //     const overlay = new ee.layers.ImageOverlay(tileSource)
+        //     dispatch(setShowOverlay(true))
+        //     dispatch(setOverlay(overlay))
+        //     map.overlayMapTypes.push(overlay)
+        //     // setSelectedDistrict(null)
+        //   })
+        //   .catch((error) => {
+        //     if (axios.isCancel(error)) {
+        //       console.log('Request cancelled.')
+        //     } else {
+        //       console.log(error)
+        //     }
+        //   })
         setShowMapSpinner(false)
       })
       // polygon.addListener('mouseover', () => {
@@ -376,7 +389,9 @@ const Map = ({ center, zoom, backendData }) => {
     )
 
     createRoot(mapMarkersLegendElRef.current).render(
-      <MapMarkersLegend maxValue={maxFlood} />
+      <Provider store={store}>
+        <MapMarkersLegend maxValue={maxFlood} />
+      </Provider>
     )
     map.controls[maps.ControlPosition.TOP_LEFT].push(
       mapMarkersLegendElRef.current
@@ -427,7 +442,7 @@ const Map = ({ center, zoom, backendData }) => {
             />
           )}
           {!selectedDistrict &&
-            showRoads &&
+            roadSwitch &&
             showRoadsFor &&
             apiRoadCoords.map((coordinates, i) => (
               <RoadMarker

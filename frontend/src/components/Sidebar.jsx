@@ -58,13 +58,14 @@ const Sidebar = () => {
   const [isDateDialogOpen, setIsDateDialogOpen] = useState(false)
   const [isSearchPopperOpen, setIsSearchPopperOpen] = useState(false)
   const [isColorSelectorOpen, setIsColorSelectorOpen] = useState(false)
+  const [overlaySwitch, setOverlaySwitch] = useState(showOverlay)
   // const [endDate, setStartDate] = useState('2022/01/01')
   // const [mapTheme, setMapTheme] = useState('dark')
   const [roadSwitch, setRoadSwitch] = useState(showRoads)
   const [pixelsSwitch, setPixelsSwitch] = useState(true)
   const [disableRoadSwitch, setDisableRoadSwitch] = useState(true)
   const [floodColor, setFloodColor] = useState('blue')
-  const [floodPixelOpacity, setFloodPixelOpacity] = useState(50)
+  const [floodPixelOpacity, setFloodPixelOpacity] = useState(100)
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
   const [isScreenLg, setIsScreenLg] = useState(innerWidth > 1024 ? true : false)
   const [searchIsFocused, setSearchIsFocused] = useState(false)
@@ -191,6 +192,10 @@ const Sidebar = () => {
   }, [showRoads])
 
   useEffect(() => {
+    setOverlaySwitch(showOverlay)
+  }, [showOverlay])
+
+  useEffect(() => {
     // dispatch(setFloodPixelOpacity(floodPixelOpacity))
   }, [floodPixelOpacity])
 
@@ -210,7 +215,7 @@ const Sidebar = () => {
                 sidebarIsOpen ? 'w-48' : 'w-10'
               }`
             : `lg:hidden fixed top-0 right-0 duration-1000 z-50 h-[100vh] text-white bg-black/60 ${
-                sidebarIsOpen ? 'w-full sm:w-72 px-2 ' : 'w-0 '
+                sidebarIsOpen ? 'w-72 sm:w-72 px-2 ' : 'w-0 '
               }  backdrop-blur-sm `
         }`}
       >
@@ -239,63 +244,6 @@ const Sidebar = () => {
               )}
             </span>
           </div>
-
-          {/* <div
-            className={` ${
-              sidebarIsOpen ? 'px-1 mt-[18px]' : 'px-0 mt-4'
-            } duration-200`}
-          >
-            <CSSTransition
-              in={searchIsFocused}
-              timeout={500}
-              classNames="search-border"
-              key="desktop"
-            >
-              <div
-                id="searchinput"
-                className={`flex items-center py-0.5 bg-slate-600/50 border-transparent transition-all duration-200 ${
-                  isScreenLg ? `justify-between` : `overflow-hidden`
-                } ${
-                  sidebarIsOpen
-                    ? 'px-1.5 border-[2px] rounded-md'
-                    : 'pl-[9px] w-full rounded-sm'
-                }`}
-              >
-                <div className="py-1 text-lg transition-colors duration-500 md:text-xl text-slate-400 hover:text-slate-200">
-                  <HiSearch
-                    className="hover:cursor-pointer"
-                    onClick={() => {
-                      // setIsSearchOpen((v) => !v)
-                      if (!sidebarIsOpen) {
-                        dispatch(toggleSidebar())
-                        searchInputRef.current.focus()
-                        setSearchIsFocused(true)
-                      }
-                    }}
-                  />
-                </div>
-                <form className="flex items-center">
-                  <input
-                    ref={searchInputRef}
-                    onFocus={() => {
-                      setSearchIsFocused(true)
-                    }}
-                    onBlur={() => {
-                      setSearchIsFocused(false)
-                    }}
-                    className={`text-xs text-slate-300 focus:outline-none bg-transparent border-l-2 border-slate-600 ${
-                      isScreenLg ? `` : `w-52`
-                    } ${
-                      sidebarIsOpen
-                        ? 'pl-1.5 ml-1 opacity-100'
-                        : 'pl-1.5 ml-1 opacity-0'
-                    } transition-opacity duration-500 `}
-                    placeholder="Search for a District..."
-                  />
-                </form>
-              </div>
-            </CSSTransition>
-          </div> */}
 
           <SearchBar
             isScreenLg={isScreenLg}
@@ -621,8 +569,8 @@ const Sidebar = () => {
                 onChange={() => dispatch(toggleOverlayDisplay())}
                 // value={pixelsSwitch}
                 // checked={pixelsSwitch}
-                value={showOverlay}
-                checked={showOverlay}
+                value={overlaySwitch}
+                checked={overlaySwitch}
                 disableRipple
                 sx={{
                   '&.MuiSwitch-root': {
@@ -695,18 +643,11 @@ const Sidebar = () => {
                 className="pl-1 pr-4 pt-1 "
               >
                 <Slider
-                  disabled={overlay && showOverlay ? false : true}
+                  disabled={overlay && overlaySwitch ? false : true}
                   value={floodPixelOpacity}
-                  // onChange={(e) => {
-                  //   console.log(e)
-                  //   setFloodPixelOpacity(e.target.value)
-                  // }}
                   onChange={handleFloodPixelOpacityChange}
-                  // onChange={(e, newValue) => {}}
                   size="small"
                   defaultValue={floodPixelOpacity}
-                  // aria-label="Small"
-                  // valueLabelDisplay="auto"
                   className="text-red-500"
                   sx={{
                     '& .MuiSlider-thumb': {
@@ -718,71 +659,6 @@ const Sidebar = () => {
                   }}
                 />
               </Box>
-              {/* <FormControl
-                variant="standard"
-                sx={{
-                  width: '50px',
-                  transform: 'translateY(0px)',
-                  marginRight: '8px',
-                  '& .MuiInputBase-root': {
-                    ':hover': {
-                      ':before': {
-                        borderColor: 'rgb(27 109 153)',
-                        // border: '0px',
-                      },
-                    },
-                    ':before': {
-                      borderColor: 'rgb(7 89 133)',
-                      // border: '0px',
-                    },
-                    ':after': {
-                      // border: '0px',
-                    },
-                  },
-                  '& .MuiSvgIcon-root': {
-                    color: 'rgb(7 89 133)',
-                    fontSize: '20px',
-                  },
-                  '& .MuiSelect-select': {
-                    fontSize: '12px',
-                    overflow: 'visible',
-                    padding: '0',
-                    color: 'rgb(148 163 184)',
-                    textOverflow: 'initial',
-                  },
-                  '& .MuiInput-input': {
-                    overflow: 'visible',
-                  },
-                }}
-              >
-                <Select
-                  labelId="demo-simple-select-standard-label"
-                  id="demo-simple-select-standard"
-                  value={floodColor}
-                  onChange={handleColorChange}
-                  onOpen={() => setIsColorSelectorOpen(true)}
-                  onClose={() => setIsColorSelectorOpen(false)}
-                  inputProps={{ 'aria-label': 'Without label' }}
-                  MenuProps={{
-                    sx: {
-                      '& .MuiPaper-root': {
-                        marginTop: '5px',
-                        backgroundColor: 'rgb(25 120 200 / 0.2)',
-                        boxShadow: '0px 0px 10px 3px rgba(34, 76, 143, 0.5)',
-                        color: 'rgb(148 163 184)',
-                        backdropFilter: 'blur(7px)',
-                        overflow: 'hidden',
-                        borderRadius: '12px',
-                        border: '2px solid rgb(0 130 255 / 0.3)',
-                        // paddingX: '30px',
-                      },
-                    },
-                  }}
-                >
-                  <MenuItem value={'red'}>Red</MenuItem>
-                  <MenuItem value={'blue'}>Blue</MenuItem>
-                </Select>
-              </FormControl> */}
             </div>
           </div>
         </div>
