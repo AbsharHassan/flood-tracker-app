@@ -1,2 +1,7 @@
 node_modules
 .env
+
+frontend/src/backups
+frontend/src/app_backup
+frontend/src/app_backup_v2
+frontend/sidebar_backup
