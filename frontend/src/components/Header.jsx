@@ -49,10 +49,6 @@ const Header = ({ extraTitle }) => {
     }
   }, [innerWidth])
 
-  useEffect(() => {
-    console.log(geoFormattedPolygons)
-  }, [geoFormattedPolygons])
-
   return (
     <nav className="fixed h-[50px] top-0 left-0 right-0 z-50 flex items-center justify-between py-2  px-4 border-b sm:pr-7 sm:pl-4 border-blue-600/20 bg-opacity-80 bg-clip-padding backdrop-blur-md navbar">
       <div className="flex items-baseline">

@@ -34,32 +34,39 @@ const DetailsCard = ({
             </div>
             <div className="w-full flex items-baseline ">
               <div
-                className={`max-h-4 mt-1.5 py-0.5 px-1  rounded-sm  flex items-baseline ${
+                className={`h-[15.75px] px-1 rounded flex items-center ${
                   difference.polarity
                     ? 'bg-[#2cb57e2e] text-[#2cb57e]'
                     : 'bg-[#f56e502e] text-[#f56e50]'
                 }`}
               >
+                {/* <i className="h-full flex items-center bg-yellow-400/0">
+                  <TiArrowUpThick
+                    className={`text-[10.5px] duration-200 ${
+                      difference.polarity ? 'rotate-180' : 'rotate-0'
+                    }`}
+                  />
+                </i> */}
                 {!isNaN(difference.value) && (
-                  <div className="h-full relative">
+                  <i className="h-full flex items-center bg-yellow-400/0">
                     <TiArrowUpThick
-                      className={`text-[10.5px] duration-200 ${
+                      className={`text-[11px] duration-200 ${
                         difference.polarity ? 'rotate-180' : 'rotate-0'
                       }`}
                     />
-                  </div>
+                  </i>
                 )}
 
-                <div className="ml-1 h-full text-[10.5px] flex items-center">
+                <div className="h-full ml-1 pt-[0.25px] text-[11px] flex items-center bg-green-500/0">
                   {!isNaN(difference.value)
                     ? Math.abs(difference.value)
                     : 'N/A'}
                   {!isNaN(difference.value) && differenceUnit}
                 </div>
               </div>
-              <div className="ml-2 text-[9.5px] sm:text-xs uppercase font-medium whitespace-nowrap">
+              <span className="ml-2 text-[9.5px] sm:text-xs uppercase font-medium whitespace-nowrap">
                 since last month
-              </div>
+              </span>
             </div>
           </div>
         </div>
