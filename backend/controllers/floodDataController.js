@@ -2,7 +2,9 @@ const asyncHandler = require('express-async-handler')
 const ee = require('@google/earthengine')
 const FloodData = require('../models/floodDataModel')
 
-// GET FLOOD PIXELS MAP
+// @desc    Get flood pixels map ID
+// @route   POST /api/flood-data/district
+// @access  Public
 const getMapID = (req, res) => {
   console.log('req called')
   let s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
@@ -34,14 +36,18 @@ const getMapID = (req, res) => {
   })
 }
 
-// Get object containing districts (name and geometeries) and send in the response
+// @desc    Get all flood-data
+// @route   GET /api/flood-data/
+// @access  Public
 const getAllFloodData = asyncHandler(async (req, res) => {
   const districtData = await FloodData.find()
 
   res.send(districtData)
 })
 
-// Create flood data for each district using the EE api
+// @desc    Create or update flood data for each district using the EE api
+// @route   POST /api/flood-data/ee-api/landcover-statistics
+// @access  Private
 const landClassificationDataGenerator = asyncHandler(async (req, res) => {
   let s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
   let s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
@@ -405,364 +411,9 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
   //   }
 })
 
-// const landClassificationDataGenerator = asyncHandler(async (req, res) => {
-//     let s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
-//     let s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-//     let ESAworldcover = ee.ImageCollection('ESA/WorldCover/v100')
-//     let admin2 = ee.FeatureCollection('FAO/GAUL_SIMPLIFIED_500m/2015/level2')
-//     let trainingTable = ee.FeatureCollection(
-//       'projects/flood-analyzer-241964/assets/TrainingPointsV1'
-//     )
-//     let roads = ee.FeatureCollection(
-//       'projects/flood-analyzer-241964/assets/gis_osm_roads_free_1'
-//     )
-
-//     let districts = admin2.filter(ee.Filter.eq('ADM0_NAME', 'Pakistan'))
-
-//     let beforeStartTraining = '2022-01-01'
-//     let beforeEndTraining = '2022-04-08'
-
-//     let beforeStart = '2022-03-01'
-//     let beforeEnd = '2022-05-30'
-
-//     let beforeFloodSat2 = s2
-//       .filterDate(beforeStartTraining, beforeEndTraining)
-//       .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
-//       .mean()
-
-//     let trainingPoints = trainingTable
-//     let trainingLabel = 'class'
-//     let trainingBands = [
-//       'B2',
-//       'B3',
-//       'B4',
-//       'B5',
-//       'B6',
-//       'B7',
-//       'B8',
-//       'B11',
-//       'B12',
-//       'WVP',
-//     ]
-//     let trainingInput = beforeFloodSat2.select(trainingBands)
-//     let trainImage = trainingInput.sampleRegions({
-//       collection: trainingPoints,
-//       properties: [trainingLabel],
-//       scale: 35,
-//     })
-//     let trainingData = trainImage.randomColumn()
-//     let trainingSet = trainingData.filter(ee.Filter.lessThan('random', 0.8))
-//     let testingSet = trainingData.filter(
-//       ee.Filter.greaterThanOrEquals('random', 0.8)
-//     )
-
-//     let classifier = ee.Classifier.smileCart().train(
-//       trainingSet,
-//       trainingLabel,
-//       trainingBands
-//     )
-
-//     let confusionMatrix = ee.ConfusionMatrix(
-//       testingSet.classify(classifier).errorMatrix({
-//         actual: 'class',
-//         predicted: 'classification',
-//       })
-//     )
-
-//     let accuracyMl = ee.ConfusionMatrix(confusionMatrix).accuracy()
-
-//     //MAP OVER DISTRICTS TO YEILD STATS FOR EACH
-//     const districtLandcoverGeneralFunction = function (district) {
-//       const classifiedLayer = beforeFloodSat2.classify(classifier)
-
-//       const urbanPixelsESA = ESAworldcover.first().updateMask(
-//         ESAworldcover.first().eq(50)
-//       )
-
-//       let urbanImageESA = urbanPixelsESA
-//         .select('Map')
-//         .divide(urbanPixelsESA.select('Map'))
-//         .rename('class')
-
-//       urbanImageESA = urbanImageESA.cast({
-//         class: 'uint8',
-//       })
-
-//       const completeClassifiedBefore = urbanImageESA.unmask(classifiedLayer)
-
-//       let floodPixels = getFloodPixels(
-//         ee.Feature(district).geometry(),
-//         beforeStart,
-//         beforeEnd,
-//         // afterStart,
-//         req.body.afterStartDate,
-//         req.body.afterEndDate,
-//         // afterEnd,
-//         s1
-//       )
-
-//       floodPixels = floodPixels
-//         .select('FloodWater')
-//         .divide(floodPixels.select('FloodWater'))
-//         .multiply(6)
-//         .rename('class')
-//       floodPixels = floodPixels.cast({
-//         class: 'uint8',
-//       })
-
-//       const completeClassifiedAfter = floodPixels.unmask(completeClassifiedBefore)
-
-//       //Statistical Analaysis
-//       const beforeFloodClassObj = ee.Dictionary({
-//         1: 'urban',
-//         2: 'normalWater',
-//         3: 'farmland',
-//         4: 'snowClouds',
-//         5: 'barren',
-//       })
-
-//       const districtArea = ee.Feature(district).area()
-
-//       const beforeFloodAreaImage = ee.Image.pixelArea().addBands(
-//         completeClassifiedBefore
-//       )
-
-//       let classAreasBefore = beforeFloodAreaImage
-//         .reduceRegion({
-//           reducer: ee.Reducer.sum().group({
-//             groupField: 1,
-//             groupName: 'class',
-//           }),
-//           geometry: ee.Feature(district).geometry(),
-//           scale: 30,
-//           maxPixels: 1e20,
-//           tileScale: 4,
-//         })
-//         .get('groups')
-
-//       classAreasBefore = ee.List(classAreasBefore)
-
-//       const classAreasListBefore = classAreasBefore
-//         .map(function (entry) {
-//           const areaObj = ee.Dictionary(entry)
-//           const classNumber = ee.Number(areaObj.get('class')).format()
-//           const areaPercentage = ee
-//             .Number(areaObj.get('sum'))
-//             .divide(districtArea)
-//             .multiply(100)
-//           return ee.List([beforeFloodClassObj.get(classNumber), areaPercentage])
-//         })
-//         .flatten()
-
-//       const beforeFloodAreaResult = ee.Dictionary(classAreasListBefore)
-
-//       const afterFloodClassObj = ee.Dictionary({
-//         1: 'urban',
-//         2: 'normaWater',
-//         3: 'farmland',
-//         4: 'snowClouds',
-//         5: 'barren',
-//         6: 'floodWater',
-//       })
-
-//       const afterFloodAreaImage = ee.Image.pixelArea().addBands(
-//         completeClassifiedAfter.clip(ee.Feature(district).geometry())
-//       )
-
-//       let classAreasAfter = afterFloodAreaImage
-//         .reduceRegion({
-//           reducer: ee.Reducer.sum().group({
-//             groupField: 1,
-//             groupName: 'class',
-//           }),
-//           geometry: ee.Feature(district).geometry(),
-//           scale: 30,
-//           maxPixels: 1e20,
-//           tileScale: 4,
-//         })
-//         .get('groups')
-
-//       classAreasAfter = ee.List(classAreasAfter)
-
-//       const classAreasListAfter = classAreasAfter
-//         .map(function (entry) {
-//           const areaObj = ee.Dictionary(entry)
-//           const classNumber = ee.Number(areaObj.get('class')).format()
-//           const areaPercentage = ee
-//             .Number(areaObj.get('sum'))
-//             .divide(districtArea)
-//             .multiply(100)
-//           return ee.List([afterFloodClassObj.get(classNumber), areaPercentage])
-//         })
-//         .flatten()
-
-//       const afterFloodAreaResult = ee.Dictionary(classAreasListAfter)
-
-//       let floodedRoads = floodPixels.clip(roads)
-
-//       let var1 = ee.Algorithms.If(
-//         ee.String(ee.Feature(district).get('ADM1_NAME')).equals('Balochistan'),
-//         ee.Number(1),
-//         ee.Number(0)
-//       )
-
-//       let var2 = ee.Algorithms.If(
-//         ee
-//           .String(ee.Feature(district).get('ADM2_NAME'))
-//           .equals('Nasirabad District'),
-//         ee.Number(0),
-//         ee.Number(1)
-//       )
-
-//       let var3 = ee.Number(var1).and(ee.Number(var2))
-
-//       let customConnectedPixelCount = ee.Algorithms.If(
-//         var3,
-//         ee.Number(15),
-//         ee.Number(100)
-//       )
-//       let connectedPixelsThreshold = ee.Algorithms.If(
-//         var3,
-//         ee.Number(8),
-//         ee.Number(50)
-//       )
-//       const connections = floodedRoads.connectedPixelCount(
-//         ee.Number(customConnectedPixelCount)
-//       )
-//       floodedRoads = floodedRoads.updateMask(
-//         connections.gt(ee.Number(connectedPixelsThreshold))
-//       )
-
-//       let scale = ee.Algorithms.If(
-//         ee.String(ee.Feature(district).get('ADM1_NAME')).equals('Balochistan'),
-//         ee.Number(100),
-//         ee.Number(80)
-//       )
-
-//       const floodedRoadVectors = floodedRoads.reduceToVectors({
-//         geometry: ee.Feature(district).geometry(),
-//         scale: 120,
-//         eightConnected: true,
-//         maxPixels: 1e10,
-//         tileScale: 1,
-//       })
-
-//       const floodedRoadArray = floodedRoadVectors.toList(1e5)
-
-//       const getCenters = function (feature) {
-//         return ee
-//           .Feature(feature)
-//           .centroid({ maxError: 1 })
-//           .geometry()
-//           .coordinates()
-//       }
-
-//       const floodedRoadsCentroids = floodedRoadArray.map(getCenters)
-
-//       return {
-//         name: ee.Feature(district).get('ADM2_NAME'),
-//         results: {
-//           total: districtArea,
-//           before: beforeFloodAreaResult,
-//           after: afterFloodAreaResult,
-//           roads: floodedRoadsCentroids,
-//         },
-//       }
-//     }
-
-//     if (
-//       !(req.body.afterStartDate && req.body.afterEndDate) ||
-//       req.body.update === undefined
-//     ) {
-//       res.status(422)
-//       throw new Error('Incomplete/invalid data in POST body')
-//     }
-
-//     if (!JSON.parse(req.body.update)) {
-//       districts.evaluate(async (districtsCollection) => {
-//         let nullWarningCounter = 0
-//         let completenessCounter = 0
-//         let temporaryHoldingArray = []
-//         for (
-//           var index = 0;
-//           index < districtsCollection.features.length;
-//           index++
-//         ) {
-//           districtsArray = districts.toList(1, parseInt(index))
-//           districtsFloodData = districtsArray.map(
-//             districtLandcoverGeneralFunction
-//           )
-//           districtsFloodData.evaluate(async (resultsObj) => {
-//             completenessCounter++
-//             console.log(completenessCounter)
-//             if (resultsObj) {
-//               temporaryHoldingArray.push(resultsObj[0])
-//             } else {
-//               temporaryHoldingArray.push(null)
-//               nullWarningCounter++
-//             }
-//             if (completenessCounter == districtsCollection.features.length) {
-//               await FloodData.create({
-//                 after_END: req.body.afterEndDate,
-//                 after_START: req.body.afterStartDate,
-//                 districts: temporaryHoldingArray,
-//               })
-
-//               res.json({
-//                 message: `Request fulfilled with ${nullWarningCounter} null responses`,
-//                 nullCounts: nullWarningCounter,
-//               })
-//             }
-//           })
-//         }
-//       })
-//     } else {
-//       districts.evaluate(async (districtsCollection) => {
-//         let nullWarningCounter = 0
-//         let completenessCounter = 0
-//         let temporaryHoldingArray = []
-//         for (
-//           var index = 0;
-//           index < districtsCollection.features.length;
-//           index++
-//         ) {
-//           districtsArray = districts.toList(1, parseInt(index))
-//           districtsFloodData = districtsArray.map(
-//             districtLandcoverGeneralFunction
-//           )
-//           districtsFloodData.evaluate(async (resultsObj) => {
-//             completenessCounter++
-//             console.log(completenessCounter)
-//             if (resultsObj) {
-//               temporaryHoldingArray.push(resultsObj[0])
-//             } else {
-//               temporaryHoldingArray.push(null)
-//               nullWarningCounter++
-//             }
-//             if (completenessCounter == districtsCollection.features.length) {
-//               console.log('this was an update req')
-//               await FloodData.findOneAndUpdate(
-//                 {
-//                   after_END: req.body.afterEndDate,
-//                   after_START: req.body.afterStartDate,
-//                 },
-//                 {
-//                   districts: temporaryHoldingArray,
-//                 }
-//               )
-//               res.json({
-//                 message: `Request fulfilled with ${nullWarningCounter} null responses`,
-//                 nullCounts: nullWarningCounter,
-//               })
-//             }
-//           })
-//         }
-//       })
-//     }
-//   })
-
-// Check for null entries
-
+// @desc    Check for any null/undefined entries in flood-data resource
+// @route   GET /api/flood-data/check-null
+// @access  Private
 const checkNullEntries = asyncHandler(async (req, res) => {
   let nullEntriesArray = []
 
@@ -781,7 +432,9 @@ const checkNullEntries = asyncHandler(async (req, res) => {
   res.send(nullEntriesArray)
 })
 
-// Delete all flood data entries
+// @desc    Delete all flood data entries
+// @route   DELETE /api/flood-data/delete
+// @access  Private
 const deleteAllFloodData = asyncHandler(async (req, res) => {
   await FloodData.deleteMany()
 
@@ -791,14 +444,16 @@ const deleteAllFloodData = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
-  getAllFloodData,
   getMapID,
+  getAllFloodData,
   landClassificationDataGenerator,
   checkNullEntries,
   deleteAllFloodData,
 }
 
-//GENERAL FUNCTION TO CALCULATE FLOOD PIXELS FOR A GIVEN REGION WITHIN A GIVEN TIME FRAME
+// @desc    General function to calculate flood pixels for a given region within a given time frame
+// @route   N/A - Native function
+// @access  N/A
 const getFloodPixels = (geometry, dateBS, dateBE, dateAS, dateAE, satData) => {
   const filteredSatData = satData
     .filter(ee.Filter.eq('instrumentMode', 'IW'))
@@ -831,17 +486,24 @@ const getFloodPixels = (geometry, dateBS, dateBE, dateAS, dateAE, satData) => {
   return floodedPixels
 }
 
-// Function to convert image from dB to natural
+// @desc    Function to convert image from dB to natural
+// @route   N/A - Native function
+// @access  N/A
 const toNatural = (img) => {
   return ee.Image(10.0).pow(img.select(0).divide(10.0))
 }
 
-// Function to convert image from natural to dB
+// @desc    Function to convert image from natural to dB
+// @route   N/A - Native function
+// @access  N/A
 const toDB = (img) => {
   return ee.Image(img).log10().multiply(10.0)
 }
 
-//Apllying a Refined Lee Speckle filter as coded in the SNAP 3.0 S1TBX:
+// @desc    Apllying a Refined Lee Speckle filter as coded in the SNAP 3.0 S1TBX
+// @route   N/A - Native function
+// @access  N/A
+
 //https://github.com/senbox-org/s1tbx/blob/master/s1tbx-op-sar-processing/src/main/java/org/esa/s1tbx/sar/gpf/filtering/SpeckleFilters/RefinedLee.java
 //Adapted by Guido Lemoine
 const RefinedLee = (img) => {

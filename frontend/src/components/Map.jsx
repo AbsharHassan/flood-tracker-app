@@ -5,28 +5,22 @@ import { Provider, useSelector, useDispatch } from 'react-redux'
 import { store } from '../app/store'
 
 import { createRoot } from 'react-dom/client'
+import axios from 'axios'
+
 import GoogleMapReact from 'google-map-react'
-// import { InfoWindow } from 'google-map-react'
 import ee from '@google/earthengine'
 import { selectDistrict } from '../features/apiData/apiDataSlice'
 import {
   setMap,
   clearOverlay,
-  setIsInfoWindowOpen,
   setOverlay,
   setShowOverlay,
 } from '../features/map/mapSlice'
-// import { setShowOverlay } from '../features/map/mapSlice'
-// import { setOverlay } from '../features/map/mapSlice'
-// import { clearOverlay } from '../features/map/mapSlice'
-import axios from 'axios'
+
 import mapStyles from '../MapModification/mapStyles'
 import RoadMarker from './RoadMarker'
 import MapSpinner from './MapSpinner'
 import newCoordsPak from '../MapModification/newCoordsPak'
-import CustomControl from './CustomControl'
-import MapZoom from './MapZoom'
-import MapFullScreen from './MapFullScreen'
 import MapDistrictsLegend from './MapDistrictsLegend'
 import MapMarkersLegend from './MapMarkersLegend'
 

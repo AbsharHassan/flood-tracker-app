@@ -21,3 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+src/backups
+
+sidebar_backup
+
+app_backup_v2
+app_backup

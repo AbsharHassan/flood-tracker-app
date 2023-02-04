@@ -21,14 +21,6 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(urlencoded({ extended: false }))
 
-// app.use(express.static('public'))
-
-// app.get('*', (req, res) => {
-//   // res.sendFile(path.join(__dirname, 'public', 'index.html'))
-//   res.send()
-// })
-
-// app.use('/api', require('./routes/floodDataRoutes'))
 app.use('/api', require('./routes/userRoutes'))
 app.use('/api', require('./routes/earthEngineRoutes'))
 
@@ -45,10 +37,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(errorHandler)
-
-// app.get('*', (req, res) => {
-//   res.sendFile(path.resolve(__dirname, 'index.html'))
-// })
 
 app.listen(port, () =>
   console.log(`Server started. Listening on port ${port}.`.bgGreen)

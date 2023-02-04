@@ -12,118 +12,22 @@ const initialState = {
   geoFormattedPolygons: geoFormattedPolygons,
   districtNames: districtNames,
   selectedPeriod: 7,
-  completeFloodData: null,
+  completeFloodData: [],
   selectedFloodData: null,
   prevPeriodFloodData: null,
   globalSelectedDistrictName: null,
   globalSelectedDistrict: null,
   prevPeriodGlobalSelectedDistrict: null,
   globalSelectedGeometry: null,
-
-  maxFlood: null,
-  totalArea: null,
-  totalFlooded: null,
-  totalFarmlandAffected: null,
-  totalUrbanAffected: null,
-  totalRoadsAffected: null,
-}
-
-// Prepare API polygons for Google Maps API
-const formatPolygonData = (data) => {
-  if (data[0].districts.length) {
-    const geoDataArray = data[0].districts.map((innerObject) => {
-      if (innerObject.geometry.type === 'Polygon') {
-        const coordinates = innerObject.geometry.coordinates[0].map(
-          (coords) => {
-            return { lat: coords[1], lng: coords[0] }
-          }
-        )
-        const centerCoords = {
-          lat: innerObject.center.coordinates[1],
-          lng: innerObject.center.coordinates[0],
-        }
-        return {
-          name: innerObject.district,
-          center: centerCoords,
-          coordinates: coordinates,
-        }
-      } else if (innerObject.geometry.type === 'MultiPolygon') {
-        const coordinates = innerObject.geometry.coordinates[
-          innerObject.geometry.coordinates.length - 1
-        ][0].map((coords) => {
-          return { lat: coords[1], lng: coords[0] }
-        })
-        const centerCoords = {
-          lat: innerObject.center.coordinates[1],
-          lng: innerObject.center.coordinates[0],
-        }
-        return {
-          name: innerObject.district,
-          center: centerCoords,
-          coordinates: coordinates,
-        }
-      } else if (innerObject.geometry.type === 'GeometryCollection') {
-        if (
-          !(
-            innerObject.geometry.geometries[
-              innerObject.geometry.geometries.length - 1
-            ].coordinates.length > 1
-          )
-        ) {
-          const coordinates = innerObject.geometry.geometries[
-            innerObject.geometry.geometries.length - 1
-          ].coordinates[0].map((coords) => {
-            return { lat: coords[1], lng: coords[0] }
-          })
-          const centerCoords = {
-            lat: innerObject.center.coordinates[1],
-            lng: innerObject.center.coordinates[0],
-          }
-          return {
-            name: innerObject.district,
-            center: centerCoords,
-            coordinates: coordinates,
-          }
-        } else {
-          const coordinates = innerObject.geometry.geometries[
-            innerObject.geometry.geometries.length - 1
-          ].coordinates[0].map((coords) => {
-            return { lat: coords[1], lng: coords[0] }
-          })
-          const centerCoords = {
-            lat: innerObject.center.coordinates[1],
-            lng: innerObject.center.coordinates[0],
-          }
-          return {
-            name: innerObject.district,
-            center: centerCoords,
-            coordinates: coordinates,
-          }
-        }
-      }
-    })
-
-    const districtNames = data[0].districts.map((innerObject) => {
-      // return innerObject.district.split(' District')[0]
-      return innerObject.district
-    })
-
-    return {
-      geoDataArray,
-      districtNames,
-    }
-  }
+  tryAgain: false,
 }
 
 // Prepare API flood data for Google Maps API
-
 const formatFloodData = (data) => {
   const singlePeriodProcessor = (periodObj) => {
     const totalArea = periodObj.districts.reduce((sum, curObj) => {
       return sum + curObj.results.total
     }, 0)
-    // console.log((totalArea / 1e6).toFixed(1))
-    // console.log(totalArea)
 
     const intermediateArray = periodObj.districts.map((innerObject) => {
       const roadCoords = innerObject.results.roads.map((coords) => {
@@ -136,8 +40,6 @@ const formatFloodData = (data) => {
         ratio: innerObject.results.total / totalArea,
       }
     })
-
-    // const totalObject = intermediateArray.reduce(())
 
     let totalFlooded = 0
     let totalFarmlandAffected = 0
@@ -193,19 +95,6 @@ const formatFloodData = (data) => {
 
   return formattedData
 }
-
-// Get districts' polygon data
-export const getPolygons = createAsyncThunk(
-  'apiData/getPolygons',
-  async (thunkAPI) => {
-    try {
-      return await apiDataService.getPolygons()
-    } catch (error) {
-      const errorMessage = 'Failed to get geometries'
-      return thunkAPI.rejectWithValue(errorMessage)
-    }
-  }
-)
 
 // Get districts' flood data
 export const getFloodData = createAsyncThunk(
@@ -273,50 +162,27 @@ export const apiDataSlice = createSlice({
               )
             : null
       }
-
-      // state.prevPeriodGlobalSelectedDistrict =
-      //   state.prevPeriodFloodData.results.resultsArray.find(
-      //     (floodObj) => floodObj.name === payload
-      //   )
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getPolygons.pending, (state) => {
-        state.isLoadingPolygons = true
-      })
-      .addCase(getPolygons.fulfilled, (state, { payload }) => {
-        const formattedPolygonsData = payload.length
-          ? formatPolygonData(payload)
-          : null
-
-        state.geoFormattedPolygons = payload.length
-          ? formattedPolygonsData.geoDataArray
-          : null
-
-        state.districtNames = payload.length
-          ? formattedPolygonsData.districtNames
-          : null
-
-        state.isLoadingPolygons = false
-      })
       .addCase(getFloodData.pending, (state) => {
         state.isLoadingFloodData = true
+        state.tryAgain = false
       })
       .addCase(getFloodData.fulfilled, (state, { payload }) => {
         const formattedFloodData = formatFloodData(payload)
         state.completeFloodData = formattedFloodData
         state.selectedFloodData = formattedFloodData[state.selectedPeriod]
         state.prevPeriodFloodData = formattedFloodData[state.selectedPeriod - 1]
-        // console.log(formattedFloodData)
-        // state.floodData = formattedFloodData.resultsArray
-        // state.maxFlood = formattedFloodData.maxFlood
-        // state.totalArea = formattedFloodData.totalArea
-        // state.totalFlooded = formattedFloodData.totalFlooded
-        // state.totalFarmlandAffected = formattedFloodData.totalFarmlandAffected
-        // state.totalUrbanAffected = formattedFloodData.totalUrbanAffected
-        // state.totalRoadsAffected = formattedFloodData.totalRoadsAffected
         state.isLoadingFloodData = false
+      })
+      .addCase(getFloodData.rejected, (state, { payload }) => {
+        state.completeFloodData = []
+        state.selectedFloodData = {}
+        state.prevPeriodFloodData = {}
+        state.tryAgain = true
+        console.log(payload)
       })
   },
 })

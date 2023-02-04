@@ -3,11 +3,16 @@ const bcrypt = require('bcrypt')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 
-// GET GOOGLE MAPS API KEY
+// @desc    Get Google Maps Api key (POST FOR SECURITY)
+// @route   POST /api/key
+// @access  Public
 const getApiKey = (req, res) => {
   res.send(process.env.GMAPS_API_KEY)
 }
 
+// @desc    Check if admin exists
+// @route   GET /api/check-user
+// @access  Public
 const userExists = asyncHandler(async (req, res) => {
   const user = await User.findOne()
 
@@ -24,6 +29,9 @@ const userExists = asyncHandler(async (req, res) => {
   return user
 })
 
+// @desc    Create a new admin
+// @route   POST /api/create-user
+// @access  Public
 const registerUser = asyncHandler(async (req, res) => {
   //Check if admin already exists
   const admin = await User.findOne()
@@ -78,6 +86,9 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Login the admin
+// @route   POST /api/login
+// @access  Public
 const loginUser = asyncHandler(async (req, res) => {
   // Check if body data exits
   if (!req.body.email || !req.body.password) {
@@ -111,7 +122,9 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 })
 
-// Check refreshToken and return new accessToken
+// @desc    Check refreshToken and return new accessToken
+// @route   GET /api/refresh
+// @access  Public
 const refresh = (req, res) => {
   console.log('a call was made to the refresh endpoint')
   const cookies = req.cookies
@@ -146,6 +159,9 @@ const refresh = (req, res) => {
   }
 }
 
+// @desc    Log admin out
+// @route   POST /api/logout
+// @access  Private
 const logoutUser = (req, res) => {
   const cookies = req.cookies
   console.log(cookies)
@@ -168,6 +184,9 @@ const logoutUser = (req, res) => {
   }
 }
 
+// @desc    Delete admin from DB
+// @route   DELETE /api/delete-user
+// @access  Private
 const deleteUser = asyncHandler(async (req, res) => {
   // Check if body data exits
   if (!req.body.email || !req.body.password) {
@@ -192,14 +211,9 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 })
 
-// Generate JWT
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '1d',
-  })
-}
-
-// Generate Access and Refresh Tokens
+// @desc    Generate Access and Refresh Tokens
+// @route   N/A - Native function
+// @access  N/A
 const generateTokens = (id) => {
   const accessToken = jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: '20m',
@@ -215,16 +229,12 @@ const generateTokens = (id) => {
   }
 }
 
-// Generate only accessToken
+// @desc    Generate only accessToken
+// @route   N/A - Native function
+// @access  N/A
 const generateAccessToken = (id) => {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: '20m',
-  })
-}
-
-const randomTest = (req, res) => {
-  res.json({
-    message: 'hello world',
   })
 }
 
@@ -235,6 +245,5 @@ module.exports = {
   refresh,
   logoutUser,
   deleteUser,
-  randomTest,
   getApiKey,
 }
