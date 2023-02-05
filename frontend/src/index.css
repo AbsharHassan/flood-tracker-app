@@ -66,6 +66,14 @@
   }
 }
 
+.test-class {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  transform-origin: center center;
+}
+
 .search-border-enter,
 .search-border-exit-done {
   /* border: 2px solid transparent; */
@@ -264,7 +272,7 @@
 .reset-spinner {
   transform: rotate(0deg);
 
-  animation: reset 1.5s ease-in-out;
+  animation: reset 1.5s ease-out;
 
   /* animation: loading 1s cubic-bezier(0.785, 0.135, 0.15, 0.86) infinite
     alternate; */

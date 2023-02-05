@@ -22,7 +22,7 @@ import RoadMarker from './RoadMarker'
 import MapSpinner from './MapSpinner'
 import newCoordsPak from '../MapModification/newCoordsPak'
 import MapDistrictsLegend from './MapDistrictsLegend'
-import MapMarkersLegend from './MapMarkersLegend'
+import MapControlsUI from './MapControlsUI'
 
 const Map = ({ center, zoom, backendData }) => {
   const dispatch = useDispatch()
@@ -131,6 +131,8 @@ const Map = ({ center, zoom, backendData }) => {
 
   useEffect(() => {
     // console.log(apiRoadCoords)
+    // console.log(selectedDistrict)
+    // console.log(roadSwitch)
   }, [apiRoadCoords])
 
   useEffect(() => {
@@ -191,6 +193,7 @@ const Map = ({ center, zoom, backendData }) => {
       // console.log('this was called too')
       getFloodPixels(selectedFloodData.after_START, selectedFloodData.after_END)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFloodData, globalSelectedDistrict, globalSelectedGeometry])
 
   useEffect(() => {
@@ -221,21 +224,21 @@ const Map = ({ center, zoom, backendData }) => {
         setSelectedDistrict(districtFloodObject)
         map.overlayMapTypes.clear()
         dispatch(clearOverlay())
+        // // map.setZoom(8)
+        // setCustomZoom(8)
         // map.setZoom(8)
-        setCustomZoom(8)
-        map.setZoom(8)
-        // console.log(customZoom)
-        setShowRoadsFor(polygon.name)
-        setCustomCenter(polygon.center)
+        // // console.log(customZoom)
+        // setShowRoadsFor(polygon.name)
+        // setCustomCenter(polygon.center)
 
-        polygonArray.forEach((district) => {
-          district.setOptions({
-            visible: true,
-          })
-        })
-        polygon.setOptions({
-          visible: false,
-        })
+        // polygonArray.forEach((district) => {
+        //   district.setOptions({
+        //     visible: true,
+        //   })
+        // })
+        // polygon.setOptions({
+        //   visible: false,
+        // })
       })
     })
   }
@@ -306,7 +309,7 @@ const Map = ({ center, zoom, backendData }) => {
 
     createRoot(mapMarkersLegendElRef.current).render(
       <Provider store={store}>
-        <MapMarkersLegend maxValue={maxFlood} />
+        <MapControlsUI maxValue={maxFlood} />
       </Provider>
     )
     map.controls[maps.ControlPosition.TOP_LEFT].push(
@@ -357,8 +360,8 @@ const Map = ({ center, zoom, backendData }) => {
               lng={customCenter.lng}
             />
           )}
-          {!selectedDistrict &&
-            roadSwitch &&
+          {roadSwitch &&
+            // !selectedDistrict &&
             showRoadsFor &&
             apiRoadCoords.map((coordinates, i) => (
               <RoadMarker

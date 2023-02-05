@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Switch, Box, Slider } from '@mui/material'
 import { AiFillWarning, AiFillStop } from 'react-icons/ai'
 import { TiRefresh } from 'react-icons/ti'
 
 import { toggleShowRoads, toggleOverlayDisplay } from '../features/map/mapSlice'
+import { selectDistrict } from '../features/apiData/apiDataSlice'
 
-const MapMarkersLegend = () => {
+const MapControlsUI = () => {
   const dispatch = useDispatch()
 
   const { overlay, showRoads, showOverlay } = useSelector((state) => state.map)
@@ -15,9 +16,21 @@ const MapMarkersLegend = () => {
   const [overlaySwitch, setOverlaySwitch] = useState(showOverlay)
   const [floodPixelOpacity, setFloodPixelOpacity] = useState(50)
 
+  let resetIconRef = useRef()
+
   const handleFloodPixelOpacityChange = (e, newValue) => {
     setFloodPixelOpacity(newValue)
     overlay?.setOpacity(newValue / 100)
+  }
+
+  const handleResetRequest = () => {
+    dispatch(selectDistrict(null))
+    if (!resetIconRef.current.classList.contains('reset-spinner')) {
+      resetIconRef.current.classList.add('reset-spinner')
+      setTimeout(() => {
+        resetIconRef.current.classList.remove('reset-spinner')
+      }, 1500)
+    }
   }
 
   useEffect(() => {
@@ -33,9 +46,12 @@ const MapMarkersLegend = () => {
   }, [overlay])
 
   return (
-    <div className="px-2 sm:px-2  whitespace-nowrap py-1 text-[10px]  sm:py-1 mt-2 ml-2 rounded-lg bg-black/30 backdrop-blur-2xl details-card text-slate-300">
+    <div className="pl-2 pr-0   whitespace-nowrap py-1 text-[10px]  sm:py-1 mt-2 ml-2 rounded-lg bg-black/30 backdrop-blur-2xl details-card text-slate-300">
       {/* <div className="mb-1 sm:mb-3 text-[12px] sm:text-[15px] text-center">
         Key
+      </div> */}
+      {/* <div className="mb-2 sm:mb-3 text-[12px] sm:text-[15px] text-center">
+        Map Controls
       </div> */}
 
       <div className="w-full flex flex-col space-y-2 sm:space-y-2 mb-1 sm:mb-1">
@@ -46,7 +62,7 @@ const MapMarkersLegend = () => {
           <div className="ml-2 w-[65px] h-full  flex items-center justify-start ">
             Road Affected
           </div>
-          <div>
+          <div className="bg-slate-800 rounded-full ml-2">
             <Switch
               // onChange={() => setPixelsSwitch((v) => !v)}
               // onChange={() => dispatch(toggleOverlayDisplay())}
@@ -90,7 +106,7 @@ const MapMarkersLegend = () => {
           <div className=" ml-2 w-[65px] h-full   flex items-center justify-start ">
             Flood Pixels
           </div>
-          <div>
+          <div className="bg-slate-800 rounded-full ml-2">
             <Switch
               onChange={() => dispatch(toggleOverlayDisplay())}
               value={overlaySwitch}
@@ -125,10 +141,15 @@ const MapMarkersLegend = () => {
             />
           </div>
         </div>
-        <div className="max-h-3 w-full flex items-center justify-between pt-0 pr-[2.5px] bg-red-600/0  ">
+        <div className="max-h-3 w-full flex items-center justify-between  pr-[8px] bg-red-600/0  ">
           <Box
             width="90px"
             marginTop="6px"
+            backgroundColor="rgb(30 41 59)"
+            height="17px"
+            paddingLeft="5px"
+            paddingRight="11px"
+            borderRadius={9999}
           >
             <Slider
               disabled={overlay && overlaySwitch ? false : true}
@@ -137,6 +158,9 @@ const MapMarkersLegend = () => {
               size="small"
               defaultValue={100}
               sx={{
+                '&.MuiSlider-root': {
+                  padding: '0px',
+                },
                 '& .MuiSlider-thumb': {
                   boxShadow: 'none !important',
                 },
@@ -146,9 +170,15 @@ const MapMarkersLegend = () => {
               }}
             />
           </Box>
-          <i className="bg-purple-700/0 h-full">
-            <TiRefresh className="text-[#1976d2] text-3xl" />
-          </i>
+          <div
+            className="bg-slate-800 mt-[6.5px] h-[18px] w-[40px] ml-[11px] rounded-full  hover:cursor-pointer flex items-center justify-center"
+            // ref={resetIconRef}
+            onClick={handleResetRequest}
+          >
+            <span ref={resetIconRef}>
+              <TiRefresh className="text-[#1976d2] text-2xl mb-[2px]" />
+            </span>
+          </div>
         </div>
         <div className="w-full flex justify-center"></div>
       </div>
@@ -156,4 +186,4 @@ const MapMarkersLegend = () => {
   )
 }
 
-export default MapMarkersLegend
+export default MapControlsUI

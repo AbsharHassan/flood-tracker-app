@@ -39,6 +39,11 @@ import { GrPowerReset } from 'react-icons/gr'
 import { IoRefreshOutline } from 'react-icons/io5'
 import { TiRefresh } from 'react-icons/ti'
 
+import { IoMdRefresh } from 'react-icons/io'
+import { MdRefresh } from 'react-icons/md'
+import { BsArrowClockwise } from 'react-icons/bs'
+import { AiOutlineSync } from 'react-icons/ai'
+
 import DateSelector from './DateSelector'
 
 import dayjs from 'dayjs'
