@@ -58,12 +58,10 @@ const Map = ({ center, zoom, backendData }) => {
     selectedFloodData.after_START,
     selectedFloodData.after_END,
   ])
-  // const [axiosReqCounter, setAxiosReqCounter] = useState(0)
-
-  let axiosReqCounter = useRef(0)
 
   let mapDistrictsLegendElRef = useRef()
   let mapMarkersLegendElRef = useRef()
+  let axiosAbortController = useRef()
 
   const MapControls = () => {
     return (
@@ -74,110 +72,17 @@ const Map = ({ center, zoom, backendData }) => {
     )
   }
 
-  // let axiosAbortController
-  // console.log('kuch hua hai lmao')
-  // useEffect(() => {
-  //   var axiosAbortController
-  // }, [])
-
-  // let axiosAbortController = useRef()
-  // console.log(axiosAbortController)
-
-  // let axiosAbortController = new AbortController()
-
-  let axiosAbortController = useRef()
-
-  let initialClickComplete = useRef(false)
-
-  let responseIsPending = useRef(false)
-
   const getFloodPixels = async (afterStart, afterEnd) => {
-    // if (initialClickComplete.current) {
-    //   axiosAbortController.abort()
-    // }
-    // console.log(overlay)
-    // console.log(initialClickComplete.current)
-    initialClickComplete.current = true
-
-    console.log(responseIsPending.current)
-
-    // if (responseIsPending.current) {
-    //   console.log(axiosAbortController)
-    //   axiosAbortController?.abort()
-    // }
-
-    // if (!axiosAbortController.current) {
-    //   console.log('abortable request')
-    // } else {
-    //   console.log('there is no abortable request rn')
-    // }
-
-    // if (axiosAbortController.hasOwnProperty('current')) {
-    //   console.log('still the stupid ref')
-    // } else {
-    //   console.log('is a diff thing nowe')
-    // }
-
     if (axiosAbortController.current) {
-      // console.log('the abort controller exists')
       axiosAbortController.current.abort()
-    } else {
-      console.log('its false adn there is nortnignakfsl kldsajb')
     }
-
-    console.log(axiosAbortController)
 
     axiosAbortController.current = new AbortController()
 
-    console.log(axiosAbortController)
-
-    // if (axiosReqCounter.current > 0) {
-    //   var axiosAbortController = new AbortController()
-
-    // }
-    // axiosAbortController.abort()
-    // let someController
-
-    // if (axiosReqCounter.current > 0) {
-    //   someController = new AbortController()
-    // }
-
-    // if (someController) {
-    //   someController.abort()
-    // }
-
-    // axiosAbortController = new AbortController()
-
-    // console.log(axiosReqCounter.current)
-
-    // if (axiosAbortController) {
-    //   axiosAbortController.abort()
-    // }
-
-    // axiosAbortController = new AbortController()
-
-    // console.log(axiosReqCounter.current)
-
-    // if (axiosReqCounter.current) {
-    //   console.log('request(s) present in the stack')
-    //   axiosAbortController.abort()
-    // }
-
-    // if (!(overlay === null)) {
-    //   // console.log('there is an overlay')
-    //   axiosAbortController.abort()
-    //   // console.log(axiosReqCounter.current)
-    // }
-    axiosReqCounter.current++
-
     setShowMapSpinner(true)
-
-    responseIsPending.current = true
 
     await axios
       .post(
-        // `http://127.0.0.1:5000/api/district`,
-        // `https://flood-tracker-app-api.onrender.com/api/flood-data/district`,
         '/api/flood-data/district',
         {
           afterStart,
@@ -185,7 +90,6 @@ const Map = ({ center, zoom, backendData }) => {
           district: globalSelectedDistrict.name,
         },
         {
-          // cancelToken: source.token,
           signal: axiosAbortController.current.signal,
         }
       )
@@ -209,8 +113,6 @@ const Map = ({ center, zoom, backendData }) => {
         }
       })
 
-    responseIsPending.current = false
-    axiosReqCounter.current--
     setShowMapSpinner(false)
   }
 
@@ -309,37 +211,22 @@ const Map = ({ center, zoom, backendData }) => {
   }, [apiFloodDataArray, showRoadsFor])
 
   const nativeApiHandler = (map, maps) => {
-    // let source
-    // let controller
     polygonArray.map((polygon) => {
       polygon.setMap(map)
       polygon.addListener('click', async () => {
-        // console.log(polygon.name + ' was clicked')
-        // console.log(source)
-        // console.log(controller)
         dispatch(selectDistrict(polygon.name))
         const districtFloodObject = apiFloodDataArray.find(
           (floodObj) => floodObj.name === polygon.name
         )
         setSelectedDistrict(districtFloodObject)
-        // map.overlayMapTypes.clear()
-        // dispatch(clearOverlay())
+        map.overlayMapTypes.clear()
+        dispatch(clearOverlay())
         // map.setZoom(8)
         setCustomZoom(8)
         map.setZoom(8)
         // console.log(customZoom)
         setShowRoadsFor(polygon.name)
         setCustomCenter(polygon.center)
-
-        // if (source) {
-        //   source.cancel()
-        // }
-        // source = axios.CancelToken.source()
-
-        // if (controller) {
-        //   controller.abort()
-        // }
-        // controller = new AbortController()
 
         polygonArray.forEach((district) => {
           district.setOptions({
@@ -349,44 +236,6 @@ const Map = ({ center, zoom, backendData }) => {
         polygon.setOptions({
           visible: false,
         })
-
-        setShowMapSpinner(true)
-
-        // await axios
-        //   .post(
-        //     // `http://127.0.0.1:5000/api/district`,
-        //     // `https://flood-tracker-app-api.onrender.com/api/flood-data/district`,
-        //     '/api/flood-data/district',
-        //     {
-        //       afterStart: selectedPeriodDates[0],
-        //       afterEnd: selectedPeriodDates[1],
-        //       district: polygon.name,
-        //     },
-        //     {
-        //       // cancelToken: source.token,
-        //       signal: controller.signal,
-        //     }
-        //   )
-        //   .then((response) => {
-        //     console.log(`${polygon.name} data recieved`)
-        //     const mapid = response.data
-        //     const tileSource = new ee.layers.EarthEngineTileSource({
-        //       mapid,
-        //     })
-        //     const overlay = new ee.layers.ImageOverlay(tileSource)
-        //     dispatch(setShowOverlay(true))
-        //     dispatch(setOverlay(overlay))
-        //     map.overlayMapTypes.push(overlay)
-        //     // setSelectedDistrict(null)
-        //   })
-        //   .catch((error) => {
-        //     if (axios.isCancel(error)) {
-        //       console.log('Request cancelled.')
-        //     } else {
-        //       console.log(error)
-        //     }
-        //   })
-        setShowMapSpinner(false)
       })
     })
   }
@@ -420,7 +269,6 @@ const Map = ({ center, zoom, backendData }) => {
     map.data.setStyle({
       fillColor: '#020416',
       // fillColor: '#0e1824',
-      // fillColor: 'red',
       strokeWeight: 1,
       fillOpacity: 1,
     })
@@ -430,8 +278,6 @@ const Map = ({ center, zoom, backendData }) => {
     })
 
     const districtPolygons = apiPolygonArray.map((geometryObject) => {
-      // console.log(geometryObject)
-
       const floodDataObject = apiFloodDataArray.find(
         (floodObj) => floodObj.name === geometryObject.name
       )
@@ -522,11 +368,6 @@ const Map = ({ center, zoom, backendData }) => {
                 size="11px"
               />
             ))}
-          {/* <InfoWindow visible={true} /> */}
-          {/* <JunkMarker
-            lat={30.3753}
-            lng={69.3451}
-          /> */}
         </GoogleMapReact>
       </div>
     </>
@@ -541,3 +382,7 @@ Map.defaultProps = {
 }
 
 export default Map
+
+//546
+//448
+//388
