@@ -26,7 +26,6 @@ import MapMarkersLegend from './MapMarkersLegend'
 
 const Map = ({ center, zoom, backendData }) => {
   const dispatch = useDispatch()
-  const axiosAbortController = new AbortController()
 
   const {
     selectedFloodData,
@@ -34,7 +33,7 @@ const Map = ({ center, zoom, backendData }) => {
     globalSelectedDistrict,
     globalSelectedGeometry,
   } = useSelector((state) => state.apiData)
-  const { apiKey, showRoads, mapOverlay, isInfoWindowOpen, mapTheme } =
+  const { apiKey, showRoads, overlay, isInfoWindowOpen, mapTheme } =
     useSelector((state) => state.map)
 
   const [apiDataArray, setApiDataArray] = useState([])
@@ -59,6 +58,9 @@ const Map = ({ center, zoom, backendData }) => {
     selectedFloodData.after_START,
     selectedFloodData.after_END,
   ])
+  // const [axiosReqCounter, setAxiosReqCounter] = useState(0)
+
+  let axiosReqCounter = useRef(0)
 
   let mapDistrictsLegendElRef = useRef()
   let mapMarkersLegendElRef = useRef()
@@ -72,10 +74,105 @@ const Map = ({ center, zoom, backendData }) => {
     )
   }
 
+  // let axiosAbortController
+  // console.log('kuch hua hai lmao')
+  // useEffect(() => {
+  //   var axiosAbortController
+  // }, [])
+
+  // let axiosAbortController = useRef()
+  // console.log(axiosAbortController)
+
+  // let axiosAbortController = new AbortController()
+
+  let axiosAbortController = useRef()
+
+  let initialClickComplete = useRef(false)
+
+  let responseIsPending = useRef(false)
+
   const getFloodPixels = async (afterStart, afterEnd) => {
-    if (showMapSpinner) axiosAbortController.abort()
+    // if (initialClickComplete.current) {
+    //   axiosAbortController.abort()
+    // }
+    // console.log(overlay)
+    // console.log(initialClickComplete.current)
+    initialClickComplete.current = true
+
+    console.log(responseIsPending.current)
+
+    // if (responseIsPending.current) {
+    //   console.log(axiosAbortController)
+    //   axiosAbortController?.abort()
+    // }
+
+    // if (!axiosAbortController.current) {
+    //   console.log('abortable request')
+    // } else {
+    //   console.log('there is no abortable request rn')
+    // }
+
+    // if (axiosAbortController.hasOwnProperty('current')) {
+    //   console.log('still the stupid ref')
+    // } else {
+    //   console.log('is a diff thing nowe')
+    // }
+
+    if (axiosAbortController.current) {
+      // console.log('the abort controller exists')
+      axiosAbortController.current.abort()
+    } else {
+      console.log('its false adn there is nortnignakfsl kldsajb')
+    }
+
+    console.log(axiosAbortController)
+
+    axiosAbortController.current = new AbortController()
+
+    console.log(axiosAbortController)
+
+    // if (axiosReqCounter.current > 0) {
+    //   var axiosAbortController = new AbortController()
+
+    // }
+    // axiosAbortController.abort()
+    // let someController
+
+    // if (axiosReqCounter.current > 0) {
+    //   someController = new AbortController()
+    // }
+
+    // if (someController) {
+    //   someController.abort()
+    // }
+
+    // axiosAbortController = new AbortController()
+
+    // console.log(axiosReqCounter.current)
+
+    // if (axiosAbortController) {
+    //   axiosAbortController.abort()
+    // }
+
+    // axiosAbortController = new AbortController()
+
+    // console.log(axiosReqCounter.current)
+
+    // if (axiosReqCounter.current) {
+    //   console.log('request(s) present in the stack')
+    //   axiosAbortController.abort()
+    // }
+
+    // if (!(overlay === null)) {
+    //   // console.log('there is an overlay')
+    //   axiosAbortController.abort()
+    //   // console.log(axiosReqCounter.current)
+    // }
+    axiosReqCounter.current++
 
     setShowMapSpinner(true)
+
+    responseIsPending.current = true
 
     await axios
       .post(
@@ -89,7 +186,7 @@ const Map = ({ center, zoom, backendData }) => {
         },
         {
           // cancelToken: source.token,
-          signal: axiosAbortController.signal,
+          signal: axiosAbortController.current.signal,
         }
       )
       .then((response) => {
@@ -111,6 +208,9 @@ const Map = ({ center, zoom, backendData }) => {
           console.log(error)
         }
       })
+
+    responseIsPending.current = false
+    axiosReqCounter.current--
     setShowMapSpinner(false)
   }
 
@@ -123,48 +223,12 @@ const Map = ({ center, zoom, backendData }) => {
     setRoadSwitch(showRoads)
   }, [showRoads])
 
-  // useEffect(() => {
-  //   if (!globalSelectedDistrict && nativeMap) {
-  //     polygonArray.forEach((district) => {
-  //       district.setOptions({
-  //         visible: true,
-  //       })
-  //     })
-  //     setShowRoadsFor(null)
-  //     nativeMap.overlayMapTypes.clear()
-  //     nativeMap.setZoom(6)
-  //     setCustomZoom(6)
-  //     setCustomCenter({})
-  //     dispatch(setOverlay(null))
-  //   } else if (globalSelectedDistrict && globalSelectedGeometry && nativeMap) {
-  //     const selectedPolygon = polygonArray.find(
-  //       (polygon) => polygon.name === globalSelectedGeometry.name
-  //     )
-  //     selectedPolygon.setOptions({
-  //       visible: false,
-  //     })
-  //     setCustomZoom(8)
-  //     nativeMap.overlayMapTypes.clear()
-  //     dispatch(clearOverlay())
-  //     nativeMap.setZoom(8)
-  //     setShowRoadsFor(globalSelectedGeometry.name)
-  //     setCustomCenter(globalSelectedGeometry.center)
-  //     getFloodPixels(selectedPeriodDates[0], selectedPeriodDates[1])
-  //     console.log(mapOverlay)
-  //   }
-  // }, [globalSelectedDistrict, globalSelectedGeometry])
-
-  // useEffect(() => {
-  //   setApiPolygonArray(geoFormattedPolygons)
-  //   setApiFloodDataArray(floodData)
-  // }, [geoFormattedPolygons, floodData])
-
   useEffect(() => {
     setApiPolygonArray(geoFormattedPolygons)
   }, [geoFormattedPolygons])
 
   useEffect(() => {
-    console.log(apiRoadCoords)
+    // console.log(apiRoadCoords)
   }, [apiRoadCoords])
 
   useEffect(() => {
@@ -222,7 +286,7 @@ const Map = ({ center, zoom, backendData }) => {
       nativeMap.setZoom(8)
       setShowRoadsFor(globalSelectedGeometry.name)
       setCustomCenter(globalSelectedGeometry.center)
-      console.log('this was called too')
+      // console.log('this was called too')
       getFloodPixels(selectedFloodData.after_START, selectedFloodData.after_END)
     }
   }, [selectedFloodData, globalSelectedDistrict, globalSelectedGeometry])
@@ -245,17 +309,21 @@ const Map = ({ center, zoom, backendData }) => {
   }, [apiFloodDataArray, showRoadsFor])
 
   const nativeApiHandler = (map, maps) => {
-    let source
+    // let source
+    // let controller
     polygonArray.map((polygon) => {
       polygon.setMap(map)
       polygon.addListener('click', async () => {
+        // console.log(polygon.name + ' was clicked')
+        // console.log(source)
+        // console.log(controller)
         dispatch(selectDistrict(polygon.name))
         const districtFloodObject = apiFloodDataArray.find(
           (floodObj) => floodObj.name === polygon.name
         )
         setSelectedDistrict(districtFloodObject)
-        map.overlayMapTypes.clear()
-        dispatch(clearOverlay())
+        // map.overlayMapTypes.clear()
+        // dispatch(clearOverlay())
         // map.setZoom(8)
         setCustomZoom(8)
         map.setZoom(8)
@@ -263,10 +331,15 @@ const Map = ({ center, zoom, backendData }) => {
         setShowRoadsFor(polygon.name)
         setCustomCenter(polygon.center)
 
-        if (source) {
-          source.cancel()
-        }
-        source = axios.CancelToken.source()
+        // if (source) {
+        //   source.cancel()
+        // }
+        // source = axios.CancelToken.source()
+
+        // if (controller) {
+        //   controller.abort()
+        // }
+        // controller = new AbortController()
 
         polygonArray.forEach((district) => {
           district.setOptions({
@@ -290,7 +363,8 @@ const Map = ({ center, zoom, backendData }) => {
         //       district: polygon.name,
         //     },
         //     {
-        //       cancelToken: source.token,
+        //       // cancelToken: source.token,
+        //       signal: controller.signal,
         //     }
         //   )
         //   .then((response) => {
@@ -314,10 +388,6 @@ const Map = ({ center, zoom, backendData }) => {
         //   })
         setShowMapSpinner(false)
       })
-      // polygon.addListener('mouseover', () => {
-      //   console.log(polygon.name)
-      //   someIndex++
-      // })
     })
   }
 
