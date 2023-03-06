@@ -332,8 +332,7 @@ const Map = ({ center, zoom, backendData }) => {
       <div className="mx-auto w-full h-full p-[3.5px]">
         <GoogleMapReact
           bootstrapURLKeys={{
-            // key: apiKey,
-            key: 'AIzaSyCJ6LFFCDXC1QFms7h8BcO3KiJZwS20HDg',
+            key: apiKey,
           }}
           options={{
             // disableDefaultUI: true,
