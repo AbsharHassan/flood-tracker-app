@@ -1,5 +1,14 @@
 const darkTheme = [
   {
+    featureType: 'administrative.country',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        visibility: 'off',
+      },
+    ],
+  },
+  {
     elementType: 'geometry',
     stylers: [
       {
