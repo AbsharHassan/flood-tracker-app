@@ -90,8 +90,9 @@ const Dashboard = () => {
   }, [innerWidth])
 
   useEffect(() => {
-    console.log('yeah something tochabge')
-    setSomeRerenderCounter(someRerenderCounter + 1)
+    if (innerWidth > 640) {
+      setSomeRerenderCounter(someRerenderCounter + 1)
+    }
   }, [innerHeight])
 
   return (

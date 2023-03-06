@@ -1,14 +1,5 @@
 const darkTheme = [
   {
-    featureType: 'administrative.country',
-    elementType: 'labels.text.fill',
-    stylers: [
-      {
-        visibility: 'off',
-      },
-    ],
-  },
-  {
     elementType: 'geometry',
     stylers: [
       {
@@ -678,6 +669,15 @@ const labelDarkTheme = [
     stylers: [
       {
         color: '#3d3d3d',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative.country',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        visibility: 'off',
       },
     ],
   },
