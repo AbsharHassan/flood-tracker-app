@@ -122,6 +122,9 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
                   setSearchIsFocused(false)
                   handlePopperClose()
                 }}
+                onKeyDown={() => {
+                  console.log('key down')
+                }}
                 className={`text-xs text-slate-300 focus:outline-none bg-transparent border-l-2 border-slate-600 ${
                   isScreenLg ? `` : `w-52`
                 } ${
@@ -140,7 +143,7 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
 
       <Portal>
         {/* <div
-          className={`bg-[#1978c833] border-2 border-[#0082ff4d] rounded-md details-card backdrop-blur-sm w-[200px]  absolute z-[60] ${
+          className={`bg-[#1978c833] border-2 border-[#0082ff4d] rounded-md backdrop-blur-sm w-[200px]  absolute z-[60] ${
             showPopper ? 'h-[300px] opacity-100' : 'h-0 opacity-0'
           } transition-all duration-1000`}
           ref={setPopperEl}

@@ -270,8 +270,9 @@ const Map = ({ center, zoom, backendData }) => {
     })
 
     map.data.setStyle({
-      fillColor: '#020416',
-      // fillColor: '#0e1824',
+      // fillColor: '#020416', //main one rn
+      fillColor: '#0e1824',
+      // fillColor: '#121e2d',
       strokeWeight: 1,
       fillOpacity: 1,
     })
@@ -287,6 +288,8 @@ const Map = ({ center, zoom, backendData }) => {
       return new maps.Polygon({
         paths: geometryObject.coordinates,
         strokeColor: '#00aaff',
+        // strokeColor: 'black',
+
         strokeOpacity: 1,
         strokeWeight: 0.4,
         // fillColor: '#00FFFF88',
@@ -326,10 +329,11 @@ const Map = ({ center, zoom, backendData }) => {
   return (
     <>
       <MapControls />
-      <div className="map h-full">
+      <div className="mx-auto w-full h-full p-[3.5px]">
         <GoogleMapReact
           bootstrapURLKeys={{
-            key: apiKey,
+            // key: apiKey,
+            key: 'AIzaSyCJ6LFFCDXC1QFms7h8BcO3KiJZwS20HDg',
           }}
           options={{
             // disableDefaultUI: true,

@@ -12,22 +12,22 @@ const DetailsCard = ({
   return (
     //bg-[#121e2d]
     <>
-      <div className="flex justify-center w-full px-1 sm:px-2 xl:px-3">
-        <div className="w-full details-card h-[90px]  sm:h-[120px] rounded-sm p-2  sm:p-5 relative">
-          <span className="absolute right-3 top-3 text-lg sm:text-3xl xs:text-xl   p-2 bg-[#1d2d42] rounded-full">
+      <div className="flex justify-center w-full px-2 sm:px-2 xl:px-3">
+        <div className="w-full bg-themeCardColor border border-themeBorderColor h-[110px] sm:h-[120px] rounded-sm px-3 sm:px-5 relative">
+          <span className="absolute right-4 top-3 text-lg sm:text-3xl xs:text-xl p-2 bg-[#1d2d42] rounded-full">
             <Icon />
           </span>
-          <div className="flex flex-col justify-between h-full text-[#9599ad]">
-            <div className="font-medium uppercase text-[9px] text-clip xxs:text-[10.5px] xxs:whitespace-nowrap xs:text-xs md:text ">
+          <div className="flex flex-col justify-evenly h-full text-[#9599ad]">
+            <div className="font-semibold uppercase text-[9px] text-clip xxs:text-[10.5px] xxs:whitespace-nowrap xs:text-xs md:text ">
               {title}
             </div>
-            <div className="flex items-center text-sm text-[8px] font-medium">
+            <div className="flex items-center text-sm text-[8px] font-medium mb-1">
               <span
-                className={`mr-1 text-sm xxs:text-lg xs:text-lg sm:text-xl xl:text-3xl ${color}`}
+                className={`mr-1 text-sm xxs:text-lg xs:text-lg sm:text-xl md:text-2xl xl:text-3xl font-bold ${color}`}
               >
                 {Math.abs(value)}
-              </span>{' '}
-              <span className="text-base xs:text-xl">-</span>{' '}
+              </span>
+              <span className="text-base xs:text-xl">-</span>
               <span className="ml-1 mt-0.5  font-bold text-[10px] xs:text-sm">
                 {units}
               </span>

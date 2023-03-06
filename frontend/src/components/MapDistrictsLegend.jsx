@@ -11,7 +11,7 @@ const MapLegend = () => {
 
   return (
     <div
-      className="flex flex-col ml-2 rounded-lg sm:ml-2 sm:flex-col sm:mb-3 bg-black/30 backdrop-blur-2xl details-card"
+      className="flex flex-col ml-2 rounded-lg sm:ml-2 sm:flex-col sm:mb-3 bg-themeCardColor/50 backdrop-blur-2xl card-shadow"
       title="Map legend"
     >
       <div className="h-full p-1 pt-2 font-medium text-center sm:w-full text-slate-300">

@@ -30,9 +30,9 @@ const DetailsOverview = () => {
 
   return (
     <div
-      className={`xs:grid space-y-3 xs:space-y-0 w-full grid-cols-2 px-1 py-4 md:py-4 gap-y-4 ${
+      className={`xs:grid space-y-4 xs:space-y-0 w-full px-3 py-5 md:py-6 sm:grid-cols-2 gap-y-4 ${
         sidebarIsOpen ? 'xl:grid-cols-4' : 'lg:grid-cols-4'
-      } transition-all duration-1000`}
+      } transition-all duration-1000 xl:overview-view`}
     >
       <DetailsCard
         title="Total Land Flooded"

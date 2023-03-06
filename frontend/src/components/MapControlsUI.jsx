@@ -46,7 +46,7 @@ const MapControlsUI = () => {
   }, [overlay])
 
   return (
-    <div className="pl-2 pr-0   whitespace-nowrap py-1 text-[10px]  sm:py-1 mt-2 ml-2 rounded-lg bg-black/30 backdrop-blur-2xl details-card text-slate-300">
+    <div className="pl-2 pr-0   whitespace-nowrap py-1 text-[10px]  sm:py-1 mt-2 ml-2 rounded-lg bg-themeCardColor/50 backdrop-blur-2xl card-shadow text-slate-300">
       {/* <div className="mb-1 sm:mb-3 text-[12px] sm:text-[15px] text-center">
         Key
       </div> */}

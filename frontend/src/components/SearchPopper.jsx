@@ -22,6 +22,9 @@ const SearchPopper = ({
   const { districtNames } = useSelector((state) => state.apiData)
   return (
     <div
+      onKeyDown={() => {
+        console.log('key down')
+      }}
       ref={setPopperEl}
       style={styles.popper}
       {...attributes.popper}
@@ -43,13 +46,21 @@ const SearchPopper = ({
         </button>
       </div>
       <div
-        className={`bg-[#1978c822] border-2 border-[#114b81] rounded-md details-card backdrop-blur-md w-full absolute z-[60] overflow-y-scroll search-popper   ${
+        onKeyDown={() => {
+          console.log('key down')
+        }}
+        className={`bg-[#1978c822] border-2 border-[#114b81] rounded-md  backdrop-blur-md w-full absolute z-[60] overflow-y-scroll search-popper   ${
           showPopper
             ? 'max-h-[250px] pb-1 opacity-100'
             : 'max-h-[20px] opacity-0'
         } transition-all duration-1000`}
       >
-        <div className="h-full relative pt-[25px]">
+        <ul
+          onKeyDown={() => {
+            console.log('key down')
+          }}
+          className="h-full relative pt-[25px]"
+        >
           {searchResults &&
             searchResults.map((result, index) => (
               <div
@@ -63,7 +74,7 @@ const SearchPopper = ({
                 {result}
               </div>
             ))}
-        </div>
+        </ul>
       </div>
     </div>
   )

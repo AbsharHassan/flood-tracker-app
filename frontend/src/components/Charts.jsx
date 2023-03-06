@@ -45,6 +45,21 @@ const Charts = () => {
 
     const truncatedArray = apiData.slice(0, 10)
 
+    const floodValuesArray = truncatedArray.map((districtObj) => {
+      return districtObj.results.after.floodWater
+    })
+
+    console.log(floodValuesArray)
+
+    const maxFlood = Math.max(...floodValuesArray)
+    console.log(maxFlood)
+
+    const ratioArray = floodValuesArray.map((value) => {
+      return value / maxFlood
+    })
+
+    console.log(ratioArray)
+
     setBarChartData({
       labels: truncatedArray.map((districtObj) => {
         return districtObj.name.split(' ')[0]
@@ -52,18 +67,17 @@ const Charts = () => {
       datasets: [
         {
           label: 'Percentage of Land Flooded',
-          data: truncatedArray.map((districtObj) => {
-            return districtObj.results.after.floodWater
-          }),
+          // data: truncatedArray.map((districtObj) => {
+          //   return districtObj.results.after.floodWater
+          // }),
+          data: floodValuesArray,
           maxBarThickness: 15,
           minBarLength: 35,
-          backgroundColor: [
-            '#33aaffaa',
-            '#33aaffaa',
-            '#33aaffaa',
-            '#33aaffaa',
-            '#33aaffaa',
-          ],
+          backgroundColor: (data) => {
+            const maxValue = Math.max(...data.dataset.data)
+            const opacity = data.dataset.data[data.dataIndex] / maxValue - 0.25
+            return `rgb(51 170 255 / ${opacity})`
+          },
         },
       ],
     })
@@ -80,11 +94,11 @@ const Charts = () => {
         maxBarThickness: 15,
         minBarLength: 35,
         backgroundColor: [
-          '#33aaffaa',
-          '#33aaffaa',
-          '#33aaffaa',
-          '#33aaffaa',
-          '#33aaffaa',
+          '#33aaff22',
+          // '#33aaffaa',
+          // '#33aaffaa',
+          // '#33aaffaa',
+          // '#33aaffaa',
         ],
       },
     ],
@@ -149,6 +163,9 @@ const Charts = () => {
     ],
   })
   const [lineChartOptions, setLinerChartOptions] = useState({
+    legend: {
+      borderWidth: 0, // Set the borderWidth to 0 to remove the border
+    },
     maintainAspectRatio: false,
     tension: 0.25,
     scales: {
@@ -181,6 +198,7 @@ const Charts = () => {
     },
     plugins: {
       legend: {
+        borderWidth: 0, // Set the border width to 0 to remove the border
         labels: {
           // This more specific font property overrides the global property
           font: {
@@ -192,8 +210,8 @@ const Charts = () => {
     },
     elements: {
       line: {
-        // borderColor: 'red',
-        // backgroundColor: 'red',
+        borderColor: 'transparent',
+        backgroundColor: '#33aaff44',
         fill: true,
       },
       point: {
@@ -202,17 +220,17 @@ const Charts = () => {
     },
   })
   return (
-    <div className="flex flex-col w-full py-5 space-y-2">
-      <div className="w-full max-h-[250px]">
+    <div className="flex flex-col justify-between h-full w-full py-5 space-y-2">
+      <div className="basis-1/2 w-full h-[95%]">
         <LineChart
-          height={220}
+          // height={220}
           chartData={lineChartData}
           chartOptions={lineChartOptions}
         />
       </div>
-      <div className="w-full max-h-[250px]">
+      <div className="basis-1/2 w-full h-[95%]">
         <BarChart
-          height={250}
+          // height={250}
           chartData={barChartData}
           chartOptions={barChartOptions}
         />

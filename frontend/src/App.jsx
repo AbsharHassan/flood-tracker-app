@@ -71,7 +71,7 @@ function App() {
         </CSSTransition>
       </SwitchTransition>
 
-      <BackgroundSVG />
+      {/* <BackgroundSVG /> */}
     </>
   )
 }

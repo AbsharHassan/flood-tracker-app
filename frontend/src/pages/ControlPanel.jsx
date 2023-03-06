@@ -279,7 +279,7 @@ const ControlPanel = () => {
         >
           <Sidebar />
           <div className="w-full md:grow p-6 space-y-10 sm:space-y-0 sm:flex sm:space-x-10 text-slate-300">
-            <div className="rounded details-card p-3 basis-1/2 sm:flex flex-col items-center justify-center">
+            <div className="rounded bg-themeCardColor border border-themeBorderColor p-3 basis-1/2 sm:flex flex-col items-center justify-center">
               <div className=" text-center text-3xl font-semibold uppercase">
                 Flood Data
               </div>
@@ -319,7 +319,7 @@ const ControlPanel = () => {
                 />
               </div>
             </div>
-            <div className="rounded details-card p-3 basis-1/2 sm:flex flex-col items-center justify-center">
+            <div className="rounded bg-themeCardColor border border-themeBorderColor p-3 basis-1/2 sm:flex flex-col items-center justify-center">
               <div className="text-center text-3xl font-semibold uppercase">
                 Geometries
               </div>

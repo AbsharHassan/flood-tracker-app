@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleSidebar } from '../features/sidebar/sidebarSlice'
 import { selectDistrict } from '../features/apiData/apiDataSlice'
@@ -49,6 +49,7 @@ import DateSelector from './DateSelector'
 import dayjs from 'dayjs'
 
 const Sidebar = () => {
+  const location = useLocation()
   const { sidebarIsOpen } = useSelector((state) => state.sidebar)
   const { map, showOverlay, mapTheme, showRoads, overlay } = useSelector(
     (state) => state.map
@@ -91,6 +92,10 @@ const Sidebar = () => {
       path: '/about',
     },
   ])
+
+  useEffect(() => {
+    console.log(location)
+  }, [location])
 
   const handleMapThemeChange = (e, newTheme) => {
     // if (mapTheme == 'dark') {
@@ -209,14 +214,29 @@ const Sidebar = () => {
   }, [overlay])
 
   return (
+    // #162436
     <>
-      <aside
+      {/* <aside
         key="desktop-sidemenu"
         ref={desktopSidebarRef}
         // style={{ backgroundColor: 'rgb(25 120 200 / 0.2)' }}
         className={`${
           isScreenLg
             ? `hidden lg:block duration-500 border-r border-blue-600/20 bg-clip-padding backdrop-blur-md fixed left-0 top-12 h-full  ${
+                sidebarIsOpen ? 'w-48' : 'w-10'
+              }`
+            : `lg:hidden fixed top-0 right-0 duration-1000 z-50 h-[100vh] text-white bg-black/60 ${
+                sidebarIsOpen ? 'w-72 sm:w-72 px-2 ' : 'w-0 '
+              }  backdrop-blur-sm `
+        }`}
+      > */}
+      <aside
+        key="desktop-sidemenu"
+        ref={desktopSidebarRef}
+        // style={{ backgroundColor: 'rgb(25 120 200 / 0.2)' }}
+        className={`${
+          isScreenLg
+            ? `hidden lg:block duration-500 border-r border-[#162436] bg-clip-padding bg-[#121e2d] backdrop-blur-md fixed left-0 top-12 h-full  ${
                 sidebarIsOpen ? 'w-48' : 'w-10'
               }`
             : `lg:hidden fixed top-0 right-0 duration-1000 z-50 h-[100vh] text-white bg-black/60 ${
@@ -264,13 +284,23 @@ const Sidebar = () => {
               <Link
                 to={item.path}
                 key={item.title}
+                onClick={() => {
+                  dispatch(toggleSidebar())
+                }}
               >
                 <li
-                  className={`text-slate-400 text-xs flex items-center gap-x-3 cursor-pointer   hover:bg-sky-900/50 mb-3 hover:text-slate-300 duration-200 py-2 overflow-hidden whitespace-nowrap ${
+                  className={`text-slate-400 text-xs flex items-center gap-x-3 cursor-pointer hover:bg-sky-900/50 mb-3 hover:text-slate-300 duration-200 py-2 overflow-hidden whitespace-nowrap ${
                     sidebarIsOpen
                       ? 'gap-x-3 px-2 rounded-md'
                       : 'gap-x-0 pl-[9px] rounded-sm'
-                  } duration-200`}
+                  } duration-200
+                  ${
+                    location.pathname === item.path
+                      ? 'bg-sky-900/30'
+                      : 'bg-transparent'
+                  }
+
+                  `}
                 >
                   <span
                     className={`${
@@ -291,10 +321,15 @@ const Sidebar = () => {
             ))}
           </ul>
 
-          <hr
+          {/* <hr
             className={` mx-4 ${
               sidebarIsOpen ? '' : 'scale-0'
             }   bg-sky-800/50 h-[1px] border-none`}
+          /> */}
+          <hr
+            className={` mx-4 ${
+              sidebarIsOpen ? '' : 'scale-0'
+            }   bg-[#23344b] h-[1px] border-none`}
           />
         </div>
 
@@ -332,7 +367,8 @@ const Sidebar = () => {
                     : 'text-transparent w-0 scale-0 h-0'
                 } transition-all duration-200`}
               >
-                RESET SELECTIONS
+                {/* RESET SELECTIONS */}
+                <span className="uppercase"> Reset Selections</span>
               </div>
 
               <div
@@ -392,7 +428,8 @@ const Sidebar = () => {
                     : 'text-transparent w-0 scale-0 h-0'
                 } transition-all duration-200`}
               >
-                MAP THEME
+                {/* MAP THEME */}
+                <span className="uppercase">Map Theme</span>
               </div>
               <div
                 onClick={() => {
@@ -476,6 +513,7 @@ const Sidebar = () => {
                 } transition-all duration-200`}
               >
                 ROADS AFFECTED
+                <span></span>
               </div>
               <div
                 className={`${

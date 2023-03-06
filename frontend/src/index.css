@@ -15,7 +15,23 @@
   --navbar-height: 50px;
   --sidebar-width: 224px;
   --sidebar-link-div-height: 240px;
-  --main-view-height: calc(100vh - var(--navbar-height));
+  --selected-district-height: 25px;
+  --main-view-height: calc(
+    100vh - (var(--navbar-height) + var(--selected-district-height))
+  );
+  --overview-view-height: 152px;
+}
+
+.selected-district {
+  height: var(--selected-district-height);
+}
+
+.overview-view {
+  height: var(--overview-view-height);
+}
+
+.map-chart-view {
+  height: calc(var(--main-view-height) - var(--overview-view-height));
 }
 
 .navbar {
@@ -43,7 +59,10 @@
 }
 
 .details-card {
-  box-shadow: 0px 0px 10px 1px rgba(34, 76, 143, 0.5);
+  /* box-shadow: 0px 0px 10px 1px rgba(34, 76, 143, 0.5); */
+
+  background-color: #121e2d;
+  border: 1px solid #162436;
   /* border: 1px solid rgba(34, 90, 211, 0.3); */
   /* border: 1px solid rgba(34, 90, 211, 0.3); */
 
@@ -52,7 +71,11 @@
   /* border: 1px solid rgb(22 36 54 / 1); */
 }
 
-.header-shadow {
+.card-shadow {
+  box-shadow: 0px 0px 7px 0.5px rgba(34, 76, 143, 0.5);
+}
+
+.card-theme .header-shadow {
   box-shadow: 0px 20px 10px 2px rgba(34, 76, 143, 0.5);
 }
 
@@ -356,17 +379,38 @@
   background-color: #ff0000;
 }
 
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    sans-serif; */
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans',
+    Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'; */
+
+  /* font-family: 'Open Sans', sans-serif; */
+
+  /* font-family: 'Roboto', sans-serif; */
+
+  /* font-family: 'Montserrat', sans-serif; */
+
+  font-family: 'Lato', sans-serif;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: #010314; */
 
-  background-color: #020416;
+  /* *********************************************** */
+  /* THIS IS THE MAIN ONE SO FAR */
+  /* background-color: #020416; */
+  /* *********************************************** */
+
+  background-color: #0e1824;
+
   /* background-color: #0e1824; */
 
   /* background-color: #040404; */
@@ -377,7 +421,7 @@ body {
 .map {
   margin: auto;
   width: 100%;
-  height: 500px;
+  height: 100%;
   /* height: fit-content; */
   padding: 3.5px;
 

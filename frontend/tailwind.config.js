@@ -8,6 +8,11 @@ module.exports = {
         // => @media (min-width: 350px) { ... }
         xs: '450px',
       },
+      colors: {
+        themeBgColor: '#0e1824',
+        themeCardColor: '#121e2d',
+        themeBorderColor: '#162436',
+      },
     },
   },
   plugins: [],
