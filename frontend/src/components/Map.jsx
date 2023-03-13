@@ -174,7 +174,7 @@ const Map = ({ center, zoom, backendData }) => {
       setCustomCenter({})
       dispatch(setOverlay(null))
     } else if (globalSelectedDistrict && globalSelectedGeometry && nativeMap) {
-      mapDivRef.current?.scrollIntoView()
+      mapDistrictsLegendElRef.current?.scrollIntoView()
 
       polygonArray.forEach((district) => {
         district.setOptions({
