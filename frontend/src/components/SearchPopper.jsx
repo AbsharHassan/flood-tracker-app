@@ -3,6 +3,7 @@ import { HiX, HiSearch } from 'react-icons/hi'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { selectDistrict } from '../features/apiData/apiDataSlice'
+import { toggleSidebar } from '../features/sidebar/sidebarSlice'
 
 const SearchPopper = ({
   showPopper,
@@ -13,6 +14,7 @@ const SearchPopper = ({
   searchResults,
   selectedItemIndex,
   keyPressed,
+  isScreenLg,
 }) => {
   const dispatch = useDispatch()
 
@@ -105,6 +107,9 @@ const SearchPopper = ({
                 onClick={() => {
                   dispatch(selectDistrict(result))
                   closePopper()
+                  if (!isScreenLg) {
+                    dispatch(toggleSidebar())
+                  }
                 }}
                 className={`flex items-center text-xs text-slate-300 font-medium italic px-3  hover:bg-slate-700/60 hover:cursor-pointer transition-colors   h-6 ${
                   selectedItemIndex === index ? 'bg-cyan-700/50' : ''

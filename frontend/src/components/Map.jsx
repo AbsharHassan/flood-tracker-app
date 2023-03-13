@@ -61,6 +61,8 @@ const Map = ({ center, zoom, backendData }) => {
 
   let mapDistrictsLegendElRef = useRef()
   let mapMarkersLegendElRef = useRef()
+  let mapDivRef = useRef()
+
   let axiosAbortController = useRef()
 
   const MapControls = () => {
@@ -172,6 +174,8 @@ const Map = ({ center, zoom, backendData }) => {
       setCustomCenter({})
       dispatch(setOverlay(null))
     } else if (globalSelectedDistrict && globalSelectedGeometry && nativeMap) {
+      mapDivRef.current?.scrollIntoView()
+
       polygonArray.forEach((district) => {
         district.setOptions({
           visible: true,
@@ -329,7 +333,10 @@ const Map = ({ center, zoom, backendData }) => {
   return (
     <>
       <MapControls />
-      <div className="mx-auto w-full h-full p-[3.5px]">
+      <div
+        className="mx-auto w-full h-full p-[3.5px]"
+        ref={mapDivRef}
+      >
         <GoogleMapReact
           bootstrapURLKeys={{
             key: apiKey,

@@ -86,6 +86,9 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
         dispatch(selectDistrict(searchResults[selectedItemIndex]))
         setSelectedItemIndex(-1)
         handlePopperClose()
+        if (!isScreenLg) {
+          dispatch(toggleSidebar())
+        }
       }
     }
   }
@@ -183,6 +186,7 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
           searchResults={searchResults}
           selectedItemIndex={selectedItemIndex}
           keyPressed={keyPressed}
+          isScreenLg={isScreenLg}
         />
       </Portal>
       {/* <Menu

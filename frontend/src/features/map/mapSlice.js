@@ -13,6 +13,7 @@ const initialState = {
   isInfoWindowOpen: true,
   showInfoWindow: false,
   selectedMarkerCoords: {},
+  mapRef: null,
 }
 
 // Get Google Maps Api key
