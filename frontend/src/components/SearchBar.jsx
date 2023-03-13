@@ -9,6 +9,8 @@ import SearchPopper from './SearchPopper'
 import { HiX, HiSearch } from 'react-icons/hi'
 import { toggleSidebar } from '../features/sidebar/sidebarSlice'
 
+import { selectDistrict } from '../features/apiData/apiDataSlice'
+
 const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
   const dispatch = useDispatch()
 
@@ -23,7 +25,8 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
     districtNames ? districtNames : []
   )
   const [searchResults, setSearchResults] = useState([])
-  const [error, setError] = useState(false)
+  const [selectedItemIndex, setSelectedItemIndex] = useState(-1)
+  const [keyPressed, setKeyPressed] = useState(null)
 
   let searchInputRef = useRef()
   let searchDivRef = useRef()
@@ -44,6 +47,7 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
     )
 
     setSearchResults(searchResultsArray)
+    // console.log(searchResultsArray)
     setShowPopper(searchResultsArray?.length ? true : false)
 
     // console.log(searchResultsArray)
@@ -62,6 +66,38 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
   const handlePopperClose = () => {
     setShowPopper(false)
   }
+
+  const handleInputKeyDown = (e) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      if (selectedItemIndex > 0) {
+        setSelectedItemIndex((prev) => prev - 1)
+        setKeyPressed('ArrowUp')
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      if (selectedItemIndex < searchResults.length) {
+        setSelectedItemIndex((prev) => prev + 1)
+        setKeyPressed('ArrowDown')
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault()
+      if (selectedItemIndex >= 0) {
+        dispatch(selectDistrict(searchResults[selectedItemIndex]))
+        setSelectedItemIndex(-1)
+        handlePopperClose()
+      }
+    }
+  }
+
+  const handleSearchFocus = () => {
+    setSearchIsFocused(true)
+    handleSearchChange(searchInputRef.current.value)
+  }
+
+  useEffect(() => {
+    // console.log(selectedItemIndex)
+  }, [selectedItemIndex])
 
   useEffect(() => {
     if (!sidebarIsOpen) setShowPopper(false)
@@ -114,17 +150,13 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
                 onChange={(e) => {
                   handleSearchChange(e.target.value)
                 }}
-                onFocus={() => {
-                  setSearchIsFocused(true)
-                  handleSearchChange(searchInputRef.current.value)
-                }}
+                onFocus={handleSearchFocus}
                 onBlur={(e) => {
                   setSearchIsFocused(false)
                   handlePopperClose()
+                  setSelectedItemIndex(-1)
                 }}
-                onKeyDown={() => {
-                  console.log('key down')
-                }}
+                onKeyDown={handleInputKeyDown}
                 className={`text-xs text-slate-300 focus:outline-none bg-transparent border-l-2 border-slate-600 ${
                   isScreenLg ? `` : `w-52`
                 } ${
@@ -142,14 +174,6 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
       </div>
 
       <Portal>
-        {/* <div
-          className={`bg-[#1978c833] border-2 border-[#0082ff4d] rounded-md backdrop-blur-sm w-[200px]  absolute z-[60] ${
-            showPopper ? 'h-[300px] opacity-100' : 'h-0 opacity-0'
-          } transition-all duration-1000`}
-          ref={setPopperEl}
-          style={styles.popper}
-          {...attributes.popper}
-        ></div> */}
         <SearchPopper
           showPopper={showPopper}
           setPopperEl={setPopperEl}
@@ -157,8 +181,35 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
           attributes={attributes}
           closePopper={handlePopperClose}
           searchResults={searchResults}
+          selectedItemIndex={selectedItemIndex}
+          keyPressed={keyPressed}
         />
       </Portal>
+      {/* <Menu
+        id="long-menu"
+        MenuListProps={{
+          // 'aria-labelledby': 'long-button',
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: ITEM_HEIGHT * 4.5,
+            width: '20ch',
+          },
+        }}
+      >
+        {options.map((option) => (
+          <MenuItem
+            key={option}
+            selected={option === 'Pyxis'}
+            onClick={handleClose}
+          >
+            {option}
+          </MenuItem>
+        ))}
+      </Menu> */}
     </>
   )
 }

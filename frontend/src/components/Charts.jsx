@@ -49,17 +49,6 @@ const Charts = () => {
       return districtObj.results.after.floodWater
     })
 
-    console.log(floodValuesArray)
-
-    const maxFlood = Math.max(...floodValuesArray)
-    console.log(maxFlood)
-
-    const ratioArray = floodValuesArray.map((value) => {
-      return value / maxFlood
-    })
-
-    console.log(ratioArray)
-
     setBarChartData({
       labels: truncatedArray.map((districtObj) => {
         return districtObj.name.split(' ')[0]
