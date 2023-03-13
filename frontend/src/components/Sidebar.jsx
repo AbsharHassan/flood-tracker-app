@@ -73,7 +73,13 @@ const Sidebar = () => {
   const [floodColor, setFloodColor] = useState('blue')
   const [floodPixelOpacity, setFloodPixelOpacity] = useState(100)
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
-  const [isScreenLg, setIsScreenLg] = useState(innerWidth > 1024 ? true : false)
+  const [innerHeight, setInnerHeight] = useState(window.innerHeight)
+  const [isScreenLg, setIsScreenLg] = useState(
+    window.innerWidth > 1024 ? true : false
+  )
+  const [isScreenRectangular, setIsScreenRectangular] = useState(
+    window.innerWidth > window.innerHeight ? true : false
+  )
   const [searchIsFocused, setSearchIsFocused] = useState(false)
   const [menuLinks, setMenuLinks] = useState([
     {
@@ -195,7 +201,13 @@ const Sidebar = () => {
     } else {
       setIsScreenLg(false)
     }
-  }, [innerWidth])
+
+    if (innerWidth > innerHeight) {
+      setIsScreenRectangular(true)
+    } else {
+      setIsScreenRectangular(false)
+    }
+  }, [innerWidth, innerHeight])
 
   useEffect(() => {
     setRoadSwitch(showRoads)
@@ -239,10 +251,10 @@ const Sidebar = () => {
             ? `hidden lg:block duration-500 border-r border-[#162436] bg-clip-padding bg-[#121e2d] backdrop-blur-md fixed left-0 top-12 h-full  ${
                 sidebarIsOpen ? 'w-48' : 'w-10'
               }`
-            : `lg:hidden fixed top-0 right-0 duration-1000 z-50 h-[100vh] text-white bg-black/60 ${
+            : `lg:hidden fixed top-0 right-0 duration-1000 z-50 overflow-y-scroll  h-[100vh] text-white bg-black/60 ${
                 sidebarIsOpen ? 'w-72 sm:w-72 px-2 ' : 'w-0 '
               }  backdrop-blur-sm `
-        }`}
+        } `}
       >
         <div className={`${isScreenLg ? 'sidebar-links-div ' : ''}`}>
           <div
@@ -336,8 +348,13 @@ const Sidebar = () => {
         <div
           // className={`mt-5 ${sidebarIsOpen ? 'space-y-7' : 'space-y-4'} duration-200`}
           className={`pt-2 pb-4 flex flex-col justify-evenly ${
-            sidebarIsOpen ? 'sidebar-tools-div' : 'space-y-4 h-96'
+            sidebarIsOpen
+              ? `${
+                  isScreenLg && isScreenRectangular ? 'sidebar-tools-div' : ''
+                }`
+              : 'space-y-4 h-96'
           } duration-200`}
+          //sidebar-tools-div
         >
           <div
             className={` text-slate-500 px-3 font-bold text-xs whitespace-nowrap overflow-hidden ${

@@ -30,7 +30,7 @@ const DetailsOverview = () => {
 
   return (
     <div
-      className={`xs:grid space-y-4 xs:space-y-0 w-full px-3 py-5 md:py-6 sm:grid-cols-2 gap-y-4 ${
+      className={`xs:grid space-y-5 xs:space-y-0 w-full px-3 py-5 md:py-6 sm:grid-cols-2 gap-y-4 ${
         sidebarIsOpen ? 'xl:grid-cols-4' : 'lg:grid-cols-4'
       } transition-all duration-1000 xl:overview-view`}
     >

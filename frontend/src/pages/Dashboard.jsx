@@ -35,6 +35,7 @@ const Dashboard = () => {
   const [isScreenLg, setIsScreenLg] = useState(innerWidth > 1024 ? true : false)
   const [someRerenderCounter, setSomeRerenderCounter] = useState(0)
 
+  let dashboardRef = useRef()
   let mapAndChartViewRef = useRef()
 
   // useEffect(() => {
@@ -109,12 +110,15 @@ const Dashboard = () => {
           {loadingData ? (
             <Loader />
           ) : (
-            <div className="flex flex-col">
+            <div
+              className="flex flex-col"
+              ref={dashboardRef}
+            >
               <Header />
               <div
                 className={`flex main-view pt-[50px] ${
                   isScreenLg ? `${sidebarIsOpen ? 'pl-48' : 'pl-10'}` : 'pl-0'
-                }  duration-500`}
+                }  duration-500 `}
               >
                 <Sidebar />
                 <div className="w-full md:grow ">

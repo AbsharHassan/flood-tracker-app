@@ -4,6 +4,7 @@ export const sidebarSlice = createSlice({
   name: 'sidebar',
   initialState: {
     sidebarIsOpen: window.innerWidth > 1024 ? true : false,
+    isScreenLg: window.innerWidth > 1024 ? true : false,
   },
   reducers: {
     openSidebar: (state) => {
@@ -15,9 +16,13 @@ export const sidebarSlice = createSlice({
     toggleSidebar: (state) => {
       state.sidebarIsOpen = !state.sidebarIsOpen
     },
+    toggleIsScreenLg: (state, { payload }) => {
+      state.isScreenLg = payload
+    },
   },
 })
 
-export const { openSidebar, closeSidebar, toggleSidebar } = sidebarSlice.actions
+export const { openSidebar, closeSidebar, toggleSidebar, toggleIsScreenLg } =
+  sidebarSlice.actions
 
 export default sidebarSlice.reducer
