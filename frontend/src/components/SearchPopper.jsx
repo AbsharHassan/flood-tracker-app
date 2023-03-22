@@ -18,6 +18,9 @@ const SearchPopper = ({
 }) => {
   const dispatch = useDispatch()
 
+  const { districtNames } = useSelector((state) => state.apiData)
+  const { isDarkMode } = useSelector((state) => state.sidebar)
+
   let dropdownRef = useRef(null)
   let itemRef = useRef(null)
 
@@ -25,26 +28,6 @@ const SearchPopper = ({
     // dispatch()
     console.log(e)
   }
-
-  // useEffect(() => {
-  //   console.log(selectedItemIndex)
-  //   if (selectedItemIndex !== 0 && selectedItemIndex % 10 === 0) {
-  //     // console.log('boss i have been called')
-  //     // const dropdownEl = dropdownRef.current
-  //     // const dropdownTop = dropdownEl.offsetTop
-  //     // const dropdownHeight = dropdownEl.offsetHeight
-  //     // const scrollTop = '50px'
-  //     // dropdownRef.current.scrollTop += 50
-  //     // dropdownRef.current.classList.add('bg-red-600')
-  //     if (keyPressed === 'ArrowDown') {
-  //       dropdownRef.current.scrollTop += 240
-  //     } else if (keyPressed === 'ArrowUp') {
-  //       dropdownRef.current.scrollTop -= 240
-  //     }
-  //     // console.log(dropdownRef.current)
-  //     // console.log(dropdownRef.current.scrollTop)
-  //   }
-  // })
 
   useEffect(() => {
     if (keyPressed === 'ArrowDown') {
@@ -56,12 +39,8 @@ const SearchPopper = ({
         dropdownRef.current.scrollTop -= 240
       }
     }
-    // if (selectedItemIndex >= 10) {
-    //   itemRef.current.scrollIntoView()
-    // }
   }, [keyPressed, selectedItemIndex])
 
-  const { districtNames } = useSelector((state) => state.apiData)
   return (
     <div
       onKeyDown={() => {
@@ -77,9 +56,6 @@ const SearchPopper = ({
           showPopper ? 'opacity-100' : 'opacity-0'
         } transition-opacity duration-100`}
       >
-        {/* <div className="text-slate-400 font-bold tracking-tighter">
-          Select a district
-        </div> */}
         <button onClick={closePopper}>
           <HiX className="text-lg text-slate-400 hover:text-slate-200 transition-colors duration-200 " />
         </button>
@@ -89,10 +65,12 @@ const SearchPopper = ({
         onKeyDown={() => {
           console.log('key down')
         }}
-        className={`bg-[#1978c822] border-2 border-[#114b81] rounded-md  backdrop-blur-md w-full absolute z-[60] overflow-y-scroll search-popper   ${
+        className={` border-2 border-[#114b81] rounded-md  backdrop-blur-md w-full absolute z-[60] overflow-y-scroll search-popper   ${
           showPopper
             ? 'max-h-[292px] pb-1 opacity-100'
             : 'max-h-[20px] opacity-0'
+        } ${
+          isDarkMode ? 'bg-[#1978c822]' : 'bg-themeCardColorDark'
         } transition-all duration-1000`}
       >
         <ul

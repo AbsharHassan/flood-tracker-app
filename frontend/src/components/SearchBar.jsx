@@ -11,7 +11,7 @@ import { toggleSidebar } from '../features/sidebar/sidebarSlice'
 
 import { selectDistrict } from '../features/apiData/apiDataSlice'
 
-const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
+const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
   const dispatch = useDispatch()
 
   const { sidebarIsOpen } = useSelector((state) => state.sidebar)
@@ -27,6 +27,7 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
   const [searchResults, setSearchResults] = useState([])
   const [selectedItemIndex, setSelectedItemIndex] = useState(-1)
   const [keyPressed, setKeyPressed] = useState(null)
+  const [searchDisabled, setSearchDisabled] = useState(false)
 
   let searchInputRef = useRef()
   let searchDivRef = useRef()
@@ -34,6 +35,11 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
   useEffect(() => {
     handleSearchPopperState(showPopper)
   }, [showPopper])
+
+  useEffect(() => {
+    if (location.pathname === '/about') {
+    }
+  })
 
   const { styles, attributes } = usePopper(referenceEl, popperEl, {
     modifiers: [
@@ -127,10 +133,14 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
             } ${
               sidebarIsOpen
                 ? 'px-1.5 border-[2px] rounded-md'
-                : 'pl-[9px] w-full rounded-sm'
+                : 'pl-[9px] w-full rounded-sm py-[4px]'
             }`}
           >
-            <div className="py-1 text-lg transition-colors duration-500 md:text-xl text-slate-400 hover:text-slate-200">
+            <div
+              className={`py-1 text-lg duration-200 md:text-xl text-slate-400 hover:text-slate-200 ${
+                sidebarIsOpen ? '' : 'translate-x-3.5'
+              }`}
+            >
               <HiSearch
                 className="hover:cursor-pointer"
                 onClick={() => {
@@ -149,6 +159,7 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
               onSubmit={(e) => e.preventDefault()}
             >
               <input
+                disabled={location.pathname === '/about' ? true : false}
                 ref={searchInputRef}
                 onChange={(e) => {
                   handleSearchChange(e.target.value)
@@ -160,12 +171,12 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState }) => {
                   setSelectedItemIndex(-1)
                 }}
                 onKeyDown={handleInputKeyDown}
-                className={`text-xs text-slate-300 focus:outline-none bg-transparent border-l-2 border-slate-600 ${
+                className={`text-xs text-slate-300 focus:outline-none bg-transparent  ${
                   isScreenLg ? `` : `w-52`
                 } ${
                   sidebarIsOpen
-                    ? 'pl-1.5 ml-1 opacity-100'
-                    : 'pl-1.5 ml-1 opacity-0'
+                    ? 'pl-1.5 ml-1 opacity-100 border-l-2 border-slate-600'
+                    : 'pl-1.5 ml-1 opacity-0 w-0 '
                 } transition-opacity duration-500 `}
                 placeholder="Search for a District..."
               />

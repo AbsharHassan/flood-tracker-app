@@ -1,10 +1,17 @@
 import { useSelector } from 'react-redux'
 
 const SelectedDistrict = () => {
+  const { isDarkMode } = useSelector((state) => state.sidebar)
   const { globalSelectedDistrict } = useSelector((state) => state.apiData)
   return (
     <>
-      <div className="selected-district border-b border-[#162436] bg-[#121e2d] text-slate-400 text-xs flex items-center pl-4 ">
+      <div
+        className={`selected-district border-b text-xs flex items-center pl-4 ${
+          isDarkMode
+            ? 'border-themeBorderColorDark bg-themeCardColorDark text-slate-400'
+            : 'border-themeBorderColorLight bg-themeCardColorLight text-slate-800'
+        }`}
+      >
         Displaying data for:{' '}
         <span className="font-bold ml-1">
           {' '}

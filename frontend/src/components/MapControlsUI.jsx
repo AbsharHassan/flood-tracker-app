@@ -11,6 +11,7 @@ const MapControlsUI = () => {
   const dispatch = useDispatch()
 
   const { overlay, showRoads, showOverlay } = useSelector((state) => state.map)
+  const { isDarkMode } = useSelector((state) => state.sidebar)
 
   const [roadSwitch, setRoadSwitch] = useState(showRoads)
   const [overlaySwitch, setOverlaySwitch] = useState(showOverlay)
@@ -46,7 +47,13 @@ const MapControlsUI = () => {
   }, [overlay])
 
   return (
-    <div className="pl-2 pr-0   whitespace-nowrap py-1 text-[10px]  sm:py-1 mt-2 ml-2 rounded-lg bg-themeCardColor/50 backdrop-blur-2xl card-shadow text-slate-300">
+    <div
+      className={`pl-2 pr-0 whitespace-nowrap py-1 text-[10px]  sm:py-1 mt-2 ml-2 rounded-lg  backdrop-blur-2xl ${
+        isDarkMode
+          ? 'bg-themeCardColorDark/50 text-slate-300 card-shadow'
+          : 'bg-themeCardColorLight/20 text-slate-700 border border-themeBorderColorLight'
+      }`}
+    >
       {/* <div className="mb-1 sm:mb-3 text-[12px] sm:text-[15px] text-center">
         Key
       </div> */}
@@ -62,7 +69,11 @@ const MapControlsUI = () => {
           <div className="ml-2 w-[65px] h-full  flex items-center justify-start ">
             Road Affected
           </div>
-          <div className="bg-slate-800 rounded-full ml-2">
+          <div
+            className={` rounded-full ml-2 ${
+              isDarkMode ? 'bg-slate-800' : 'bg-slate-200'
+            }`}
+          >
             <Switch
               // onChange={() => setPixelsSwitch((v) => !v)}
               // onChange={() => dispatch(toggleOverlayDisplay())}
@@ -106,7 +117,11 @@ const MapControlsUI = () => {
           <div className=" ml-2 w-[65px] h-full   flex items-center justify-start ">
             Flood Pixels
           </div>
-          <div className="bg-slate-800 rounded-full ml-2">
+          <div
+            className={` rounded-full ml-2 ${
+              isDarkMode ? 'bg-slate-800' : 'bg-slate-200'
+            }`}
+          >
             <Switch
               onChange={() => dispatch(toggleOverlayDisplay())}
               value={overlaySwitch}
@@ -145,7 +160,9 @@ const MapControlsUI = () => {
           <Box
             width="90px"
             marginTop="6px"
-            backgroundColor="rgb(30 41 59)"
+            backgroundColor={`${
+              isDarkMode ? 'rgb(30 41 59)' : 'rgb(226 232 240)'
+            }`}
             height="17px"
             paddingLeft="5px"
             paddingRight="11px"
@@ -171,7 +188,9 @@ const MapControlsUI = () => {
             />
           </Box>
           <div
-            className="bg-slate-800 mt-[6.5px] h-[18px] w-[40px] ml-[11px] rounded-full  hover:cursor-pointer flex items-center justify-center"
+            className={`mt-[6.5px] h-[18px] w-[40px] ml-[11px] rounded-full  hover:cursor-pointer flex items-center justify-center ${
+              isDarkMode ? 'bg-slate-800' : 'bg-slate-200'
+            }`}
             // ref={resetIconRef}
             onClick={handleResetRequest}
           >

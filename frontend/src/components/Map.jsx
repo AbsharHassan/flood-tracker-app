@@ -15,6 +15,7 @@ import {
   clearOverlay,
   setOverlay,
   setShowOverlay,
+  setMapTheme,
 } from '../features/map/mapSlice'
 
 import mapStyles from '../MapModification/mapStyles'
@@ -35,6 +36,7 @@ const Map = ({ center, zoom, backendData }) => {
   } = useSelector((state) => state.apiData)
   const { apiKey, showRoads, overlay, isInfoWindowOpen, mapTheme } =
     useSelector((state) => state.map)
+  const { isDarkMode } = useSelector((state) => state.sidebar)
 
   const [apiDataArray, setApiDataArray] = useState([])
   const [apiPolygonArray, setApiPolygonArray] = useState(
@@ -217,6 +219,19 @@ const Map = ({ center, zoom, backendData }) => {
     }
   }, [apiFloodDataArray, showRoadsFor])
 
+  useEffect(() => {
+    dispatch(setMapTheme(isDarkMode ? 'dark' : 'light'))
+    if (nativeMap) {
+      nativeMap.data.setStyle({
+        // fillColor: '#020416', //main one rn
+        fillColor: isDarkMode ? '#0e1824' : '#fff',
+        // fillColor: '#121e2d',
+        strokeWeight: isDarkMode ? 1 : 0.25,
+        fillOpacity: 1,
+      })
+    }
+  }, [isDarkMode])
+
   const nativeApiHandler = (map, maps) => {
     polygonArray.map((polygon) => {
       polygon.setMap(map)
@@ -275,7 +290,7 @@ const Map = ({ center, zoom, backendData }) => {
 
     map.data.setStyle({
       // fillColor: '#020416', //main one rn
-      fillColor: '#0e1824',
+      fillColor: isDarkMode ? '#0e1824' : '#fff',
       // fillColor: '#121e2d',
       strokeWeight: 1,
       fillOpacity: 1,
@@ -345,6 +360,12 @@ const Map = ({ center, zoom, backendData }) => {
             // disableDefaultUI: true,
             // disableDoubleClickZoom: true,
             styles: mapTheme === 'dark' ? mapStyles.labelDarkTheme : [],
+            // styles: isDarkMode
+            //   ? mapTheme === 'dark'
+            //     ? mapStyles.labelDarkTheme
+            //     : []
+            //   : [],
+
             restriction: {
               latLngBounds: {
                 north: 40,

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { CSSTransition, SwitchTransition } from 'react-transition-group'
@@ -13,15 +13,36 @@ import ControlPanel from './pages/ControlPanel'
 import Register from './pages/Register'
 import ProtectedRoutes from './components/ProtectedRoutes'
 import BackgroundSVG from './components/BackgroundSVG'
+import About from './pages/About'
 
 function App() {
   const location = useLocation()
   const dispatch = useDispatch()
   const { tryAgain } = useSelector((state) => state.apiData)
+  const { isDarkMode } = useSelector((state) => state.sidebar)
+
+  const bodyRef = useRef(document.body)
 
   useEffect(() => {
     // console.log('some stupid change happened')
   })
+
+  useEffect(() => {
+    // console.log(isDarkMode)
+    // console.log(JSON.parse(sessionStorage.getItem('darkMode')))
+  }, [isDarkMode])
+
+  useEffect(() => {
+    if (bodyRef) {
+      if (isDarkMode) {
+        bodyRef.current.classList.remove('bg-themeBgColorLight')
+        bodyRef.current.classList.add('bg-themeBgColorDark')
+      } else {
+        bodyRef.current.classList.remove('bg-themeBgColorDark')
+        bodyRef.current.classList.add('bg-themeBgColorLight')
+      }
+    }
+  }, [isDarkMode])
 
   useEffect(() => {
     console.log(process.env.NODE_ENV)
@@ -39,6 +60,11 @@ function App() {
   }, [tryAgain])
 
   return (
+    // <main
+    //   className={`h-full w-full min-h-screen min-w-screen ${
+    //     isDarkMode ? 'bg-themeBgColorDark' : 'bg-themeBgColorLight'
+    //   }`}
+    // ></main>
     <>
       <SwitchTransition>
         <CSSTransition
@@ -55,6 +81,10 @@ function App() {
             <Route
               path="/login"
               element={<Login />}
+            />
+            <Route
+              path="/about"
+              element={<About />}
             />
 
             <Route element={<ProtectedRoutes />}>

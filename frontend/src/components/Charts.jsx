@@ -18,6 +18,7 @@ const Charts = () => {
   const { completeFloodData, selectedFloodData } = useSelector(
     (state) => state.apiData
   )
+  const { isDarkMode } = useSelector((state) => state.sidebar)
 
   useEffect(() => {
     const data = completeFloodData.map((monthObj) => {
@@ -29,7 +30,7 @@ const Charts = () => {
       labels: FloodData.map((entry) => entry.month),
       datasets: [
         {
-          label: 'Percentage Flooding by Month (2022)',
+          label: '% Flooding by Month (2022)',
           data: data,
         },
       ],
@@ -55,7 +56,7 @@ const Charts = () => {
       }),
       datasets: [
         {
-          label: 'Percentage of Land Flooded',
+          label: '% of Land Flooded',
           // data: truncatedArray.map((districtObj) => {
           //   return districtObj.results.after.floodWater
           // }),
@@ -65,7 +66,11 @@ const Charts = () => {
           backgroundColor: (data) => {
             const maxValue = Math.max(...data.dataset.data)
             const opacity = data.dataset.data[data.dataIndex] / maxValue - 0.25
-            return `rgb(51 170 255 / ${opacity})`
+            return `${
+              isDarkMode
+                ? `rgb(51 170 255 / ${opacity})`
+                : `rgb(51 170 255 / ${opacity})`
+            }`
           },
         },
       ],
@@ -77,7 +82,7 @@ const Charts = () => {
     labels: null,
     datasets: [
       {
-        label: 'Percentage of Land Flooded',
+        label: '% of Land Flooded',
         // data: DistrictData.map((entry) => entry.flooded),
         data: null,
         maxBarThickness: 15,
@@ -98,7 +103,7 @@ const Charts = () => {
     scales: {
       y: {
         ticks: {
-          color: 'rgb(203 213 225 / 0.75)',
+          color: isDarkMode ? 'rgb(203 213 225 / 0.75)' : 'rgb(91 105 125)',
           font: {
             size: 10,
           },
@@ -109,7 +114,7 @@ const Charts = () => {
       },
       x: {
         ticks: {
-          color: 'rgb(203 213 225)',
+          color: isDarkMode ? 'rgb(203 213 225 / 0.75)' : 'rgb(91 105 125)',
           font: {
             size: 10,
           },
@@ -129,13 +134,14 @@ const Charts = () => {
           font: {
             // size: 14,
           },
-          color: 'rgb(203 213 225 / 0.75)',
+          color: isDarkMode ? 'rgb(203 213 225 / 0.75)' : 'rgb(91 105 125)',
         },
       },
     },
     elements: {
       bar: {
         borderWidth: 2,
+        borderColor: 'transparent',
       },
     },
   })
@@ -145,7 +151,7 @@ const Charts = () => {
 
     datasets: [
       {
-        label: 'Percentage Flooding by Month (2022)',
+        label: '% Flooding by Month (2022)',
         // data: FloodData.map((entry) => entry.flooding),
         data: null,
       },
@@ -161,7 +167,7 @@ const Charts = () => {
       y: {
         beginAtZero: true,
         ticks: {
-          color: 'rgb(203 213 225 / 0.75)',
+          color: isDarkMode ? 'rgb(203 213 225 / 0.75)' : 'rgb(91 105 125)',
           font: {
             size: 10,
           },
@@ -175,7 +181,7 @@ const Charts = () => {
       },
       x: {
         ticks: {
-          color: 'rgb(203 213 225 / 0.75)',
+          color: isDarkMode ? 'rgb(203 213 225 / 0.75)' : 'rgb(91 105 125)',
           font: {
             size: 10,
           },
@@ -193,18 +199,18 @@ const Charts = () => {
           font: {
             // size: 14,
           },
-          color: 'rgb(203 213 225 / 0.75)',
+          color: isDarkMode ? 'rgb(203 213 225 / 0.75)' : 'rgb(91 105 125)',
         },
       },
     },
     elements: {
       line: {
         borderColor: 'transparent',
-        backgroundColor: '#33aaff44',
+        backgroundColor: isDarkMode ? '#33aaff44' : 'rgb(56 189 248 / 0.4)',
         fill: true,
       },
       point: {
-        pointBackgroundColor: 'aqua',
+        pointBackgroundColor: isDarkMode ? 'aqua' : 'rgb(3 105 161)',
       },
     },
   })

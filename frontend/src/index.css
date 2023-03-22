@@ -39,8 +39,12 @@
 }
 
 .sidebar {
-  height: calc(100vh - var(--navbar-height));
-  width: var(--sidebar-width);
+  /* height: calc(100vh - var(--navbar-height));
+  width: var(--sidebar-width); */
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar-links-div {
@@ -409,7 +413,8 @@ body {
   /* background-color: #020416; */
   /* *********************************************** */
 
-  background-color: #0e1824;
+  /* background-color: #0e1824; */
+  /* background-color: #f8f8f8; */
 
   /* background-color: #0e1824; */
 

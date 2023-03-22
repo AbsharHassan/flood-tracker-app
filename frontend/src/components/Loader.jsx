@@ -1,8 +1,12 @@
-const Loader = () => {
+const Loader = ({ isDarkMode }) => {
   return (
     <div className="flex items-center justify-center w-screen h-screen">
       <div className="loader-box">
-        <h1 className="mb-4 text-5xl font-bold tracking-tighter text-center text-slate-300 sm:text-6xl">
+        <h1
+          className={`mb-4 text-5xl font-bold tracking-tighter text-center sm:text-6xl ${
+            isDarkMode ? 'text-slate-300' : 'text-slate-800'
+          }`}
+        >
           Flood <span className="text-gradient">Tracker</span>
         </h1>
         <h3 className="mb-4 font-medium tracking-tight text-center text-sky-500">

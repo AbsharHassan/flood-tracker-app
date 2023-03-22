@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import { TiArrowUpThick } from 'react-icons/ti'
 
 const DetailsCard = ({
@@ -9,21 +10,36 @@ const DetailsCard = ({
   difference,
   differenceUnit,
 }) => {
+  const { isDarkMode } = useSelector((state) => state.sidebar)
   return (
     //bg-[#121e2d]
     <>
       <div className="flex justify-center w-full px-2 sm:px-2 xl:px-3">
-        <div className="w-full bg-themeCardColor border border-themeBorderColor h-[110px] sm:h-[120px] rounded-sm px-3 sm:px-5 relative">
-          <span className="absolute right-4 top-3 text-lg sm:text-3xl xs:text-xl p-2 bg-[#1d2d42] rounded-full">
+        <div
+          className={`w-full h-[110px] sm:h-[120px] rounded-sm px-3 sm:px-5 relative ${
+            isDarkMode
+              ? 'bg-themeCardColorDark border border-themeBorderColorDark'
+              : 'bg-themeCardColorLight border border-themeBorderColorLight'
+          }`}
+        >
+          <span
+            className={`absolute right-4 top-3 text-lg sm:text-3xl xs:text-xl p-2 rounded-full ${
+              isDarkMode ? 'bg-[#1d2d42]' : 'bg-[#eff2f7]'
+            }`}
+          >
             <Icon />
           </span>
-          <div className="flex flex-col justify-evenly h-full text-[#9599ad]">
-            <div className="font-semibold uppercase text-[9px] text-clip xxs:text-[10.5px] xxs:whitespace-nowrap xs:text-xs md:text ">
+          <div
+            className={`flex flex-col justify-evenly h-full ${
+              isDarkMode ? 'text-[#9599ad]' : 'text-slate-500'
+            }`}
+          >
+            <div className=" uppercase text-[9px] text-clip xxs:text-[10.5px] xxs:whitespace-nowrap xs:text-xs md:text ">
               {title}
             </div>
             <div className="flex items-center text-sm text-[8px] font-medium mb-1">
               <span
-                className={`mr-1 text-sm xxs:text-lg xs:text-lg sm:text-xl md:text-2xl xl:text-3xl font-bold ${color}`}
+                className={`mr-1 text-sm xxs:text-lg xs:text-lg sm:text-xl md:text-2xl xl:text-2xl font-bold ${color}`}
               >
                 {Math.abs(value)}
               </span>

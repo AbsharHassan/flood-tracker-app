@@ -20,6 +20,8 @@ const Login = () => {
   const { isAuthLoading, isAuthSuccess, isAuthError, authMessage } =
     useSelector((state) => state.auth)
 
+  const { isDarkMode } = useSelector((state) => state.sidebar)
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -88,13 +90,23 @@ const Login = () => {
           </Link>
         </div>
         <div className="w-[90vw] max-w-md ">
-          <h1 className="mb-1.5 text-4xl font-bold tracking-tighter text-center text-slate-300 sm:text-5xl">
+          <h1
+            className={`mb-1.5 text-4xl font-bold tracking-tighter text-center sm:text-5xl ${
+              isDarkMode ? 'text-slate-300' : 'text-slate-800'
+            }`}
+          >
             Flood <span className="text-gradient">Tracker</span>
           </h1>
           <h3 className="text-xs tracking-tighter mb-6 font-medium  text-center text-sky-500">
             Powered by Google Earth Engine
           </h3>
-          <div className="login text-slate-300 w-full px-5 py-5">
+          <div
+            className={` w-full px-5 py-5 ${
+              isDarkMode
+                ? 'login text-slate-300'
+                : 'text-slate-800 bg-themeCardColorLight border border-themeBorderColorLight'
+            }`}
+          >
             <div className="flex items-baseline justify-between">
               <div className="text-sm font-medium mb-1">
                 Create Your Admin Account
@@ -155,7 +167,11 @@ const Login = () => {
               </span>
             </div>
           </div>
-          <div className="mx-auto mt-6 text-xs text-slate-400 max-w-sm text-center">
+          <div
+            className={`mx-auto mt-6 text-xs max-w-sm text-center ${
+              isDarkMode ? 'text-slate-400' : 'text-slate-800'
+            }`}
+          >
             The control panel is for admin use only and is used to manage the
             backend configurations of this application.
           </div>

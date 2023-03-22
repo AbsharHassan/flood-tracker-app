@@ -9,9 +9,15 @@ module.exports = {
         xs: '450px',
       },
       colors: {
-        themeBgColor: '#0e1824',
-        themeCardColor: '#121e2d',
-        themeBorderColor: '#162436',
+        themeBgColorDark: '#0e1824',
+        themeCardColorDark: '#121e2d',
+        themeBorderColorDark: '#162436',
+        themeBgColorLight: '#f8f8f8',
+        themeCardColorLight: '#fff',
+        themeBorderColorLight: '#e9ebec',
+      },
+      height: {
+        'calc-minus-65': 'calc(100% - 40px)',
       },
     },
   },

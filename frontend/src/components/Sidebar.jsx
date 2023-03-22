@@ -50,7 +50,7 @@ import dayjs from 'dayjs'
 
 const Sidebar = () => {
   const location = useLocation()
-  const { sidebarIsOpen } = useSelector((state) => state.sidebar)
+  const { isDarkMode, sidebarIsOpen } = useSelector((state) => state.sidebar)
   const { map, showOverlay, mapTheme, showRoads, overlay } = useSelector(
     (state) => state.map
   )
@@ -98,10 +98,6 @@ const Sidebar = () => {
       path: '/about',
     },
   ])
-
-  useEffect(() => {
-    console.log(location)
-  }, [location])
 
   const handleMapThemeChange = (e, newTheme) => {
     // if (mapTheme == 'dark') {
@@ -225,6 +221,10 @@ const Sidebar = () => {
     setFloodPixelOpacity(100)
   }, [overlay])
 
+  useEffect(() => {
+    // console.log(location)
+  }, [location])
+
   return (
     // #162436
     <>
@@ -248,20 +248,60 @@ const Sidebar = () => {
         // style={{ backgroundColor: 'rgb(25 120 200 / 0.2)' }}
         className={`${
           isScreenLg
-            ? `hidden lg:block duration-500 border-r border-[#162436] bg-clip-padding bg-[#121e2d] backdrop-blur-md fixed left-0 top-12 h-full  ${
-                sidebarIsOpen ? 'w-48' : 'w-10'
+            ? `hidden lg:block duration-200 border-r border-[#162436] bg-clip-padding bg-[#121e2d] backdrop-blur-md fixed left-0 top-0 h-full  ${
+                sidebarIsOpen ? 'w-48' : 'w-[70px]'
               }`
-            : `lg:hidden fixed top-0 right-0 duration-1000 z-50 overflow-y-scroll  h-[100vh] text-white bg-black/60 ${
+            : `lg:hidden fixed top-0 right-0 duration-1000 overflow-y-scroll h-[100vh] text-white ${
+                isDarkMode ? 'bg-black/60' : 'bg-black/[0.85]'
+              } ${
                 sidebarIsOpen ? 'w-72 sm:w-72 px-2 ' : 'w-0 '
               }  backdrop-blur-sm `
-        } `}
+        } sidebar z-[60] `}
       >
-        <div className={`${isScreenLg ? 'sidebar-links-div ' : ''}`}>
+        {isScreenLg && (
+          <div
+            className={`flex items-center h-[50px] border-b border-themeBorderColorDark overflow-x-hidden ${
+              sidebarIsOpen ? 'pl-4' : 'justify-center'
+            }`}
+          >
+            <Link to="/">
+              <h1
+                className={`text-lg font-semibold tracking-tighter text-center md:text-2xl text-slate-300`}
+              >
+                {sidebarIsOpen ? (
+                  <span
+                    className={`${
+                      sidebarIsOpen ? 'scale-0' : ' opacity-0 w-0'
+                    } duration-200 whitespace-nowrap `}
+                  >
+                    Flood <span className="text-gradient">Tracker</span>
+                  </span>
+                ) : (
+                  <span
+                    className={`${
+                      sidebarIsOpen ? ' opacity-0 w-0' : ''
+                    } duration-200`}
+                  >
+                    F <span className="text-gradient">T</span>
+                  </span>
+                )}
+              </h1>
+            </Link>
+            {/* <span className="text-slate-300 text-[11px]  sm:text-sm font-semibold tracking-tighter">
+          {extraTitle && (
+            <span className="mx-0.5 sm:mx-1.5 text-[10px] sm:text-xl ">-</span>
+          )}
+          {extraTitle}
+        </span> */}
+          </div>
+        )}
+
+        <div className={`${isScreenLg ? 'sidebar-links-div' : ''}`}>
           <div
             className={`${
               isScreenLg
                 ? 'pr-2.5 pt-2 flex items-center justify-end'
-                : 'w-full h-[50px] text-white flex items-center pl-2 text-xl '
+                : 'w-full h-[50px] text-white flex items-center pl-2 text-xl'
             } `}
           >
             <span
@@ -269,11 +309,16 @@ const Sidebar = () => {
                 dispatch(toggleSidebar())
                 setSearchIsFocused(false)
               }}
+              className={`${
+                isScreenLg
+                  ? `${sidebarIsOpen ? '' : '-translate-x-[13px]'}`
+                  : ''
+              }`}
             >
               {isScreenLg ? (
                 <BsArrowBarLeft
-                  className={` text-xl duration-500 cursor-pointer text-slate-500 hover:text-slate-300 ${
-                    !sidebarIsOpen && 'rotate-180'
+                  className={`text-xl duration-200 cursor-pointer text-slate-500 hover:text-slate-300 ${
+                    sidebarIsOpen ? '' : 'rotate-180'
                   }`}
                 />
               ) : (
@@ -285,10 +330,11 @@ const Sidebar = () => {
           <SearchBar
             isScreenLg={isScreenLg}
             handleSearchPopperState={handleSearchPopperState}
+            location={location}
           />
 
           <ul
-            className={`${
+            className={` ${
               sidebarIsOpen ? 'px-1 pt-3' : 'px-0 pt-4'
             } duration-200`}
           >
@@ -297,7 +343,7 @@ const Sidebar = () => {
                 to={item.path}
                 key={item.title}
                 onClick={() => {
-                  dispatch(toggleSidebar())
+                  if (!isScreenLg) dispatch(toggleSidebar())
                 }}
               >
                 <li
@@ -311,19 +357,19 @@ const Sidebar = () => {
                       ? 'bg-sky-900/30'
                       : 'bg-transparent'
                   }
-
+                  
                   `}
                 >
                   <span
                     className={`${
-                      sidebarIsOpen ? 'text-lg' : 'text-xl'
-                    } duration-200`}
+                      sidebarIsOpen ? 'text-lg' : 'text-xl translate-x-3.5'
+                    } duration-200 `}
                   >
                     {item.icon}
                   </span>
                   <span
                     className={`text-sm  ${
-                      sidebarIsOpen ? '' : 'scale-0'
+                      sidebarIsOpen ? '' : 'opacity-0 w-0'
                     } duration-200`}
                   >
                     {item.title}
@@ -346,13 +392,12 @@ const Sidebar = () => {
         </div>
 
         <div
-          // className={`mt-5 ${sidebarIsOpen ? 'space-y-7' : 'space-y-4'} duration-200`}
           className={`pt-2 pb-4 flex flex-col justify-evenly ${
             sidebarIsOpen
               ? `${
                   isScreenLg && isScreenRectangular ? 'sidebar-tools-div' : ''
                 }`
-              : 'space-y-4 h-96'
+              : 'space-y-4 h-96 pl-3.5'
           } duration-200`}
           //sidebar-tools-div
         >
@@ -473,8 +518,6 @@ const Sidebar = () => {
                 // onChange={handleMapThemeChange}
                 onChange={(e, newTheme) => {
                   if (newTheme !== null) {
-                    // setMapTheme(newTheme)
-                    console.log(newTheme)
                     dispatch(setMapTheme(newTheme))
                   }
                 }}
