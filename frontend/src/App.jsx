@@ -66,6 +66,11 @@ function App() {
     //   }`}
     // ></main>
     <>
+      {/* <div className="text-slate-300 font-semibold tracking-tighter w-full h-screen flex items-center justify-center  justRandom">
+        <span className={``}>
+          F <span className="text-gradient">T</span>
+        </span>
+      </div> */}
       <SwitchTransition>
         <CSSTransition
           key={location.pathname}

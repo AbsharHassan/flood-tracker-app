@@ -464,6 +464,11 @@ body {
   background-color: rgb(25 120 200 / 0.2);
 }
 
+.justRandom {
+  font-size: 38rem;
+  line-height: 1;
+}
+
 .test-marker {
   /* font-size: 1rem; */
   /* color: #ff0000; */
