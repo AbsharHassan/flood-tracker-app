@@ -11,7 +11,7 @@ const initialState = {
   isLoading: true,
   geoFormattedPolygons: geoFormattedPolygons,
   districtNames: districtNames,
-  selectedPeriod: 7,
+  selectedPeriod: 8,
   completeFloodData: [],
   selectedFloodData: null,
   prevPeriodFloodData: null,
