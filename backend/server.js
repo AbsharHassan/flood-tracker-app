@@ -8,6 +8,7 @@ const corsOptions = require('./config/corsOptions')
 const cookieParser = require('cookie-parser')
 const connectDB = require('./config/db')
 const { urlencoded } = require('express')
+
 const port = process.env.PORT
 
 connectDB()

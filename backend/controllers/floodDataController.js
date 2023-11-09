@@ -1,6 +1,81 @@
 const asyncHandler = require('express-async-handler')
 const ee = require('@google/earthengine')
+const moment = require('moment')
 const FloodData = require('../models/floodDataModel')
+
+// @desc    Returns first and last dates of previous month in YYYY-MM-DD format
+// @route   N/A - Native Function
+// @access  N/A - Internal
+const getPreviousMonthDates = () => {
+  // First date of the previous month
+  const afterStartDate = moment()
+    .subtract(1, 'months')
+    .startOf('month')
+    .format('YYYY-MM-DD')
+
+  // Last date of the previous month
+  const afterEndDate = moment()
+    .subtract(1, 'months')
+    .endOf('month')
+    .format('YYYY-MM-DD')
+
+  console.log(afterStartDate)
+  console.log(afterEndDate)
+
+  return { afterStartDate, afterEndDate }
+}
+
+// @desc    Adds new entries into the database. Used by the cron Job.
+// @route   N/A - Native Function
+// @access  N/A - Internal
+const updateDbFunction = async () => {
+  console.log('starting the updateDbFunction')
+
+  const { afterStartDate, afterEndDate } = getPreviousMonthDates()
+
+  const req = {
+    body: {
+      afterEndDate,
+      afterStartDate,
+      update: false,
+      cron: true,
+    },
+  }
+  const res = null
+
+  landClassificationDataGenerator(req, res)
+
+  let existingEntry = await FloodData.findOne({
+    after_END: req.body.afterEndDate,
+    after_START: req.body.afterStartDate,
+  })
+
+  let hasNullResult = true
+  let isIncomplete = true
+
+  if (existingEntry) {
+    hasNullResult = existingEntry.districts.some(
+      (district) => district.result === null
+    )
+    if (existingEntry.districts.length !== 119) {
+      isIncomplete = true
+    } else {
+      isIncomplete = false
+    }
+  }
+
+  let timeout
+
+  if (hasNullResult || isIncomplete) {
+    const delay = 20 * 60 * 1000
+
+    timeout = setTimeout(() => {
+      updateDbFunction()
+    }, delay)
+  } else {
+    clearTimeout(timeout)
+  }
+}
 
 // @desc    Get flood pixels map ID
 // @route   POST /api/flood-data/district
@@ -53,6 +128,7 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
   let s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
   let ESAworldcover = ee.ImageCollection('ESA/WorldCover/v100')
   let admin2 = ee.FeatureCollection('FAO/GAUL_SIMPLIFIED_500m/2015/level2')
+  let allDistricts = admin2.filter(ee.Filter.eq('ADM0_NAME', 'Pakistan'))
   let trainingTable = ee.FeatureCollection(
     'projects/flood-analyzer-241964/assets/TrainingPointsV1'
   )
@@ -60,7 +136,24 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
     'projects/flood-analyzer-241964/assets/gis_osm_roads_free_1'
   )
 
-  let districts = admin2.filter(ee.Filter.eq('ADM0_NAME', 'Pakistan'))
+  let districts
+
+  let existingEntry = await FloodData.findOne({
+    after_END: req.body.afterEndDate,
+    after_START: req.body.afterStartDate,
+  })
+
+  if (!existingEntry) {
+    districts = allDistricts
+  } else {
+    let namesArray = existingEntry.districts
+      .filter((obj) => obj.results === null)
+      .map((obj) => obj.name)
+
+    let filter = ee.Filter.inList('ADM2_NAME', namesArray)
+
+    districts = allDistricts.filter(filter)
+  }
 
   let beforeStartTraining = '2022-01-01'
   let beforeEndTraining = '2022-04-08'
@@ -85,7 +178,7 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
     'B8',
     'B11',
     'B12',
-    'WVP',
+    // 'WVP',
   ]
   let trainingInput = beforeFloodSat2.select(trainingBands)
   let trainImage = trainingInput.sampleRegions({
@@ -331,12 +424,20 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
       districtsFloodData.evaluate(async (resultsObj) => {
         completenessCounter++
         console.log(completenessCounter)
+
         if (resultsObj) {
           temporaryHoldingArray.push(resultsObj[0])
         } else {
-          temporaryHoldingArray.push(null)
+          temporaryHoldingArray.push({
+            name: districtsCollection.features[completenessCounter].properties[
+              'ADM2_NAME'
+            ],
+            results: null,
+          })
+
           nullWarningCounter++
         }
+
         if (completenessCounter == districtsCollection.features.length) {
           if (!JSON.parse(req.body.update)) {
             await FloodData.create({
@@ -345,70 +446,46 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
               districts: temporaryHoldingArray,
             })
           } else {
-            console.log('this was an update req')
+            let existingDistricts = existingEntry.districts
+            let newDistricts = temporaryHoldingArray
+
+            let combinedDistricts = existingDistricts.map((district) => {
+              const districtInNewDistricts = newDistricts.find(
+                (newDistrict) => newDistrict.name === district.name
+              )
+              return districtInNewDistricts || district
+            })
+
             await FloodData.findOneAndUpdate(
               {
                 after_END: req.body.afterEndDate,
                 after_START: req.body.afterStartDate,
               },
               {
-                districts: temporaryHoldingArray,
+                districts: combinedDistricts,
               }
             )
           }
+          console.log(nullWarningCounter)
 
-          res.json({
-            message: `Request fulfilled with ${nullWarningCounter} null responses`,
-            nullCounts: nullWarningCounter,
-          })
+          if (req.body.cron && !res) {
+            if (nullWarningCounter) {
+              req.body.update = true
+              landClassificationDataGenerator(req, res)
+            } else {
+              console.log('Db update complete')
+              return
+            }
+          } else {
+            res.json({
+              message: `Request fulfilled with ${nullWarningCounter} null responses`,
+              nullCounts: nullWarningCounter,
+            })
+          }
         }
       })
     }
   })
-  //   }
-  //   else {
-  //     districts.evaluate(async (districtsCollection) => {
-  //       let nullWarningCounter = 0
-  //       let completenessCounter = 0
-  //       let temporaryHoldingArray = []
-  //       for (
-  //         var index = 0;
-  //         index < districtsCollection.features.length;
-  //         index++
-  //       ) {
-  //         districtsArray = districts.toList(1, parseInt(index))
-  //         districtsFloodData = districtsArray.map(
-  //           districtLandcoverGeneralFunction
-  //         )
-  //         districtsFloodData.evaluate(async (resultsObj) => {
-  //           completenessCounter++
-  //           console.log(completenessCounter)
-  //           if (resultsObj) {
-  //             temporaryHoldingArray.push(resultsObj[0])
-  //           } else {
-  //             temporaryHoldingArray.push(null)
-  //             nullWarningCounter++
-  //           }
-  //           if (completenessCounter == districtsCollection.features.length) {
-  //             console.log('this was an update req')
-  //             await FloodData.findOneAndUpdate(
-  //               {
-  //                 after_END: req.body.afterEndDate,
-  //                 after_START: req.body.afterStartDate,
-  //               },
-  //               {
-  //                 districts: temporaryHoldingArray,
-  //               }
-  //             )
-  //             res.json({
-  //               message: `Request fulfilled with ${nullWarningCounter} null responses`,
-  //               nullCounts: nullWarningCounter,
-  //             })
-  //           }
-  //         })
-  //       }
-  //     })
-  //   }
 })
 
 // @desc    Check for any null/undefined entries in flood-data resource
@@ -449,6 +526,8 @@ module.exports = {
   landClassificationDataGenerator,
   checkNullEntries,
   deleteAllFloodData,
+  updateDbFunction,
+  getPreviousMonthDates,
 }
 
 // @desc    General function to calculate flood pixels for a given region within a given time frame
