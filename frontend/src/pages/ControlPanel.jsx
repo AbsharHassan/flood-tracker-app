@@ -1,53 +1,20 @@
 import { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import useAxios from '../utils/useAxios'
-import {
-  toggleRegisterAllowed,
-  deleteUser,
-  reset,
-  refresh,
-  testFunc,
-  logoutUser,
-} from '../features/auth/authSlice'
-import { Link, useNavigate } from 'react-router-dom'
-
-import Header from '../components/Header'
-import Sidebar from '../components/Sidebar'
-import Input from '../components/Input'
-import SubmitButton from '../components/SubmitButton'
-import ControlPanelButton from '../components/ControlPanelButton'
 import axios from 'axios'
 import dayjs from 'dayjs'
 
+import { toggleRegisterAllowed } from '../features/auth/authSlice'
+
+import Header from '../components/Header'
+import Sidebar from '../components/Sidebar'
+import ControlPanelButton from '../components/ControlPanelButton'
+
 const ControlPanel = () => {
-  const navigate = useNavigate()
   const dispatch = useDispatch()
   const privAxios = useAxios()
 
-  const { isAuthLoading, user, isAuthSuccess, isAuthError, authMessage } =
-    useSelector((state) => state.auth)
-
-  const [password, setPassword] = useState('')
   const [isApiProcessing, setIsApiProcessing] = useState(false)
-  const [redBorder, setRedBorder] = useState(false)
-  const [logoutReq, setLogoutReq] = useState(true)
-  const [randomCounter, setRandomCounter] = useState(0)
-  const [analysisDatePoints, setAnalysisDatePoints] = useState([
-    ['2022-01-01', '2022-01-31'],
-    ['2022-02-01', '2022-02-28'],
-    ['2022-03-01', '2022-03-31'],
-    ['2022-04-01', '2022-04-30'],
-    ['2022-05-01', '2022-05-31'],
-    ['2022-06-01', '2022-06-30'],
-    ['2022-07-01', '2022-07-31'],
-    ['2022-08-01', '2022-08-31'],
-    ['2022-09-01', '2022-09-30'],
-    ['2022-10-01', '2022-10-31'],
-    ['2022-11-01', '2022-11-30'],
-    ['2022-12-01', '2022-12-31'],
-  ])
-  const [reAnalysisDatePoints, setReAnalysisDatePoints] = useState([])
-  const [polygonsNeedUpdate, setPolygonsNeedUpdate] = useState(false)
   const { sidebarIsOpen } = useSelector((state) => state.sidebar)
 
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
@@ -56,25 +23,7 @@ const ControlPanel = () => {
   let startDateRef = useRef(null)
   let endDateRef = useRef(null)
   let updateRef = useRef(null)
-
-  useEffect(() => {
-    const handleResize = () => {
-      setInnerWidth(window.innerWidth)
-    }
-    window.addEventListener('resize', handleResize)
-
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (innerWidth > 1024) {
-      setIsScreenLg(true)
-    } else {
-      setIsScreenLg(false)
-    }
-  }, [innerWidth])
+  let deleteRef = useRef(null)
 
   const getAllFloodDataEntries = async () => {
     setIsApiProcessing(true)
@@ -87,110 +36,11 @@ const ControlPanel = () => {
     setIsApiProcessing(false)
   }
 
-  const handleFloodAnalysis = async () => {
-    setIsApiProcessing(true)
-    const tempHoldingArray = []
-    for (let index = 0; index < analysisDatePoints.length; index++) {
-      const afterStartDate = analysisDatePoints[index][0]
-      const afterEndDate = analysisDatePoints[index][1]
-      try {
-        const response = await privAxios.post(
-          'flood-data/ee-api/landcover-statistics',
-          {
-            afterStartDate: analysisDatePoints[index][0],
-            afterEndDate: analysisDatePoints[index][1],
-            update: false,
-          }
-        )
-        if (response.data.nullCounts > 0) {
-          tempHoldingArray.push([afterStartDate, afterEndDate])
-          setRandomCounter(randomCounter + 1)
-          setReAnalysisDatePoints([
-            ...reAnalysisDatePoints,
-            [afterStartDate, afterEndDate],
-          ])
-        }
-      } catch (error) {
-        console.log(error)
-        break
-      }
-    }
-
-    setIsApiProcessing(false)
-    return tempHoldingArray
-  }
-
-  const updateMissingFloodAnalysis = async () => {
-    setIsApiProcessing(true)
-    const tempHoldingArray = []
-    if (reAnalysisDatePoints.length) {
-      for (let index = 0; index < reAnalysisDatePoints.length; index++) {
-        const afterStartDate = reAnalysisDatePoints[index][0]
-        const afterEndDate = reAnalysisDatePoints[index][1]
-        try {
-          const response = await privAxios.post(
-            'flood-data/ee-api/landcover-statistics',
-            {
-              afterStartDate: reAnalysisDatePoints[index][0],
-              afterEndDate: reAnalysisDatePoints[index][1],
-              update: true,
-            }
-          )
-          if (response.data.nullCounts > 0) {
-            console.log('yeah null answer')
-            if (
-              reAnalysisDatePoints.find(
-                (entry) => entry === [afterStartDate, afterEndDate]
-              )
-            ) {
-              console.log('already exists in here so nvm')
-            } else {
-              tempHoldingArray.push([afterStartDate, afterEndDate])
-            }
-          } else if (response.data.nullCounts === 0) {
-          }
-        } catch (error) {
-          console.log(error)
-          break
-        }
-      }
-    }
-    setIsApiProcessing(false)
-    return tempHoldingArray
-  }
-
-  const deleteAllFloodData = async () => {
-    setIsApiProcessing(true)
-    try {
-      const response = await privAxios.delete('flood-data/delete')
-      console.log(response)
-    } catch (error) {
-      console.log(error)
-    }
-    setIsApiProcessing(false)
-  }
-
-  const handleDeleteSubmit = async (e) => {
-    e.preventDefault()
-
-    setLogoutReq(false)
-
-    setRedBorder(false)
-
-    dispatch(deleteUser({ email: user.email, password }))
-  }
-
   const checkNullEntries = async () => {
     const response = await privAxios.get('flood-data/check-null')
 
-    setReAnalysisDatePoints(response.data)
+    console.log(response)
   }
-
-  useEffect(() => {
-    dispatch(toggleRegisterAllowed(false))
-    console.log('RENDERED CONTROL PANEL')
-    checkNullEntries()
-  }, [])
 
   const validateFormDates = (startDateString, endDateString) => {
     const parsedStartDate = dayjs(startDateString)
@@ -276,28 +126,60 @@ const ControlPanel = () => {
     setIsApiProcessing(false)
   }
 
-  // useEffect(() => {
-  //   console.log(reAnalysisDatePoints)
-  // }, [reAnalysisDatePoints])
+  const handleDelete = async (e) => {
+    e.preventDefault()
 
-  // useEffect(() => {
-  //   console.log(logoutReq)
-  //   console.log(isAuthError);
-  //   console.log(isAu);
-  //   console.log(isAuthError);
+    setIsApiProcessing(true)
 
-  //   if (isAuthError) {
-  //     console.log(authMessage)
-  //     setRedBorder(true)
-  //   }
+    if (deleteRef.current.checked) {
+      try {
+        const response = await privAxios.delete('flood-data/delete')
+        console.log(response)
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      if (
+        validateFormDates(startDateRef.current.value, endDateRef.current.value)
+      ) {
+        try {
+          const response = await privAxios.delete(
+            `flood-data/delete/${startDateRef.current.value}`
+          )
+          console.log(response)
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        console.log('tests failed')
+      }
+    }
 
-  //   if (isAuthSuccess) {
-  //     dispatch(toggleRegisterAllowed(true))
-  //     navigate('/login')
-  //   }
+    setIsApiProcessing(false)
+  }
 
-  //   dispatch(reset())
-  // }, [isAuthSuccess, isAuthError, authMessage, navigate, dispatch])
+  useEffect(() => {
+    const handleResize = () => {
+      setInnerWidth(window.innerWidth)
+    }
+    window.addEventListener('resize', handleResize)
+
+    dispatch(toggleRegisterAllowed(false))
+    checkNullEntries()
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (innerWidth > 1024) {
+      setIsScreenLg(true)
+    } else {
+      setIsScreenLg(false)
+    }
+  }, [innerWidth])
 
   return (
     <>
@@ -322,10 +204,7 @@ const ControlPanel = () => {
                 />
               </div>
               <div className="mt-6 p-10 border border-slate-600 rounded">
-                <form
-                  className="flex flex-col items-center justify-center space-y-2"
-                  onSubmit={handleAnalysisSubmit}
-                >
+                <form className="flex flex-col items-center justify-center space-y-5">
                   <label className="flex space-x-4">
                     <span>Start Date</span>
                     <input
@@ -349,19 +228,27 @@ const ControlPanel = () => {
                     />
                   </label>
                   <ControlPanelButton
-                    type={'submit'}
-                    label="ANALYZE "
+                    type={'button'}
+                    label="ANALYZE"
                     isLoading={isApiProcessing}
+                    handleClick={handleAnalysisSubmit}
+                  />
+                  <label className="block mt-6">
+                    Delete all?
+                    <input
+                      ref={deleteRef}
+                      type="checkbox"
+                      className="ml-2.5"
+                    />
+                  </label>
+                  <ControlPanelButton
+                    label="DELETE"
+                    isLoading={isApiProcessing}
+                    handleClick={handleDelete}
                   />
                 </form>
               </div>
-              <div className="mt-6 w-full">
-                <ControlPanelButton
-                  label="DELETE ALL"
-                  isLoading={isApiProcessing}
-                  handleClick={deleteAllFloodData}
-                />
-              </div>
+              <div className="mt-6 w-full"></div>
             </div>
           </div>
         </div>
