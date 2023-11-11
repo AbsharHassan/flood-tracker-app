@@ -488,7 +488,11 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
     let nullWarningCounter = 0
     let completenessCounter = 0
     let temporaryHoldingArray = []
-    if (districtsCollection.length) {
+    if (
+      districtsCollection &&
+      districtsCollection.features &&
+      districtsCollection.features.length
+    ) {
       for (
         var index = 0;
         index < districtsCollection.features.length;
@@ -560,6 +564,11 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
             }
           }
         })
+      }
+    } else {
+      if (res) {
+        res.status(500)
+        res.send('Internal Server Error')
       }
     }
   })
