@@ -1,13 +1,15 @@
-import { useEffect } from 'react'
 import { AiOutlineSync } from 'react-icons/ai'
 
-const ControlPanelButton = ({ label, isLoading, handleClick, disabled }) => {
-  useEffect(() => {
-    // console.log(isLoading)
-  }, [isLoading])
-
+const ControlPanelButton = ({
+  type,
+  label,
+  isLoading,
+  handleClick,
+  disabled,
+}) => {
   return (
     <button
+      type={type ? type : 'button'}
       className={`w-full max-w-sm mx-auto font-medium flex items-center justify-center  rounded h-11 mb-4  duration-300 text-sm ${
         isLoading ? 'cursor-not-allowed' : ''
       } ${

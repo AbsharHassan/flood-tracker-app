@@ -120,10 +120,88 @@ const getAllFloodData = asyncHandler(async (req, res) => {
   res.send(districtData)
 })
 
+// @desc    Check to see if dates in the request are valid
+// @route   N/A - Native Function
+// @access  N/A - Internal
+const validateFormDates = (req, res) => {
+  const parsedStartDate = moment(req.body.afterStartDate, 'YYYY-MM-DD', true)
+  const parsedEndDate = moment(req.body.afterEndDate, 'YYYY-MM-DD', true)
+
+  // check date formats
+  if (!parsedStartDate.isValid() || !parsedEndDate.isValid()) {
+    if (res) {
+      res.status(422)
+    }
+    throw new Error('invalid date format, enter in the format YYYY-MM-DD')
+  }
+
+  // check if dates are in the correct ranges
+  const minDate = moment('2022-01-01')
+  const maxDate = moment() // current date
+  if (
+    !(
+      parsedStartDate.isAfter(minDate) &&
+      parsedEndDate.isBefore(maxDate) &&
+      parsedEndDate.isAfter(parsedStartDate)
+    )
+  ) {
+    if (res) {
+      res.status(422)
+    }
+    throw new Error(
+      'Start date must be before end date and they must fall within the 2022-01-01 and present date'
+    )
+  }
+
+  // check if the dates are of the same month
+  if (parsedStartDate.month() !== parsedEndDate.month()) {
+    if (res) {
+      res.status(422)
+    }
+    throw new Error('currently, both dates must be of the same month')
+  }
+
+  // check if start date is the first of a month
+  if (parsedStartDate.date() !== 1) {
+    if (res) {
+      res.status(422)
+    }
+    throw new Error('currently, start date must be the 1st of a month')
+  }
+
+  // check if end date is the last date of a month
+  const lastDayOfMonth = parsedEndDate.clone().endOf('month')
+  if (!parsedEndDate.isSame(lastDayOfMonth, 'day')) {
+    if (res) {
+      res.status(422)
+    }
+    throw new Error(
+      'currently, the end date must be the last date of the month'
+    )
+  }
+
+  return true
+}
+
 // @desc    Create or update flood data for each district using the EE api
 // @route   POST /api/flood-data/ee-api/landcover-statistics
 // @access  Private
 const landClassificationDataGenerator = asyncHandler(async (req, res) => {
+  if (
+    !(req.body.afterStartDate && req.body.afterEndDate) ||
+    req.body.update === undefined
+  ) {
+    if (res) {
+      res.status(422)
+      throw new Error('Incomplete/invalid data in POST body')
+    } else {
+      return false
+    }
+  }
+
+  // Validate the dates in the request
+  if (!validateFormDates(req, res)) return
+
   let s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
   let s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
   let ESAworldcover = ee.ImageCollection('ESA/WorldCover/v100')
@@ -404,14 +482,6 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
         roads: floodedRoadsCentroids,
       },
     }
-  }
-
-  if (
-    !(req.body.afterStartDate && req.body.afterEndDate) ||
-    req.body.update === undefined
-  ) {
-    res.status(422)
-    throw new Error('Incomplete/invalid data in POST body')
   }
 
   districts.evaluate(async (districtsCollection) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import useAxios from '../utils/useAxios'
 import {
@@ -17,6 +17,7 @@ import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
 import ControlPanelButton from '../components/ControlPanelButton'
 import axios from 'axios'
+import dayjs from 'dayjs'
 
 const ControlPanel = () => {
   const navigate = useNavigate()
@@ -51,6 +52,9 @@ const ControlPanel = () => {
 
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
   const [isScreenLg, setIsScreenLg] = useState(innerWidth > 1024 ? true : false)
+
+  let startDateRef = useRef(null)
+  let endDateRef = useRef(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -165,64 +169,6 @@ const ControlPanel = () => {
     setIsApiProcessing(false)
   }
 
-  const getAllPolygonsEntries = async () => {
-    setIsApiProcessing(true)
-    try {
-      const response = await axios.get('/api/geometry/polygons')
-      console.log(response)
-    } catch (error) {
-      console.log(error)
-    }
-    setIsApiProcessing(false)
-  }
-
-  const createAllPolygons = async () => {
-    setIsApiProcessing(true)
-    try {
-      const response = await privAxios.post('geometry/ee-api/create-polygons', {
-        update: false,
-      })
-      console.log(response)
-      if (response.data.nullCounts > 0) {
-        setPolygonsNeedUpdate(true)
-      } else {
-        setPolygonsNeedUpdate(false)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-    setIsApiProcessing(false)
-  }
-
-  const updateAllPolygons = async () => {
-    setIsApiProcessing(true)
-    try {
-      const response = await privAxios.post('geometry/ee-api/create-polygons', {
-        update: true,
-      })
-      console.log(response)
-      if (response.data.nullCounts > 0) {
-        setPolygonsNeedUpdate(true)
-      } else {
-        setPolygonsNeedUpdate(false)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-    setIsApiProcessing(false)
-  }
-
-  const deleteAllPolygons = async () => {
-    setIsApiProcessing(true)
-    try {
-      const response = await privAxios.delete('geometry/delete')
-      console.log(response)
-    } catch (error) {
-      console.log(error)
-    }
-    setIsApiProcessing(false)
-  }
-
   const handleDeleteSubmit = async (e) => {
     e.preventDefault()
 
@@ -244,6 +190,105 @@ const ControlPanel = () => {
     console.log('RENDERED CONTROL PANEL')
     checkNullEntries()
   }, [])
+
+  const validateFormDates = (startDateString, endDateString) => {
+    const parsedStartDate = dayjs(startDateString)
+    const parsedEndDate = dayjs(endDateString)
+
+    // check date formats
+    if (
+      !(
+        parsedStartDate.isValid() &&
+        parsedStartDate.format('YYYY-MM-DD') === startDateString
+      ) &&
+      !(
+        parsedEndDate.isValid() &&
+        parsedEndDate.format('YYYY-MM-DD') === endDateString
+      )
+    ) {
+      console.log('invalid date format, enter in the format YYYY-MM-DD')
+      return false
+    }
+
+    // check if dates are in the correct ranges
+    const minDate = dayjs('2022-01-01')
+    const maxDate = dayjs() // current date
+    if (
+      !(
+        parsedStartDate.isAfter(minDate) &&
+        parsedEndDate.isBefore(maxDate) &&
+        parsedEndDate.isAfter(parsedStartDate)
+      )
+    ) {
+      console.log(
+        'start date must be before end date and they must fall within the 2022-01-01 and present date'
+      )
+      return false
+    }
+
+    // check if the dates are of the same month
+    if (parsedStartDate.month !== parsedEndDate.month) {
+      console.log('currently, both dates must be of the same month')
+      return false
+    }
+
+    // check if start date is the first of a month
+    if (parsedStartDate.date() !== 1) {
+      console.log('currently, start date must be the 1st of a month')
+      return false
+    }
+
+    // check if end date is the last date of a month
+    const lastDayOfMonth = parsedEndDate.endOf('month')
+    if (!parsedEndDate.isSame(lastDayOfMonth, 'day')) {
+      console.log('currently, the end date must be the last date of the month')
+      return false
+    }
+
+    return true
+  }
+
+  const handleAnalysisSubmit = async (e) => {
+    e.preventDefault()
+    setIsApiProcessing(true)
+
+    console.log(startDateRef.current.value)
+    console.log(endDateRef.current.value)
+
+    if (
+      validateFormDates(startDateRef.current.value, endDateRef.current.value)
+    ) {
+      console.log('tests passed')
+    } else {
+      console.log('tests failed')
+    }
+    // const tempHoldingArray = []
+
+    //   const afterStartDate = analysisDatePoints[index][0]
+    //   const afterEndDate = analysisDatePoints[index][1]
+    //   try {
+    //     const response = await privAxios.post(
+    //       'flood-data/ee-api/landcover-statistics',
+    //       {
+    //         afterStartDate: analysisDatePoints[index][0],
+    //         afterEndDate: analysisDatePoints[index][1],
+    //         update: false,
+    //       }
+    //     )
+    //     if (response.data.nullCounts > 0) {
+    //       tempHoldingArray.push([afterStartDate, afterEndDate])
+    //       setRandomCounter(randomCounter + 1)
+    //       setReAnalysisDatePoints([
+    //         ...reAnalysisDatePoints,
+    //         [afterStartDate, afterEndDate],
+    //       ])
+    //     }
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+
+    setIsApiProcessing(false)
+  }
 
   // useEffect(() => {
   //   console.log(reAnalysisDatePoints)
@@ -278,8 +323,8 @@ const ControlPanel = () => {
           }  duration-500`}
         >
           <Sidebar />
-          <div className="w-full md:grow p-6 space-y-10 sm:space-y-0 sm:flex sm:space-x-10 text-slate-300">
-            <div className="rounded bg-themeCardColorDark border border-themeBorderColorDark p-3 basis-1/2 sm:flex flex-col items-center justify-center">
+          <div className="w-full p-16 text-slate-300">
+            <div className="w-full h-full rounded bg-themeBorderColorDark border border-themeBorderColorDark p-3 sm:flex flex-col items-center justify-center">
               <div className=" text-center text-3xl font-semibold uppercase">
                 Flood Data
               </div>
@@ -290,16 +335,35 @@ const ControlPanel = () => {
                   handleClick={getAllFloodDataEntries}
                 />
               </div>
-
-              <div className="mt-6 w-full">
-                <ControlPanelButton
-                  label="ANALYZE (CREATE)"
-                  isLoading={isApiProcessing}
-                  handleClick={async () => {
-                    const unFinishedArray = await handleFloodAnalysis()
-                    setReAnalysisDatePoints(unFinishedArray)
-                  }}
-                />
+              <div className="mt-6 p-10 border border-slate-600 rounded">
+                <form
+                  className="flex flex-col items-center justify-center space-y-2"
+                  onSubmit={handleAnalysisSubmit}
+                >
+                  <label className="flex space-x-4">
+                    <span>Start Date</span>
+                    <input
+                      ref={startDateRef}
+                      type="date"
+                    />
+                  </label>
+                  <label className="flex space-x-4">
+                    <span>End Date</span>
+                    <input
+                      ref={endDateRef}
+                      type="date"
+                    />
+                  </label>
+                  <ControlPanelButton
+                    type={'submit'}
+                    label="ANALYZE (CREATE)"
+                    isLoading={isApiProcessing}
+                    // handleClick={async () => {
+                    //   const unFinishedArray = await handleFloodAnalysis()
+                    //   setReAnalysisDatePoints(unFinishedArray)
+                    // }}
+                  />
+                </form>
               </div>
               <div className="mt-6 w-full">
                 <ControlPanelButton
@@ -319,157 +383,9 @@ const ControlPanel = () => {
                 />
               </div>
             </div>
-            <div className="rounded bg-themeCardColorDark border border-themeBorderColorDark p-3 basis-1/2 sm:flex flex-col items-center justify-center">
-              <div className="text-center text-3xl font-semibold uppercase">
-                Geometries
-              </div>
-              <div className="mt-6 w-full">
-                <ControlPanelButton
-                  label="SHOW ALL ENTRIES"
-                  // isLoading={isApiProcessing}
-                  handleClick={getAllPolygonsEntries}
-                />
-              </div>
-
-              <div className="mt-6 w-full">
-                <ControlPanelButton
-                  label="CREATE"
-                  isLoading={isApiProcessing}
-                  handleClick={createAllPolygons}
-                />
-              </div>
-
-              <div className="mt-6 w-full">
-                <ControlPanelButton
-                  label="UPDATE"
-                  disabled={!polygonsNeedUpdate}
-                  isLoading={isApiProcessing}
-                  handleClick={async () => {}}
-                />
-              </div>
-              <div className="mt-6 w-full">
-                <ControlPanelButton
-                  label="DELETE ALL"
-                  isLoading={isApiProcessing}
-                  handleClick={deleteAllPolygons}
-                />
-              </div>
-            </div>
           </div>
         </div>
       </div>
-      {/* <div className="p-3 flex items-center justify-between text-white text-2xl">
-        <div>ControlPanel</div>
-        <Link to="/">Home</Link>
-      </div>
-
-      <div className="mt-6">
-        <ControlPanelButton
-          label="SHOW ALL ENTRIES"
-          isLoading={isApiProcessing}
-          handleClick={async () => {
-            console.log('this was clicked')
-            const unFinishedArray = await handleFloodAnalysis()
-            // console.log(unFinishedArray)
-            setReAnalysisDatePoints(unFinishedArray)
-          }}
-        />
-      </div>
-
-      <div className="mt-6">
-        <SubmitButton
-          label="Analyze"
-          isLoading={isApiProcessing}
-          handleClick={async () => {
-            const unFinishedArray = await handleFloodAnalysis()
-            // console.log(unFinishedArray)
-            setReAnalysisDatePoints(unFinishedArray)
-          }}
-        />
-      </div>
-
-      <div className="mt-6">
-        <SubmitButton
-          label="Update"
-          isLoading={isApiProcessing}
-          handleClick={async () => {
-            const unFinishedArray = await updateMissingFloodAnalysis()
-            // console.log(unFinishedArray)
-            setReAnalysisDatePoints(unFinishedArray)
-          }}
-        />
-      </div>
-      <div className="mt-6">
-        <SubmitButton
-          label="show"
-          // isLoading={isApiProcessing}
-          handleClick={() => {
-            console.log(reAnalysisDatePoints)
-          }}
-        />
-      </div> */}
-
-      {/* <div>
-        <Input
-          label="Password"
-          name="password"
-          type="password"
-          placeholder="Enter password"
-          value={password}
-          redBorder={redBorder}
-          handleOnChange={(e) => {
-            setPassword(e.target.value)
-          }}
-        />
-
-        <SubmitButton
-          label="Delete"
-          isLoading={isAuthLoading}
-          handleClick={handleDeleteSubmit}
-        />
-      </div>
-      <div>
-        <button
-          className="bg-white p-3"
-          onClick={() => {
-            dispatch(refresh())
-          }}
-        >
-          refresh
-        </button>
-        <button
-          className="m-4 bg-red-900"
-          // onClick={async () => {
-          //   // dispatch(testFunc())
-          //   const response = await privAxios.get('testo')
-          //   console.log(response)
-          // }}
-          onClick={handlePrivRouteCall}
-        >
-          testo
-        </button>
-        <button
-          className="m-4 bg-green-900"
-          // onClick={async () => {
-          //   // dispatch(testFunc())
-          //   const response = await privAxios.get('testo')
-          //   console.log(response)
-          // }}
-          onClick={handlePrivRouteCall2}
-        >
-          random
-        </button>
-      </div>
-      <div className="w-full flex items-center justify-center">
-        <button
-          className="bg-slate-600 p-4"
-          onClick={() => {
-            dispatch(logoutUser())
-          }}
-        >
-          logout
-        </button>
-      </div> */}
     </>
   )
 }
