@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler')
 const ee = require('@google/earthengine')
 const moment = require('moment')
 const FloodData = require('../models/floodDataModel')
+const e = require('express')
 
 // @desc    Returns first and last dates of previous month in YYYY-MM-DD format
 // @route   N/A - Native Function
@@ -111,22 +112,23 @@ const getMapID = (req, res) => {
   })
 }
 
-// @desc    Get flood data for a single period
+// @desc    Get flood data
 // @route   GET /api/flood-data/:after_START
 // @access  Public
-const getSinglePeriodFloodData = asyncHandler(async (req, res) => {
-  const districtData = await FloodData.findOne({
-    after_START: req.params.afterStartDate,
-  })
+const getFloodData = asyncHandler(async (req, res) => {
+  let districtData
 
-  res.send(districtData)
-})
-
-// @desc    Get all flood-data
-// @route   GET /api/flood-data/
-// @access  Public
-const getAllFloodData = asyncHandler(async (req, res) => {
-  const districtData = await FloodData.find()
+  try {
+    if (req.params.after_START) {
+      districtData = await FloodData.findOne({
+        after_START: req.params.afterStartDate,
+      })
+    } else {
+      districtData = await FloodData.find()
+    }
+  } catch (error) {
+    res.status(500).send('Error fetching data from DB')
+  }
 
   res.send(districtData)
 })
@@ -606,47 +608,38 @@ const checkNullEntries = asyncHandler(async (req, res) => {
   res.send(nullEntriesArray)
 })
 
-// @desc    Delete selected flood data entry based on after_START
+// @desc    Delete flood data
 // @route   DELETE /api/flood-data/delete/:after_START
 // @access  Private
-const deleteSpecificFloodData = asyncHandler(async (req, res) => {
+const deleteFloodData = asyncHandler(async (req, res) => {
   try {
-    const deletedItem = await FloodData.findOneAndRemove({
-      after_START: req.params.afterStartDate,
-    })
-    if (!deletedItem) {
-      return res.status(404).send('Item not found')
+    if (req.params.after_START) {
+      const deletedItem = await FloodData.findOneAndRemove({
+        after_START: req.params.afterStartDate,
+      })
+      if (!deletedItem) {
+        return res.status(404).send('Item not found')
+      }
+      res.json({
+        entry: deletedItem,
+        message: 'Successfully deleted this entry.',
+      })
+    } else {
+      await FloodData.deleteMany()
     }
-    res.json({
-      entry: deletedItem,
-      message: 'Successfully deleted this entry.',
-    })
   } catch (error) {
-    res.status(500).send('Error deleting the item')
+    res.status(500).send('Error deleting the item(s)')
   }
-})
-
-// @desc    Delete all flood data entries
-// @route   DELETE /api/flood-data/delete
-// @access  Private
-const deleteAllFloodData = asyncHandler(async (req, res) => {
-  await FloodData.deleteMany()
-
-  res.json({
-    message: 'Successfully deleted all floodData',
-  })
 })
 
 module.exports = {
   updateDbFunction,
   getPreviousMonthDates,
   getMapID,
-  getSinglePeriodFloodData,
-  getAllFloodData,
+  getFloodData,
   landClassificationDataGenerator,
   checkNullEntries,
-  deleteSpecificFloodData,
-  deleteAllFloodData,
+  deleteFloodData,
 }
 
 // @desc    General function to calculate flood pixels for a given region within a given time frame

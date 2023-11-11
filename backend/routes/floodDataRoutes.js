@@ -2,23 +2,18 @@ const express = require('express')
 const router = express.Router()
 const { protect } = require('../middleware/authMiddleware')
 const {
-  getSinglePeriodFloodData,
-  getAllFloodData,
+  getFloodData,
   getMapID,
   landClassificationDataGenerator,
   checkNullEntries,
-  deleteSpecificFloodData,
-  deleteAllFloodData,
+  deleteFloodData,
 } = require('../controllers/floodDataController')
 
 // Create and return mapId for flood pixels of district
 router.post('/district', getMapID)
 
-// GET flood data for a single period
-router.get('/:after_START', getSinglePeriodFloodData)
-
-// GET all the flood data
-router.get('/', getAllFloodData)
+// GET flood data
+router.get('/:after_START', getFloodData)
 
 // Compute add/update flood data for given time period
 router.post(
@@ -30,10 +25,7 @@ router.post(
 // Check if there are any null entries in flood-data resource
 router.get('/check-null', protect, checkNullEntries)
 
-// DELETE certain flood data based on after_START
-router.delete('/delete/:after_START', protect, deleteSpecificFloodData)
-
-// DELETE all flood data
-router.delete('/delete', protect, deleteAllFloodData)
+// DELETE flood data
+router.delete('/delete/:after_START', protect, deleteFloodData)
 
 module.exports = router
