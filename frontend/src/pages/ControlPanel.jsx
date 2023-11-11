@@ -182,78 +182,76 @@ const ControlPanel = () => {
   }, [innerWidth])
 
   return (
-    <>
-      <div className="flex flex-col">
-        <Header extraTitle="Control Panel" />
-        <div
-          className={`flex main-view pt-[50px] ${
-            isScreenLg ? `${sidebarIsOpen ? 'pl-48' : 'pl-10'}` : 'pl-0'
-          }  duration-500`}
-        >
-          <Sidebar />
-          <div className="w-full p-16 text-slate-300">
-            <div className="w-full h-full rounded bg-themeBorderColorDark border border-themeBorderColorDark p-3 sm:flex flex-col items-center justify-center">
-              <div className=" text-center text-3xl font-semibold uppercase">
-                Flood Data
-              </div>
-              <div className="mt-6 w-full">
-                <ControlPanelButton
-                  label="SHOW ALL ENTRIES"
-                  // isLoading={isApiProcessing}
-                  handleClick={getAllFloodDataEntries}
-                />
-              </div>
-              <div className="mt-6 p-10 border border-slate-600 rounded">
-                <form className="flex flex-col items-center justify-center space-y-5">
-                  <label className="flex space-x-4">
-                    <span>Start Date</span>
-                    <input
-                      ref={startDateRef}
-                      type="date"
-                    />
-                  </label>
-                  <label className="flex space-x-4">
-                    <span>End Date</span>
-                    <input
-                      ref={endDateRef}
-                      type="date"
-                    />
-                  </label>
-                  <label>
-                    Update?
-                    <input
-                      ref={updateRef}
-                      type="checkbox"
-                      className="ml-2.5"
-                    />
-                  </label>
-                  <ControlPanelButton
-                    type={'button'}
-                    label="ANALYZE"
-                    isLoading={isApiProcessing}
-                    handleClick={handleAnalysisSubmit}
-                  />
-                  <label className="block mt-6">
-                    Delete all?
-                    <input
-                      ref={deleteRef}
-                      type="checkbox"
-                      className="ml-2.5"
-                    />
-                  </label>
-                  <ControlPanelButton
-                    label="DELETE"
-                    isLoading={isApiProcessing}
-                    handleClick={handleDelete}
-                  />
-                </form>
-              </div>
-              <div className="mt-6 w-full"></div>
+    <div className="flex flex-col">
+      <Header extraTitle="Control Panel" />
+      <div
+        className={`flex main-view pt-[50px] ${
+          isScreenLg ? `${sidebarIsOpen ? 'pl-48' : 'pl-10'}` : 'pl-0'
+        }  duration-500`}
+      >
+        <Sidebar />
+        <div className="w-full h-full  p-6 text-slate-300">
+          <div className="w-full h-full rounded bg-themeBorderColorDark border border-themeBorderColorDark p-3 sm:flex flex-col items-center justify-center">
+            <div className=" text-center text-3xl font-semibold uppercase">
+              Flood Data
             </div>
+            <div className="mt-6 w-full">
+              <ControlPanelButton
+                label="SHOW ALL ENTRIES"
+                // isLoading={isApiProcessing}
+                handleClick={getAllFloodDataEntries}
+              />
+            </div>
+            <div className="mt-6 p-10 border border-slate-600 rounded">
+              <form className="flex flex-col items-center justify-center space-y-5">
+                <label className="flex space-x-4">
+                  <span>Start Date</span>
+                  <input
+                    ref={startDateRef}
+                    type="date"
+                  />
+                </label>
+                <label className="flex space-x-4">
+                  <span>End Date</span>
+                  <input
+                    ref={endDateRef}
+                    type="date"
+                  />
+                </label>
+                <label>
+                  Update?
+                  <input
+                    ref={updateRef}
+                    type="checkbox"
+                    className="ml-2.5"
+                  />
+                </label>
+                <ControlPanelButton
+                  type={'button'}
+                  label="ANALYZE"
+                  isLoading={isApiProcessing}
+                  handleClick={handleAnalysisSubmit}
+                />
+                <label className="block mt-6">
+                  Delete all?
+                  <input
+                    ref={deleteRef}
+                    type="checkbox"
+                    className="ml-2.5"
+                  />
+                </label>
+                <ControlPanelButton
+                  label="DELETE"
+                  isLoading={isApiProcessing}
+                  handleClick={handleDelete}
+                />
+              </form>
+            </div>
+            <div className="mt-6 w-full"></div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

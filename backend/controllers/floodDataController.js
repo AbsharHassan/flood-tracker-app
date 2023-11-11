@@ -488,72 +488,79 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
     let nullWarningCounter = 0
     let completenessCounter = 0
     let temporaryHoldingArray = []
-    for (var index = 0; index < districtsCollection.features.length; index++) {
-      districtsArray = districts.toList(1, parseInt(index))
-      districtsFloodData = districtsArray.map(districtLandcoverGeneralFunction)
-      districtsFloodData.evaluate(async (resultsObj) => {
-        completenessCounter++
-        console.log(completenessCounter)
+    if (districtsCollection.length) {
+      for (
+        var index = 0;
+        index < districtsCollection.features.length;
+        index++
+      ) {
+        districtsArray = districts.toList(1, parseInt(index))
+        districtsFloodData = districtsArray.map(
+          districtLandcoverGeneralFunction
+        )
+        districtsFloodData.evaluate(async (resultsObj) => {
+          completenessCounter++
+          console.log(completenessCounter)
 
-        if (resultsObj) {
-          temporaryHoldingArray.push(resultsObj[0])
-        } else {
-          temporaryHoldingArray.push({
-            name: districtsCollection.features[completenessCounter].properties[
-              'ADM2_NAME'
-            ],
-            results: null,
-          })
-
-          nullWarningCounter++
-        }
-
-        if (completenessCounter == districtsCollection.features.length) {
-          if (!JSON.parse(req.body.update)) {
-            await FloodData.create({
-              after_END: req.body.afterEndDate,
-              after_START: req.body.afterStartDate,
-              districts: temporaryHoldingArray,
-            })
+          if (resultsObj) {
+            temporaryHoldingArray.push(resultsObj[0])
           } else {
-            let existingDistricts = existingEntry.districts
-            let newDistricts = temporaryHoldingArray
-
-            let combinedDistricts = existingDistricts.map((district) => {
-              const districtInNewDistricts = newDistricts.find(
-                (newDistrict) => newDistrict.name === district.name
-              )
-              return districtInNewDistricts || district
+            temporaryHoldingArray.push({
+              name: districtsCollection.features[completenessCounter - 1]
+                .properties['ADM2_NAME'],
+              results: null,
             })
 
-            await FloodData.findOneAndUpdate(
-              {
+            nullWarningCounter++
+          }
+
+          if (completenessCounter == districtsCollection.features.length) {
+            if (!JSON.parse(req.body.update)) {
+              await FloodData.create({
                 after_END: req.body.afterEndDate,
                 after_START: req.body.afterStartDate,
-              },
-              {
-                districts: combinedDistricts,
-              }
-            )
-          }
-          console.log(nullWarningCounter)
-
-          if (req.body.cron && !res) {
-            if (nullWarningCounter) {
-              req.body.update = true
-              landClassificationDataGenerator(req, res)
+                districts: temporaryHoldingArray,
+              })
             } else {
-              console.log('Db update complete')
-              return
+              let existingDistricts = existingEntry.districts
+              let newDistricts = temporaryHoldingArray
+
+              let combinedDistricts = existingDistricts.map((district) => {
+                const districtInNewDistricts = newDistricts.find(
+                  (newDistrict) => newDistrict.name === district.name
+                )
+                return districtInNewDistricts || district
+              })
+
+              await FloodData.findOneAndUpdate(
+                {
+                  after_END: req.body.afterEndDate,
+                  after_START: req.body.afterStartDate,
+                },
+                {
+                  districts: combinedDistricts,
+                }
+              )
             }
-          } else {
-            res.json({
-              message: `Request fulfilled with ${nullWarningCounter} null responses`,
-              nullCounts: nullWarningCounter,
-            })
+            console.log(nullWarningCounter)
+
+            if (req.body.cron && !res) {
+              if (nullWarningCounter) {
+                req.body.update = true
+                landClassificationDataGenerator(req, res)
+              } else {
+                console.log('Db update complete')
+                return
+              }
+            } else {
+              res.json({
+                message: `Request fulfilled with ${nullWarningCounter} null responses`,
+                nullCounts: nullWarningCounter,
+              })
+            }
           }
-        }
-      })
+        })
+      }
     }
   })
 })
