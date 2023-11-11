@@ -6,6 +6,7 @@ const {
   getMapID,
   landClassificationDataGenerator,
   checkNullEntries,
+  deleteSpecificFloodData,
   deleteAllFloodData,
 } = require('../controllers/floodDataController')
 
@@ -24,6 +25,9 @@ router.post(
 
 // Check if there are any null entries in flood-data resource
 router.get('/check-null', protect, checkNullEntries)
+
+// DELETE certain flood data based on after_START
+router.delete('/delete/:after_START', protect, deleteSpecificFloodData)
 
 // DELETE all flood data
 router.delete('/delete', protect, deleteAllFloodData)

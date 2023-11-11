@@ -579,6 +579,26 @@ const checkNullEntries = asyncHandler(async (req, res) => {
   res.send(nullEntriesArray)
 })
 
+// @desc    Delete selected flood data entry based on after_START
+// @route   DELETE /api/flood-data/delete/:after_START
+// @access  Private
+const deleteSpecificFloodData = asyncHandler(async (req, res) => {
+  try {
+    const deletedItem = await FloodData.findOneAndRemove({
+      after_START: req.params.afterStartDate,
+    })
+    if (!deletedItem) {
+      return res.status(404).send('Item not found')
+    }
+    res.json({
+      entry: deletedItem,
+      message: 'Successfully deleted this entry.',
+    })
+  } catch (error) {
+    res.status(500).send('Error deleting the item')
+  }
+})
+
 // @desc    Delete all flood data entries
 // @route   DELETE /api/flood-data/delete
 // @access  Private
@@ -591,13 +611,14 @@ const deleteAllFloodData = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
+  updateDbFunction,
+  getPreviousMonthDates,
   getMapID,
   getAllFloodData,
   landClassificationDataGenerator,
   checkNullEntries,
+  deleteSpecificFloodData,
   deleteAllFloodData,
-  updateDbFunction,
-  getPreviousMonthDates,
 }
 
 // @desc    General function to calculate flood pixels for a given region within a given time frame
