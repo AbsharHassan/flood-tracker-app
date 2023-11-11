@@ -350,24 +350,10 @@ const ControlPanel = () => {
                   </label>
                   <ControlPanelButton
                     type={'submit'}
-                    label="ANALYZE (CREATE)"
+                    label="ANALYZE "
                     isLoading={isApiProcessing}
-                    // handleClick={async () => {
-                    //   const unFinishedArray = await handleFloodAnalysis()
-                    //   setReAnalysisDatePoints(unFinishedArray)
-                    // }}
                   />
                 </form>
-              </div>
-              <div className="mt-6 w-full">
-                <ControlPanelButton
-                  label="RE-ANAZLYZE (UPDATE)"
-                  isLoading={isApiProcessing}
-                  handleClick={async () => {
-                    const unFinishedArray = await updateMissingFloodAnalysis()
-                    setReAnalysisDatePoints(unFinishedArray)
-                  }}
-                />
               </div>
               <div className="mt-6 w-full">
                 <ControlPanelButton
