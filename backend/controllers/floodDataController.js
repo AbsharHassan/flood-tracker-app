@@ -111,6 +111,17 @@ const getMapID = (req, res) => {
   })
 }
 
+// @desc    Get flood data for a single period
+// @route   GET /api/flood-data/:after_START
+// @access  Public
+const getSinglePeriodFloodData = asyncHandler(async (req, res) => {
+  const districtData = await FloodData.findOne({
+    after_START: req.params.afterStartDate,
+  })
+
+  res.send(districtData)
+})
+
 // @desc    Get all flood-data
 // @route   GET /api/flood-data/
 // @access  Public
@@ -630,6 +641,7 @@ module.exports = {
   updateDbFunction,
   getPreviousMonthDates,
   getMapID,
+  getSinglePeriodFloodData,
   getAllFloodData,
   landClassificationDataGenerator,
   checkNullEntries,

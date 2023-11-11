@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { protect } = require('../middleware/authMiddleware')
 const {
+  getSinglePeriodFloodData,
   getAllFloodData,
   getMapID,
   landClassificationDataGenerator,
@@ -12,6 +13,9 @@ const {
 
 // Create and return mapId for flood pixels of district
 router.post('/district', getMapID)
+
+// GET flood data for a single period
+router.get('/:after_START', getSinglePeriodFloodData)
 
 // GET all the flood data
 router.get('/', getAllFloodData)
