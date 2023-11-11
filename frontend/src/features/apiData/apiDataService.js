@@ -5,7 +5,7 @@ const API_URL = '/api/'
 
 // Get districts' flood data
 const getFloodData = async (date) => {
-  const response = await axios.get(API_URL + 'flood-data')
+  const response = await axios.get(`${API_URL}flood-data/${date}`)
 
   // console.log(response)
   return response.data

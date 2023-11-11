@@ -112,20 +112,43 @@ const getMapID = (req, res) => {
   })
 }
 
+// @desc    Check to see if after_START date is valid
+// @route   N/A - Native Function
+// @access  N/A - Internal
+const fastValidateStartingDate = (req, res) => {
+  const parsedStartDate = moment(req.params.after_START, 'YYYY-MM-DD', true)
+  const minDate = moment('2021-12-31')
+  const maxDate = moment()
+  if (
+    !parsedStartDate.isValid() ||
+    !(parsedStartDate.isAfter(minDate) && parsedStartDate.isBefore(maxDate)) ||
+    !(parsedStartDate.date() === 1)
+  ) {
+    if (res) {
+      res.status(422)
+    }
+    throw new Error(
+      'after_START must be in YYYY-MM-DD format, must be greater or equal to 2022-01-01 and less than the present and must be the 1st date of the month.'
+    )
+  }
+
+  return true
+}
+
 // @desc    Get flood data
 // @route   GET /api/flood-data/:after_START
 // @access  Public
 const getFloodData = asyncHandler(async (req, res) => {
   let districtData
 
+  if (req.params.after_START) {
+    fastValidateStartingDate(req, res)
+  }
+
   try {
-    if (req.params.after_START) {
-      districtData = await FloodData.findOne({
-        after_START: req.params.afterStartDate,
-      })
-    } else {
-      districtData = await FloodData.find()
-    }
+    districtData = await FloodData.findOne({
+      after_START: req.params.after_START,
+    })
   } catch (error) {
     res.status(500).send('Error fetching data from DB')
   }
@@ -612,23 +635,23 @@ const checkNullEntries = asyncHandler(async (req, res) => {
 // @route   DELETE /api/flood-data/delete/:after_START
 // @access  Private
 const deleteFloodData = asyncHandler(async (req, res) => {
+  if (req.params.after_START) {
+    fastValidateStartingDate(req, res)
+  }
+
   try {
-    if (req.params.after_START) {
-      const deletedItem = await FloodData.findOneAndRemove({
-        after_START: req.params.afterStartDate,
-      })
-      if (!deletedItem) {
-        return res.status(404).send('Item not found')
-      }
-      res.json({
-        entry: deletedItem,
-        message: 'Successfully deleted this entry.',
-      })
-    } else {
-      await FloodData.deleteMany()
+    const deletedItem = await FloodData.findOneAndRemove({
+      after_START: req.params.afterStartDate,
+    })
+    if (!deletedItem) {
+      return res.status(404).send('Item not found')
     }
+    res.json({
+      entry: deletedItem,
+      message: 'Successfully deleted this entry.',
+    })
   } catch (error) {
-    res.status(500).send('Error deleting the item(s)')
+    res.status(500).send('Error deleting the item')
   }
 })
 

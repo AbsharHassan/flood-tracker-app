@@ -96,12 +96,73 @@ const formatFloodData = (data) => {
   return formattedData
 }
 
+const singlePeriodProcessor = (periodObj) => {
+  const totalArea = periodObj.districts.reduce((sum, curObj) => {
+    return sum + curObj.results.total
+  }, 0)
+
+  const intermediateArray = periodObj.districts.map((innerObject) => {
+    const roadCoords = innerObject.results.roads.map((coords) => {
+      return { lat: coords[1], lng: coords[0] }
+    })
+    innerObject.results.roads = roadCoords
+    return {
+      name: innerObject.name,
+      results: innerObject.results,
+      ratio: innerObject.results.total / totalArea,
+    }
+  })
+
+  let totalFlooded = 0
+  let totalFarmlandAffected = 0
+  let totalUrbanAffected = 0
+  let totalRoadsAffected = 0
+
+  for (let index = 0; index < intermediateArray.length; index++) {
+    totalFlooded +=
+      intermediateArray[index].results.after.floodWater *
+      intermediateArray[index].ratio
+
+    totalFarmlandAffected +=
+      (intermediateArray[index].results.before.farmland -
+        intermediateArray[index].results.after.farmland) *
+      intermediateArray[index].ratio
+
+    totalUrbanAffected +=
+      (intermediateArray[index].results.before.urban -
+        intermediateArray[index].results.after.urban) *
+      intermediateArray[index].ratio
+
+    totalRoadsAffected += intermediateArray[index].results.roads.length
+  }
+
+  const floodValuesArray = intermediateArray.map((district) => {
+    return district.results.after.floodWater
+      ? district.results.after.floodWater
+      : 0
+  })
+
+  const maxFlood = Math.max(...floodValuesArray)
+
+  return {
+    resultsArray: intermediateArray,
+    maxFlood,
+    totalArea,
+    totalFlooded,
+    totalFarmlandAffected,
+    totalUrbanAffected,
+    totalRoadsAffected,
+    after_START: periodObj.after_START,
+    after_END: periodObj.after_END,
+  }
+}
+
 // Get districts' flood data
 export const getFloodData = createAsyncThunk(
   'apiData/getFloodData',
   async (date, thunkAPI) => {
     try {
-      return await apiDataService.getFloodData()
+      return await apiDataService.getFloodData(date)
     } catch (error) {
       const errorMessage = 'API failed to respond with flood data'
       return thunkAPI.rejectWithValue(errorMessage)
@@ -171,10 +232,16 @@ export const apiDataSlice = createSlice({
         state.tryAgain = false
       })
       .addCase(getFloodData.fulfilled, (state, { payload }) => {
-        const formattedFloodData = formatFloodData(payload)
-        state.completeFloodData = formattedFloodData
-        state.selectedFloodData = formattedFloodData[state.selectedPeriod]
-        state.prevPeriodFloodData = formattedFloodData[state.selectedPeriod - 1]
+        console.log(payload)
+        // const formattedFloodData = formatFloodData(payload)
+        // state.completeFloodData = formattedFloodData
+        // state.selectedFloodData = formattedFloodData[state.selectedPeriod]
+        // state.prevPeriodFloodData = formattedFloodData[state.selectedPeriod - 1]
+
+        const test = singlePeriodProcessor(payload)
+
+        console.log(test)
+
         state.isLoadingFloodData = false
       })
       .addCase(getFloodData.rejected, (state, { payload }) => {

@@ -42,7 +42,7 @@ function App() {
     dispatch(getApiKey())
     dispatch(checkAdmin())
     dispatch(persistLogin())
-    dispatch(getFloodData())
+    dispatch(getFloodData('2022-08-01'))
   }, [dispatch])
 
   useEffect(() => {
