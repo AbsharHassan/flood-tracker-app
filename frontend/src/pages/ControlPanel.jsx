@@ -55,6 +55,7 @@ const ControlPanel = () => {
 
   let startDateRef = useRef(null)
   let endDateRef = useRef(null)
+  let updateRef = useRef(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -252,40 +253,25 @@ const ControlPanel = () => {
     e.preventDefault()
     setIsApiProcessing(true)
 
-    console.log(startDateRef.current.value)
-    console.log(endDateRef.current.value)
-
     if (
       validateFormDates(startDateRef.current.value, endDateRef.current.value)
     ) {
-      console.log('tests passed')
+      try {
+        const response = await privAxios.post(
+          'flood-data/ee-api/landcover-statistics',
+          {
+            afterStartDate: startDateRef.current.value,
+            afterEndDate: endDateRef.current.value,
+            update: updateRef.current.checked,
+          }
+        )
+        console.log(response)
+      } catch (error) {
+        console.log(error)
+      }
     } else {
       console.log('tests failed')
     }
-    // const tempHoldingArray = []
-
-    //   const afterStartDate = analysisDatePoints[index][0]
-    //   const afterEndDate = analysisDatePoints[index][1]
-    //   try {
-    //     const response = await privAxios.post(
-    //       'flood-data/ee-api/landcover-statistics',
-    //       {
-    //         afterStartDate: analysisDatePoints[index][0],
-    //         afterEndDate: analysisDatePoints[index][1],
-    //         update: false,
-    //       }
-    //     )
-    //     if (response.data.nullCounts > 0) {
-    //       tempHoldingArray.push([afterStartDate, afterEndDate])
-    //       setRandomCounter(randomCounter + 1)
-    //       setReAnalysisDatePoints([
-    //         ...reAnalysisDatePoints,
-    //         [afterStartDate, afterEndDate],
-    //       ])
-    //     }
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
 
     setIsApiProcessing(false)
   }
@@ -352,6 +338,14 @@ const ControlPanel = () => {
                     <input
                       ref={endDateRef}
                       type="date"
+                    />
+                  </label>
+                  <label>
+                    Update?
+                    <input
+                      ref={updateRef}
+                      type="checkbox"
+                      className="ml-2.5"
                     />
                   </label>
                   <ControlPanelButton
