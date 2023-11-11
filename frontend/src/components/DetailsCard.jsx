@@ -44,7 +44,7 @@ const DetailsCard = ({
                 {Math.abs(value)}
               </span>
               <span className="text-base xs:text-xl">-</span>
-              <span className="ml-1 mt-0.5  font-bold text-[10px] xs:text-sm">
+              <span className="ml-1 mt-0.5 font-bold text-[10px] xs:text-sm">
                 {units}
               </span>
             </div>

@@ -34,6 +34,7 @@ const Map = ({ center, zoom, backendData }) => {
     globalSelectedDistrict,
     globalSelectedGeometry,
   } = useSelector((state) => state.apiData)
+
   const { apiKey, showRoads, overlay, isInfoWindowOpen, mapTheme } =
     useSelector((state) => state.map)
   const { isDarkMode } = useSelector((state) => state.sidebar)
@@ -55,10 +56,12 @@ const Map = ({ center, zoom, backendData }) => {
   const [customCenter, setCustomCenter] = useState({})
   const [selectedDistrict, setSelectedDistrict] = useState(null)
   const [showMapSpinner, setShowMapSpinner] = useState(false)
-  const [maxFlood, setMaxFlood] = useState(selectedFloodData.results.maxFlood)
+  const [maxFlood, setMaxFlood] = useState(
+    selectedFloodData ? selectedFloodData.results.maxFlood : 0
+  )
   const [selectedPeriodDates, setSelectedPeriodDates] = useState([
-    selectedFloodData.after_START,
-    selectedFloodData.after_END,
+    selectedFloodData ? selectedFloodData.after_START : '2022-08-01',
+    selectedFloodData ? selectedFloodData.after_END : '2022-08-31',
   ])
 
   let mapDistrictsLegendElRef = useRef()
@@ -132,12 +135,6 @@ const Map = ({ center, zoom, backendData }) => {
   useEffect(() => {
     setApiPolygonArray(geoFormattedPolygons)
   }, [geoFormattedPolygons])
-
-  useEffect(() => {
-    // console.log(apiRoadCoords)
-    // console.log(selectedDistrict)
-    // console.log(roadSwitch)
-  }, [apiRoadCoords])
 
   useEffect(() => {
     setApiFloodDataArray(selectedFloodData.results.resultsArray)

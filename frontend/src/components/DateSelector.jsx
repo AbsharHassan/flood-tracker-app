@@ -37,6 +37,7 @@ const DateSelector = ({
     ['2022-10-01', '2022-10-31'],
     ['2022-11-01', '2022-11-30'],
     ['2022-12-01', '2022-12-31'],
+    ['2023-01-01', '2022-01-31'],
   ])
   const [dateValue, setDateValue] = useState(
     dayjs(periodDates[selectedPeriod][0])
@@ -45,13 +46,12 @@ const DateSelector = ({
   useEffect(() => {
     // console.log(dateValue.toISOString().split('T')[0])
     // console.log(dayjs(dateValue).isBetween('2023-01-01', '2023-01-30'))
-
-    periodDates.map((dateArray, index) => {
-      if (dayjs(dateValue).isBetween(dateArray[0], dateArray[1])) {
-        // console.log(dateArray[0] + ' - ' + dateArray[1])
-        dispatch(setSelectedPeriod(index))
-      }
-    })
+    // periodDates.map((dateArray, index) => {
+    //   if (dayjs(dateValue).isBetween(dateArray[0], dateArray[1])) {
+    //     // console.log(dateArray[0] + ' - ' + dateArray[1])
+    //     dispatch(setSelectedPeriod(index))
+    //   }
+    // })
   }, [dateValue])
 
   //   useEffect(() => {
@@ -66,8 +66,8 @@ const DateSelector = ({
             label="Select Date"
             disableFuture={true}
             minDate={'2022/01/01'}
-            // views={['day', 'month']}
-            views={['day']}
+            views={['month']}
+            // views={['day']}
             // openTo="month"
             showDaysOutsideCurrentMonth={true}
             value={dateValue}
@@ -234,7 +234,8 @@ const DateSelector = ({
             disableFuture={true}
             minDate={'2022/01/01'}
             // views={['day', 'month']}
-            views={['day']}
+            // views={['day']}
+            views={['month']}
             showDaysOutsideCurrentMonth={true}
             value={dateValue}
             onChange={(newDateValue) => {

@@ -12,25 +12,15 @@ import Login from './pages/Login'
 import ControlPanel from './pages/ControlPanel'
 import Register from './pages/Register'
 import ProtectedRoutes from './components/ProtectedRoutes'
-import BackgroundSVG from './components/BackgroundSVG'
 import About from './pages/About'
 
 function App() {
   const location = useLocation()
   const dispatch = useDispatch()
-  const { tryAgain } = useSelector((state) => state.apiData)
+  const { tryAgain, selectedFloodData } = useSelector((state) => state.apiData)
   const { isDarkMode } = useSelector((state) => state.sidebar)
 
   const bodyRef = useRef(document.body)
-
-  useEffect(() => {
-    // console.log('some stupid change happened')
-  })
-
-  useEffect(() => {
-    // console.log(isDarkMode)
-    // console.log(JSON.parse(sessionStorage.getItem('darkMode')))
-  }, [isDarkMode])
 
   useEffect(() => {
     if (bodyRef) {
@@ -45,8 +35,8 @@ function App() {
   }, [isDarkMode])
 
   useEffect(() => {
-    console.log(process.env.NODE_ENV)
-  }, [])
+    console.log(selectedFloodData)
+  }, [selectedFloodData])
 
   useEffect(() => {
     dispatch(getApiKey())
@@ -57,20 +47,11 @@ function App() {
 
   useEffect(() => {
     if (tryAgain) dispatch(getFloodData())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tryAgain])
 
   return (
-    // <main
-    //   className={`h-full w-full min-h-screen min-w-screen ${
-    //     isDarkMode ? 'bg-themeBgColorDark' : 'bg-themeBgColorLight'
-    //   }`}
-    // ></main>
     <>
-      {/* <div className="text-slate-300 font-semibold tracking-tighter w-full h-screen flex items-center justify-center  justRandom">
-        <span className={``}>
-          F <span className="text-gradient">T</span>
-        </span>
-      </div> */}
       <SwitchTransition>
         <CSSTransition
           key={location.pathname}
@@ -105,8 +86,6 @@ function App() {
           </Routes>
         </CSSTransition>
       </SwitchTransition>
-
-      {/* <BackgroundSVG /> */}
     </>
   )
 }
