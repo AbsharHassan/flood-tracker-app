@@ -14,6 +14,9 @@ import Register from './pages/Register'
 import ProtectedRoutes from './components/ProtectedRoutes'
 import About from './pages/About'
 
+import axios from 'axios'
+import dayjs from 'dayjs'
+
 function App() {
   const location = useLocation()
   const dispatch = useDispatch()

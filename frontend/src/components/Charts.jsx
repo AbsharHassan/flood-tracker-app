@@ -38,7 +38,7 @@ const Charts = () => {
   }, [completeFloodData])
 
   useEffect(() => {
-    let apiData = [...selectedFloodData.results.resultsArray]
+    let apiData = [...selectedFloodData.resultsArray]
 
     apiData.sort((a, b) => {
       return b.results.after.floodWater - a.results.after.floodWater

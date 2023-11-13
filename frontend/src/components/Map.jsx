@@ -44,7 +44,7 @@ const Map = ({ center, zoom, backendData }) => {
     geoFormattedPolygons ? geoFormattedPolygons : []
   )
   const [apiFloodDataArray, setApiFloodDataArray] = useState(
-    selectedFloodData ? selectedFloodData.results.resultsArray : []
+    selectedFloodData ? selectedFloodData.resultsArray : []
   )
   const [apiRoadCoords, setApiRoadCoords] = useState([])
   const [nativeMap, setNativeMap] = useState(null)
@@ -57,7 +57,7 @@ const Map = ({ center, zoom, backendData }) => {
   const [selectedDistrict, setSelectedDistrict] = useState(null)
   const [showMapSpinner, setShowMapSpinner] = useState(false)
   const [maxFlood, setMaxFlood] = useState(
-    selectedFloodData ? selectedFloodData.results.maxFlood : 0
+    selectedFloodData ? selectedFloodData.maxFlood : 0
   )
   const [selectedPeriodDates, setSelectedPeriodDates] = useState([
     selectedFloodData ? selectedFloodData.after_START : '2022-08-01',
@@ -137,20 +137,19 @@ const Map = ({ center, zoom, backendData }) => {
   }, [geoFormattedPolygons])
 
   useEffect(() => {
-    setApiFloodDataArray(selectedFloodData.results.resultsArray)
-    setMaxFlood(selectedFloodData.results.maxFlood)
+    setApiFloodDataArray(selectedFloodData.resultsArray)
+    setMaxFlood(selectedFloodData.maxFlood)
     setSelectedPeriodDates([
       selectedFloodData.after_START,
       selectedFloodData.after_END,
     ])
     polygonArray.map((polygon) => {
-      const floodDataObject = selectedFloodData.results.resultsArray.find(
+      const floodDataObject = selectedFloodData.resultsArray.find(
         (floodObj) => floodObj.name === polygon.name
       )
       return polygon.setOptions({
         fillOpacity:
-          floodDataObject.results.after.floodWater /
-          selectedFloodData.results.maxFlood,
+          floodDataObject.results.after.floodWater / selectedFloodData.maxFlood,
       })
     })
     // dispatch(selectDistrict(null))

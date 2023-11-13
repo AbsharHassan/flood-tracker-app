@@ -44,8 +44,8 @@ const DetailsOverview = () => {
                 1e6
               ).toFixed(0)
             : (
-                ((selectedFloodData?.results.totalFlooded / 100) *
-                  selectedFloodData?.results.totalArea) /
+                ((selectedFloodData?.totalFlooded / 100) *
+                  selectedFloodData?.totalArea) /
                 1e6
               ).toFixed(0)
         }
@@ -60,8 +60,8 @@ const DetailsOverview = () => {
                   prevPeriodGlobalSelectedDistrict?.results.after.floodWater
                 ).toFixed(2)
               : (
-                  selectedFloodData?.results.totalFlooded -
-                  prevPeriodFloodData?.results.totalFlooded
+                  selectedFloodData?.totalFlooded -
+                  prevPeriodFloodData?.totalFlooded
                 ).toFixed(2),
           polarity:
             globalSelectedDistrict && prevPeriodGlobalSelectedDistrict
@@ -70,8 +70,8 @@ const DetailsOverview = () => {
                 0
                 ? false
                 : true
-              : selectedFloodData?.results.totalFlooded -
-                  prevPeriodFloodData?.results.totalFlooded >
+              : selectedFloodData?.totalFlooded -
+                  prevPeriodFloodData?.totalFlooded >
                 0
               ? false
               : true,
@@ -90,8 +90,8 @@ const DetailsOverview = () => {
                 1e6
               ).toFixed(0)
             : (
-                ((selectedFloodData?.results.totalFarmlandAffected / 100) *
-                  selectedFloodData?.results.totalArea) /
+                ((selectedFloodData?.totalFarmlandAffected / 100) *
+                  selectedFloodData?.totalArea) /
                 1e6
               ).toFixed(0)
         }
@@ -112,8 +112,8 @@ const DetailsOverview = () => {
                     prevPeriodGlobalSelectedDistrict?.results.after.farmland)
                 ).toFixed(2)
               : (
-                  selectedFloodData?.results.totalFarmlandAffected -
-                  prevPeriodFloodData?.results.totalFarmlandAffected
+                  selectedFloodData?.totalFarmlandAffected -
+                  prevPeriodFloodData?.totalFarmlandAffected
                 ).toFixed(2),
           polarity:
             globalSelectedDistrict && prevPeriodGlobalSelectedDistrict
@@ -124,8 +124,8 @@ const DetailsOverview = () => {
                 0
                 ? false
                 : true
-              : selectedFloodData?.results.totalFarmlandAffected -
-                  prevPeriodFloodData?.results.totalFarmlandAffected >
+              : selectedFloodData?.totalFarmlandAffected -
+                  prevPeriodFloodData?.totalFarmlandAffected >
                 0
               ? false
               : true,
@@ -144,8 +144,8 @@ const DetailsOverview = () => {
                 1e6
               ).toFixed(0)
             : (
-                ((selectedFloodData?.results.totalUrbanAffected / 100) *
-                  selectedFloodData?.results.totalArea) /
+                ((selectedFloodData?.totalUrbanAffected / 100) *
+                  selectedFloodData?.totalArea) /
                 1e6
               ).toFixed(0)
         }
@@ -168,8 +168,8 @@ const DetailsOverview = () => {
                   10
                 ).toFixed(2)
               : (
-                  (selectedFloodData?.results.totalUrbanAffected -
-                    prevPeriodFloodData?.results.totalUrbanAffected) *
+                  (selectedFloodData?.totalUrbanAffected -
+                    prevPeriodFloodData?.totalUrbanAffected) *
                   10
                 ).toFixed(2),
           polarity:
@@ -181,8 +181,8 @@ const DetailsOverview = () => {
                 0
                 ? false
                 : true
-              : selectedFloodData?.results.totalUrbanAffected -
-                  prevPeriodFloodData?.results.totalUrbanAffected >
+              : selectedFloodData?.totalUrbanAffected -
+                  prevPeriodFloodData?.totalUrbanAffected >
                 0
               ? false
               : true,
@@ -194,7 +194,7 @@ const DetailsOverview = () => {
         value={
           globalSelectedDistrict
             ? globalSelectedDistrict?.results.roads.length
-            : selectedFloodData?.results.totalRoadsAffected
+            : selectedFloodData?.totalRoadsAffected
         }
         units="segments"
         icon={RoadIcon}
@@ -213,8 +213,8 @@ const DetailsOverview = () => {
                   prevPeriodGlobalSelectedDistrict?.results.roads.length
                 ).toFixed(2)
               : (
-                  selectedFloodData?.results.totalRoadsAffected -
-                  prevPeriodFloodData?.results.totalRoadsAffected
+                  selectedFloodData?.totalRoadsAffected -
+                  prevPeriodFloodData?.totalRoadsAffected
                 ).toFixed(2),
           polarity:
             globalSelectedDistrict && prevPeriodGlobalSelectedDistrict
@@ -223,8 +223,8 @@ const DetailsOverview = () => {
                 0
                 ? false
                 : true
-              : selectedFloodData?.results.totalRoadsAffected -
-                  prevPeriodFloodData?.results.totalRoadsAffected >
+              : selectedFloodData?.totalRoadsAffected -
+                  prevPeriodFloodData?.totalRoadsAffected >
                 0
               ? false
               : true,

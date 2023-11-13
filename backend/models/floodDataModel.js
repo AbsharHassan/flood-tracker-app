@@ -2,17 +2,21 @@ const mongoose = require('mongoose')
 
 const floodDataSchema = mongoose.Schema(
   {
-    after_END: {
-      type: String,
-      unique: true,
-    },
     after_START: {
       type: String,
       unique: true,
     },
-    districts: {
-      type: [Object],
+    after_END: {
+      type: String,
+      unique: true,
     },
+    districts: { type: [Object] },
+    maxFlood: { type: Number },
+    totalArea: { type: Number },
+    totalFlooded: { type: Number },
+    totalFarmlandAffected: { type: Number },
+    totalRoadsAffected: { type: Number },
+    totalUrbanAffected: { type: Number },
   },
   {
     timestamps: true,

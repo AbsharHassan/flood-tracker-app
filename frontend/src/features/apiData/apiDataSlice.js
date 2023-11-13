@@ -177,7 +177,7 @@ export const apiDataSlice = createSlice({
     selectDistrict: (state, { payload }) => {
       state.globalSelectedDistrictName = payload
       state.globalSelectedDistrict = payload
-        ? state.selectedFloodData.results.resultsArray.find(
+        ? state.selectedFloodData.resultsArray.find(
             (floodObj) => floodObj.name === payload
           )
         : null
@@ -238,19 +238,22 @@ export const apiDataSlice = createSlice({
         // state.selectedFloodData = formattedFloodData[state.selectedPeriod]
         // state.prevPeriodFloodData = formattedFloodData[state.selectedPeriod - 1]
 
-        const test = singlePeriodProcessor(payload)
+        // const test = singlePeriodProcessor(payload)
 
-        console.log(test)
+        // console.log(test)
+
+        state.selectedFloodData = singlePeriodProcessor(payload.current)
+        state.prevPeriodFloodData = singlePeriodProcessor(payload.prev)
 
         state.isLoadingFloodData = false
       })
-      .addCase(getFloodData.rejected, (state, { payload }) => {
-        state.completeFloodData = []
-        state.selectedFloodData = {}
-        state.prevPeriodFloodData = {}
-        state.tryAgain = true
-        console.log(payload)
-      })
+    // .addCase(getFloodData.rejected, (state, { payload }) => {
+    //   state.completeFloodData = []
+    //   state.selectedFloodData = {}
+    //   state.prevPeriodFloodData = {}
+    //   state.tryAgain = true
+    //   console.log(payload)
+    // })
   },
 })
 

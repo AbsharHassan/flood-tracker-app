@@ -5,10 +5,10 @@ const MapLegend = () => {
   const { selectedFloodData } = useSelector((state) => state.apiData)
   const { isDarkMode } = useSelector((state) => state.sidebar)
 
-  const [maxValue, setMaxValue] = useState(selectedFloodData.results.maxFlood)
+  const [maxValue, setMaxValue] = useState(selectedFloodData.maxFlood)
 
   useEffect(() => {
-    setMaxValue(selectedFloodData.results.maxFlood)
+    setMaxValue(selectedFloodData.maxFlood)
   }, [selectedFloodData])
 
   return (

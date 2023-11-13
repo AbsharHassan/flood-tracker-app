@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const ee = require('@google/earthengine')
 const moment = require('moment')
-const FloodData = require('../models/floodDataModel')
+const FloodData = require('../models/floodDataMode_deprecatedl')
 const e = require('express')
 
 // @desc    Returns first and last dates of previous month in YYYY-MM-DD format
@@ -141,6 +141,8 @@ const fastValidateStartingDate = (req, res) => {
 const getFloodData = asyncHandler(async (req, res) => {
   let districtData
 
+  console.log(req.params.after_START)
+
   if (req.params.after_START) {
     fastValidateStartingDate(req, res)
   }
@@ -217,6 +219,70 @@ const validateFormDates = (req, res) => {
   }
 
   return true
+}
+
+// @desc    Process results from EE api to contain details such as maxFlood, totalFlooded etc
+// @route   N/A - Native Function
+// @access  N/A - Internal
+const singlePeriodProcessor = (periodObj) => {
+  const totalArea = periodObj.districts.reduce((sum, curObj) => {
+    return sum + curObj.results.total
+  }, 0)
+
+  const intermediateArray = periodObj.districts.map((innerObject) => {
+    const roadCoords = innerObject.results.roads.map((coords) => {
+      return { lat: coords[1], lng: coords[0] }
+    })
+    innerObject.results.roads = roadCoords
+    return {
+      name: innerObject.name,
+      results: innerObject.results,
+      ratio: innerObject.results.total / totalArea,
+    }
+  })
+
+  let totalFlooded = 0
+  let totalFarmlandAffected = 0
+  let totalUrbanAffected = 0
+  let totalRoadsAffected = 0
+
+  for (let index = 0; index < intermediateArray.length; index++) {
+    totalFlooded +=
+      intermediateArray[index].results.after.floodWater *
+      intermediateArray[index].ratio
+
+    totalFarmlandAffected +=
+      (intermediateArray[index].results.before.farmland -
+        intermediateArray[index].results.after.farmland) *
+      intermediateArray[index].ratio
+
+    totalUrbanAffected +=
+      (intermediateArray[index].results.before.urban -
+        intermediateArray[index].results.after.urban) *
+      intermediateArray[index].ratio
+
+    totalRoadsAffected += intermediateArray[index].results.roads.length
+  }
+
+  const floodValuesArray = intermediateArray.map((district) => {
+    return district.results.after.floodWater
+      ? district.results.after.floodWater
+      : 0
+  })
+
+  const maxFlood = Math.max(...floodValuesArray)
+
+  return {
+    after_START: periodObj.after_START,
+    after_END: periodObj.after_END,
+    districts: intermediateArray,
+    maxFlood,
+    totalArea,
+    totalFlooded,
+    totalFarmlandAffected,
+    totalUrbanAffected,
+    totalRoadsAffected,
+  }
 }
 
 // @desc    Create or update flood data for each district using the EE api
@@ -556,20 +622,38 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
 
           if (completenessCounter == districtsCollection.features.length) {
             if (!JSON.parse(req.body.update)) {
-              await FloodData.create({
-                after_END: req.body.afterEndDate,
+              const processedPeriod = singlePeriodProcessor({
                 after_START: req.body.afterStartDate,
+                after_END: req.body.afterEndDate,
                 districts: temporaryHoldingArray,
               })
+
+              await FloodData.create(processedPeriod)
             } else {
               let existingDistricts = existingEntry.districts
+              let simplifiedExistingDistricts = existingDistricts.map(
+                (district) => {
+                  return {
+                    name: district.name,
+                    results: district.results,
+                  }
+                }
+              )
               let newDistricts = temporaryHoldingArray
 
-              let combinedDistricts = existingDistricts.map((district) => {
-                const districtInNewDistricts = newDistricts.find(
-                  (newDistrict) => newDistrict.name === district.name
-                )
-                return districtInNewDistricts || district
+              let combinedDistricts = simplifiedExistingDistricts.map(
+                (district) => {
+                  const districtInNewDistricts = newDistricts.find(
+                    (newDistrict) => newDistrict.name === district.name
+                  )
+                  return districtInNewDistricts || district
+                }
+              )
+
+              const processedPeriod = singlePeriodProcessor({
+                after_START: req.body.afterStartDate,
+                after_END: req.body.afterEndDate,
+                districts: combinedDistricts,
               })
 
               await FloodData.findOneAndUpdate(
@@ -577,9 +661,7 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
                   after_END: req.body.afterEndDate,
                   after_START: req.body.afterStartDate,
                 },
-                {
-                  districts: combinedDistricts,
-                }
+                processedPeriod
               )
             }
             console.log(nullWarningCounter)
