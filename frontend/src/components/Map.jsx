@@ -295,12 +295,19 @@ const Map = ({ center, zoom, backendData }) => {
     map.data.addListener('click', () => {
       dispatch(selectDistrict(null))
     })
+    let randomArray = []
+
+    console.log(apiPolygonArray[66])
 
     const districtPolygons = apiPolygonArray.map((geometryObject) => {
-      console.log(apiFloodDataArray)
-      const floodDataObject = apiFloodDataArray.find(
-        (floodObj) => floodObj.name === geometryObject.name
-      )
+      // console.log(apiFloodDataArray)
+      const floodDataObject = apiFloodDataArray.find((floodObj, index) => {
+        if (floodObj.name === geometryObject.name) {
+          randomArray.push(index)
+        }
+        return floodObj.name === geometryObject.name
+      })
+      // console.log(floodDataObject)
       return new maps.Polygon({
         paths: geometryObject.coordinates,
         strokeColor: '#00aaff',
@@ -310,13 +317,16 @@ const Map = ({ center, zoom, backendData }) => {
         strokeWeight: 0.4,
         // fillColor: '#00FFFF88',
         fillColor: '#33aaff',
-        fillOpacity: floodDataObject.results.after.floodWater / maxFlood,
+        fillOpacity: floodDataObject
+          ? floodDataObject.results.after.floodWater / maxFlood
+          : 0,
         name: geometryObject.name,
         center: geometryObject.center,
         uncovered: false,
       })
     })
 
+    console.log(randomArray)
     createRoot(mapDistrictsLegendElRef.current).render(
       <Provider store={store}>
         <MapDistrictsLegend />
