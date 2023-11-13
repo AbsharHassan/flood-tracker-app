@@ -174,7 +174,7 @@ const validateFormDates = (req, res) => {
   }
 
   // check if dates are in the correct ranges
-  const minDate = moment('2022-01-01')
+  const minDate = moment('2021-12-31')
   const maxDate = moment() // current date
   if (
     !(
@@ -187,7 +187,7 @@ const validateFormDates = (req, res) => {
       res.status(422)
     }
     throw new Error(
-      'Start date must be before end date and they must fall within the 2022-01-01 and present date'
+      'Start date must be before end date and they must fall within the date 2022-01-01 and present date'
     )
   }
 
