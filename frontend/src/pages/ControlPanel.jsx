@@ -62,7 +62,7 @@ const ControlPanel = () => {
     }
 
     // check if dates are in the correct ranges
-    const minDate = dayjs('2022-01-01')
+    const minDate = dayjs('2021-12-31')
     const maxDate = dayjs() // current date
     if (
       !(
