@@ -1,7 +1,8 @@
 const asyncHandler = require('express-async-handler')
 const ee = require('@google/earthengine')
 const moment = require('moment')
-const FloodData = require('../models/floodDataMode_deprecatedl')
+// const FloodData = require('../models/floodDataMode_deprecatedl')
+const ProcessedFloodData = require('../models/processedFloodDataModel')
 const e = require('express')
 
 // @desc    Returns first and last dates of previous month in YYYY-MM-DD format
@@ -46,7 +47,7 @@ const updateDbFunction = async () => {
 
   landClassificationDataGenerator(req, res)
 
-  let existingEntry = await FloodData.findOne({
+  let existingEntry = await ProcessedFloodData.findOne({
     after_END: req.body.afterEndDate,
     after_START: req.body.afterStartDate,
   })
@@ -148,7 +149,7 @@ const getFloodData = asyncHandler(async (req, res) => {
   }
 
   try {
-    districtData = await FloodData.findOne({
+    districtData = await ProcessedFloodData.findOne({
       after_START: req.params.after_START,
     })
   } catch (error) {
@@ -225,19 +226,34 @@ const validateFormDates = (req, res) => {
 // @route   N/A - Native Function
 // @access  N/A - Internal
 const singlePeriodProcessor = (periodObj) => {
+  let hasNull = false
+
   const totalArea = periodObj.districts.reduce((sum, curObj) => {
-    return sum + curObj.results.total
+    if (curObj.results) {
+      return sum + curObj.results.total
+    } else {
+      hasNull = true
+
+      return sum
+    }
   }, 0)
 
   const intermediateArray = periodObj.districts.map((innerObject) => {
-    const roadCoords = innerObject.results.roads.map((coords) => {
-      return { lat: coords[1], lng: coords[0] }
-    })
-    innerObject.results.roads = roadCoords
-    return {
-      name: innerObject.name,
-      results: innerObject.results,
-      ratio: innerObject.results.total / totalArea,
+    if (innerObject.results) {
+      const roadCoords = innerObject.results.roads.map((coords) => {
+        return { lat: coords[1], lng: coords[0] }
+      })
+      innerObject.results.roads = roadCoords
+      return {
+        name: innerObject.name,
+        results: innerObject.results,
+        ratio: innerObject.results.total / totalArea,
+      }
+    } else {
+      return {
+        name: innerObject.name,
+        results: null,
+      }
     }
   })
 
@@ -246,31 +262,42 @@ const singlePeriodProcessor = (periodObj) => {
   let totalUrbanAffected = 0
   let totalRoadsAffected = 0
 
-  for (let index = 0; index < intermediateArray.length; index++) {
-    totalFlooded +=
-      intermediateArray[index].results.after.floodWater *
-      intermediateArray[index].ratio
+  if (!hasNull) {
+    for (let index = 0; index < intermediateArray.length; index++) {
+      totalFlooded +=
+        intermediateArray[index].results.after.floodWater *
+        intermediateArray[index].ratio
 
-    totalFarmlandAffected +=
-      (intermediateArray[index].results.before.farmland -
-        intermediateArray[index].results.after.farmland) *
-      intermediateArray[index].ratio
+      totalFarmlandAffected +=
+        (intermediateArray[index].results.before.farmland -
+          intermediateArray[index].results.after.farmland) *
+        intermediateArray[index].ratio
 
-    totalUrbanAffected +=
-      (intermediateArray[index].results.before.urban -
-        intermediateArray[index].results.after.urban) *
-      intermediateArray[index].ratio
+      totalUrbanAffected +=
+        (intermediateArray[index].results.before.urban -
+          intermediateArray[index].results.after.urban) *
+        intermediateArray[index].ratio
 
-    totalRoadsAffected += intermediateArray[index].results.roads.length
+      totalRoadsAffected += intermediateArray[index].results.roads.length
+    }
   }
 
   const floodValuesArray = intermediateArray.map((district) => {
-    return district.results.after.floodWater
-      ? district.results.after.floodWater
-      : 0
+    if (district.results) {
+      return district.results.after.floodWater
+        ? district.results.after.floodWater
+        : 0
+    } else {
+      return 0
+    }
   })
 
   const maxFlood = Math.max(...floodValuesArray)
+
+  if (isNaN(totalFlooded)) totalFlooded = 0
+  if (isNaN(totalFarmlandAffected)) totalFarmlandAffected = 0
+  if (isNaN(totalUrbanAffected)) totalUrbanAffected = 0
+  if (isNaN(totalRoadsAffected)) totalRoadsAffected = 0
 
   return {
     after_START: periodObj.after_START,
@@ -318,7 +345,7 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
 
   let districts
 
-  let existingEntry = await FloodData.findOne({
+  let existingEntry = await ProcessedFloodData.findOne({
     after_END: req.body.afterEndDate,
     after_START: req.body.afterStartDate,
   })
@@ -628,7 +655,7 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
                 districts: temporaryHoldingArray,
               })
 
-              await FloodData.create(processedPeriod)
+              await ProcessedFloodData.create(processedPeriod)
             } else {
               let existingDistricts = existingEntry.districts
               let simplifiedExistingDistricts = existingDistricts.map(
@@ -656,7 +683,7 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
                 districts: combinedDistricts,
               })
 
-              await FloodData.findOneAndUpdate(
+              await ProcessedFloodData.findOneAndUpdate(
                 {
                   after_END: req.body.afterEndDate,
                   after_START: req.body.afterStartDate,
@@ -698,7 +725,7 @@ const landClassificationDataGenerator = asyncHandler(async (req, res) => {
 const checkNullEntries = asyncHandler(async (req, res) => {
   let nullEntriesArray = []
 
-  const allEntries = await FloodData.find()
+  const allEntries = await ProcessedFloodData.find()
 
   allEntries.map((innerObject) => {
     let nullCounter = 0
@@ -722,7 +749,7 @@ const deleteFloodData = asyncHandler(async (req, res) => {
   }
 
   try {
-    const deletedItem = await FloodData.findOneAndRemove({
+    const deletedItem = await ProcessedFloodData.findOneAndRemove({
       after_START: req.params.afterStartDate,
     })
     if (!deletedItem) {

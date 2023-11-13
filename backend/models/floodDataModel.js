@@ -11,12 +11,6 @@ const floodDataSchema = mongoose.Schema(
       unique: true,
     },
     districts: { type: [Object] },
-    maxFlood: { type: Number },
-    totalArea: { type: Number },
-    totalFlooded: { type: Number },
-    totalFarmlandAffected: { type: Number },
-    totalRoadsAffected: { type: Number },
-    totalUrbanAffected: { type: Number },
   },
   {
     timestamps: true,
