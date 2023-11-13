@@ -182,8 +182,9 @@ export const apiDataSlice = createSlice({
           )
         : null
 
+      console.log(state.prevPeriodFloodData)
       state.prevPeriodGlobalSelectedDistrict = payload
-        ? state.prevPeriodFloodData.results.resultsArray.find(
+        ? state.prevPeriodFloodData.resultsArray.find(
             (floodObj) => floodObj.name === payload
           )
         : null
@@ -244,12 +245,12 @@ export const apiDataSlice = createSlice({
 
         state.selectedFloodData = payload.current
         state.selectedFloodData.resultsArray = state.selectedFloodData.districts
-        delete state.selectedFloodData.districts
+        // delete state.selectedFloodData.districts
 
         state.prevPeriodFloodData = payload.prev
         state.prevPeriodFloodData.resultsArray =
           state.prevPeriodFloodData.districts
-        delete state.prevPeriodFloodData.districts
+        // delete state.prevPeriodFloodData.districts
 
         state.isLoadingFloodData = false
       })
