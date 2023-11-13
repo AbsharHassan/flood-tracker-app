@@ -149,7 +149,7 @@ const getFloodData = asyncHandler(async (req, res) => {
   }
 
   try {
-    districtData = await FloodData.findOne({
+    districtData = await ProcessedFloodData.findOne({
       after_START: req.params.after_START,
     })
   } catch (error) {
