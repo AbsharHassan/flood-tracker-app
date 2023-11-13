@@ -297,6 +297,7 @@ const Map = ({ center, zoom, backendData }) => {
     })
 
     const districtPolygons = apiPolygonArray.map((geometryObject) => {
+      console.log(apiFloodDataArray)
       const floodDataObject = apiFloodDataArray.find(
         (floodObj) => floodObj.name === geometryObject.name
       )

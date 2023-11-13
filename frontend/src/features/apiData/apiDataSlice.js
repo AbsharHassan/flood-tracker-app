@@ -242,8 +242,14 @@ export const apiDataSlice = createSlice({
 
         // console.log(test)
 
-        state.selectedFloodData = singlePeriodProcessor(payload.current)
-        state.prevPeriodFloodData = singlePeriodProcessor(payload.prev)
+        state.selectedFloodData = payload.current
+        state.selectedFloodData.resultsArray = state.selectedFloodData.districts
+        delete state.selectedFloodData.districts
+
+        state.prevPeriodFloodData = payload.prev
+        state.prevPeriodFloodData.resultsArray =
+          state.prevPeriodFloodData.districts
+        delete state.prevPeriodFloodData.districts
 
         state.isLoadingFloodData = false
       })
