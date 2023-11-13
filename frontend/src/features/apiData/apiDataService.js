@@ -6,19 +6,27 @@ const API_URL = '/api/'
 
 // Get districts' flood data
 const getFloodData = async (date) => {
-  const parsedCurrentStartDate = dayjs(date).format('YYYY-MM-DD')
-  const previousStartDate = dayjs(parsedCurrentStartDate)
-    .subtract(1, 'month')
-    .format('YYYY-MM-DD')
+  const parsedCurrentStartDate = dayjs(date)
+  const previousStartDate = dayjs(parsedCurrentStartDate).subtract(1, 'month')
 
-  const currentPeriodReq = axios.get(
-    `${API_URL}flood-data/${parsedCurrentStartDate}`
-  )
-  const prevPeriodReq = axios.get(`${API_URL}flood-data/${previousStartDate}`)
+  if (parsedCurrentStartDate.isAfter(dayjs('2022-01-01'))) {
+    const currentPeriodReq = axios.get(
+      `${API_URL}flood-data/${parsedCurrentStartDate.format('YYYY-MM-DD')}`
+    )
+    const prevPeriodReq = axios.get(
+      `${API_URL}flood-data/${previousStartDate.format('YYYY-MM-DD')}`
+    )
 
-  const response = await Promise.all([currentPeriodReq, prevPeriodReq])
+    const response = await Promise.all([currentPeriodReq, prevPeriodReq])
 
-  return { current: response[0].data, prev: response[1].data }
+    return { current: response[0].data, prev: response[1].data }
+  } else {
+    const response = await axios.get(
+      `${API_URL}flood-data/${parsedCurrentStartDate.format('YYYY-MM-DD')}`
+    )
+
+    return { current: response[0].data, prev: {} }
+  }
 }
 
 const apiDataService = {

@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const ee = require('@google/earthengine')
 const moment = require('moment')
-// const FloodData = require('../models/floodDataMode_deprecatedl')
+const FloodData = require('../models/floodDataModel')
 const ProcessedFloodData = require('../models/processedFloodDataModel')
 const e = require('express')
 
@@ -149,7 +149,7 @@ const getFloodData = asyncHandler(async (req, res) => {
   }
 
   try {
-    districtData = await ProcessedFloodData.findOne({
+    districtData = await FloodData.findOne({
       after_START: req.params.after_START,
     })
   } catch (error) {

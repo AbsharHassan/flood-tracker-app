@@ -36,12 +36,6 @@ const ControlPanel = () => {
     setIsApiProcessing(false)
   }
 
-  const checkNullEntries = async () => {
-    const response = await privAxios.get('flood-data/check-null')
-
-    console.log(response)
-  }
-
   const validateFormDates = (startDateString, endDateString) => {
     const parsedStartDate = dayjs(startDateString)
     const parsedEndDate = dayjs(endDateString)
@@ -165,7 +159,6 @@ const ControlPanel = () => {
     window.addEventListener('resize', handleResize)
 
     dispatch(toggleRegisterAllowed(false))
-    checkNullEntries()
 
     return () => {
       window.removeEventListener('resize', handleResize)
