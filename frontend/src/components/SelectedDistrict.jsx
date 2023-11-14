@@ -2,7 +2,9 @@ import { useSelector } from 'react-redux'
 
 const SelectedDistrict = () => {
   const { isDarkMode } = useSelector((state) => state.sidebar)
-  const { globalSelectedDistrict } = useSelector((state) => state.apiData)
+  const { globalSelectedDistrict, selectedDate } = useSelector(
+    (state) => state.apiData
+  )
   return (
     <>
       <div
@@ -16,8 +18,12 @@ const SelectedDistrict = () => {
         <span className="font-bold ml-1">
           {' '}
           {globalSelectedDistrict
-            ? globalSelectedDistrict.name + ' (Pakistan)'
+            ? globalSelectedDistrict.name + ' (Pakistan) '
             : 'Pakistan'}{' '}
+        </span>
+        <span className="ml-2 text-slate-500 italic">
+          {' '}
+          during {selectedDate}
         </span>
       </div>
     </>

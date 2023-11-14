@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { motion } from 'framer-motion'
 import useAxios from '../utils/useAxios'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -175,7 +176,12 @@ const ControlPanel = () => {
   }, [innerWidth])
 
   return (
-    <div className="flex flex-col">
+    <motion.div
+      className="flex flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <Header extraTitle="Control Panel" />
       <div
         className={`flex main-view pt-[50px] ${
@@ -244,7 +250,7 @@ const ControlPanel = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

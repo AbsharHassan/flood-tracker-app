@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+import { motion } from 'framer-motion'
+
 import {
   registerUser,
   reset,
@@ -12,7 +14,7 @@ import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
 import { BiArrowBack } from 'react-icons/bi'
 
-const Login = () => {
+const Register = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const navigate = useNavigate()
@@ -82,7 +84,11 @@ const Login = () => {
   }
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="flex items-center justify-center w-screen h-screen relative">
         <div className="absolute top-5 left-5 text-gradient text-2xl sm:text-5xl">
           <Link to="/">
@@ -177,8 +183,8 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </>
+    </motion.div>
   )
 }
 
-export default Login
+export default Register

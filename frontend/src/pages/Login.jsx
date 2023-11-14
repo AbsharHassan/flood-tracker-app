@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { motion } from 'framer-motion'
 
 import { loginUser, reset, setAuthMessage } from '../features/auth/authSlice'
 
@@ -85,7 +86,11 @@ const Login = () => {
   }, [isAuthSuccess, isAuthError, authMessage, navigate, dispatch])
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="flex items-center justify-center w-screen h-screen relative">
         <div className="absolute top-5 left-5 text-gradient text-2xl  sm:text-5xl">
           <Link to="/">
@@ -179,7 +184,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </>
+    </motion.div>
   )
 }
 

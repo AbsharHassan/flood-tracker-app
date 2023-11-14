@@ -11,6 +11,9 @@ import DetailsOverview from '../components/DetailsOverview'
 import Charts from '../components/Charts'
 import Map from '../components/Map'
 
+import { motion } from 'framer-motion'
+import Footer from '../components/Footer'
+
 const Dashboard = () => {
   const styles = window.getComputedStyle(document.documentElement)
   const headerHeight = parseInt(styles.getPropertyValue('--navbar-height'), 10)
@@ -103,9 +106,13 @@ const Dashboard = () => {
   }, [isFetchingApiData])
 
   useEffect(() => {
+    console.log('yeah fetching data')
     if (isFetchingApiData) {
       if (loaderRef.current) {
         loaderRef.current.style.zIndex = '3000'
+      }
+      if (initialLoader.current) {
+        document.body.style.overflow = 'hidden'
       }
     }
 
@@ -117,6 +124,7 @@ const Dashboard = () => {
         if (!isFetchingApiData) {
           // initialLoader.current = false
           loaderRef.current.style.zIndex = '-3000'
+          document.body.style.overflow = 'visible'
         }
       },
     })
@@ -127,7 +135,11 @@ const Dashboard = () => {
   }, [])
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       {/* <SwitchTransition key={geoFormattedPolygons ? false : true}> */}
 
       {/* {mountLoader && (
@@ -196,6 +208,10 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+            {/* <div className="w-full h-28 bg-red-600 text-white z-[30000]">
+              Footer
+            </div> */}
+            <Footer />
           </div>
         </div>
       </div>
@@ -272,7 +288,7 @@ const Dashboard = () => {
           )}
         </CSSTransition>
       </SwitchTransition> */}
-    </>
+    </motion.div>
   )
 }
 

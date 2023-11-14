@@ -3,6 +3,7 @@ import apiDataService from './apiDataService'
 
 import { districtNames } from '../../MapModification/districtNames'
 import { geoFormattedPolygons } from '../../MapModification/geoFormattedPolygon'
+import dayjs from 'dayjs'
 
 const initialState = {
   isLoadingPolygons: true,
@@ -18,6 +19,7 @@ const initialState = {
   prevPeriodGlobalSelectedDistrict: null,
   globalSelectedGeometry: null,
   tryAgain: false,
+  selectedDate: '2022-03-01',
   defaultDateValue: '2022-03-01',
 }
 
@@ -231,6 +233,9 @@ export const apiDataSlice = createSlice({
         // state.tryAgain = false
       })
       .addCase(getFloodData.fulfilled, (state, { payload }) => {
+        state.selectedDate = dayjs(payload.current.after_START).format(
+          'MMM YYYY'
+        )
         state.selectedFloodData = payload.current
         state.selectedFloodData.resultsArray = state.selectedFloodData.districts
         // delete state.selectedFloodData.districts

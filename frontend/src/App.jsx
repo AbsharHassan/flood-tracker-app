@@ -14,6 +14,7 @@ import Register from './pages/Register'
 import ProtectedRoutes from './components/ProtectedRoutes'
 import About from './pages/About'
 
+import { AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import dayjs from 'dayjs'
 
@@ -66,7 +67,41 @@ function App() {
 
   return (
     <>
-      <SwitchTransition>
+      {/* <div className="scroll-container"> */}
+      {/* <div className="scroll-content"> */}
+      <AnimatePresence mode="wait">
+        <Routes
+          location={location}
+          key={location.pathname}
+        >
+          <Route
+            path="/"
+            element={<Dashboard />}
+          />
+          <Route
+            path="/login"
+            element={<Login />}
+          />
+          <Route
+            path="/about"
+            element={<About />}
+          />
+
+          <Route element={<ProtectedRoutes />}>
+            <Route
+              path="/register"
+              element={<Register />}
+            />
+            <Route
+              path="/control-panel"
+              element={<ControlPanel />}
+            />
+          </Route>
+        </Routes>
+      </AnimatePresence>
+      {/* </div> */}
+
+      {/* <SwitchTransition>
         <CSSTransition
           key={location.pathname}
           timeout={500}
@@ -99,7 +134,7 @@ function App() {
             </Route>
           </Routes>
         </CSSTransition>
-      </SwitchTransition>
+      </SwitchTransition> */}
     </>
   )
 }

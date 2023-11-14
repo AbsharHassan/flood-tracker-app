@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { motion } from 'framer-motion'
+
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import TechSection from '../components/TechSection'
@@ -32,7 +34,12 @@ const About = () => {
   }, [innerWidth])
 
   return (
-    <div className={`flex flex-col h-full`}>
+    <motion.div
+      className={`flex flex-col h-full`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <Header />
       <div
         className={`flex main-view pt-[50px] ${
@@ -76,7 +83,7 @@ const About = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
