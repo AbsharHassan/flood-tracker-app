@@ -53,7 +53,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    console.log(process.env.REACT_APP_REACT_APP_RANDOM)
+    console.log(process.env.REACT_APP_RANDOM)
   }, [])
 
   // useEffect(() => {
