@@ -5,13 +5,12 @@ import { districtNames } from '../../MapModification/districtNames'
 import { geoFormattedPolygons } from '../../MapModification/geoFormattedPolygon'
 
 const initialState = {
-  dataDate: '2022-08-30',
   isLoadingPolygons: true,
   isLoadingFloodData: true,
   isLoading: true,
   geoFormattedPolygons: geoFormattedPolygons,
   districtNames: districtNames,
-  selectedPeriod: 8,
+  // selectedPeriod: 8,
   completeFloodData: [],
   selectedFloodData: null,
   prevPeriodFloodData: null,
@@ -20,6 +19,7 @@ const initialState = {
   prevPeriodGlobalSelectedDistrict: null,
   globalSelectedGeometry: null,
   tryAgain: false,
+  defaultDateValue: '2022-03-01',
 }
 
 // Prepare API flood data for Google Maps API
@@ -182,7 +182,6 @@ export const apiDataSlice = createSlice({
           )
         : null
 
-      console.log(state.prevPeriodFloodData)
       state.prevPeriodGlobalSelectedDistrict = payload
         ? state.prevPeriodFloodData.resultsArray.find(
             (floodObj) => floodObj.name === payload
@@ -195,11 +194,11 @@ export const apiDataSlice = createSlice({
           )
         : null
     },
-    selectDate: (state, date) => {
-      state.dataDate = date.payload
-    },
+    // delete this and other unnceccesarry code
+
     setSelectedPeriod: (state, { payload }) => {
-      state.selectedPeriod = payload
+      console.log('set selected PERIOD called')
+      // state.selectedPeriod = payload
       state.selectedFloodData = state.completeFloodData[payload]
       state.prevPeriodFloodData = state.completeFloodData[payload - 1]
 
@@ -230,19 +229,9 @@ export const apiDataSlice = createSlice({
     builder
       .addCase(getFloodData.pending, (state) => {
         state.isLoadingFloodData = true
-        state.tryAgain = false
+        // state.tryAgain = false
       })
       .addCase(getFloodData.fulfilled, (state, { payload }) => {
-        console.log(payload)
-        // const formattedFloodData = formatFloodData(payload)
-        // state.completeFloodData = formattedFloodData
-        // state.selectedFloodData = formattedFloodData[state.selectedPeriod]
-        // state.prevPeriodFloodData = formattedFloodData[state.selectedPeriod - 1]
-
-        // const test = singlePeriodProcessor(payload)
-
-        // console.log(test)
-
         state.selectedFloodData = payload.current
         state.selectedFloodData.resultsArray = state.selectedFloodData.districts
         // delete state.selectedFloodData.districts
@@ -254,13 +243,13 @@ export const apiDataSlice = createSlice({
 
         state.isLoadingFloodData = false
       })
-    // .addCase(getFloodData.rejected, (state, { payload }) => {
-    //   state.completeFloodData = []
-    //   state.selectedFloodData = {}
-    //   state.prevPeriodFloodData = {}
-    //   state.tryAgain = true
-    //   console.log(payload)
-    // })
+      .addCase(getFloodData.rejected, (state, { payload }) => {
+        state.completeFloodData = []
+        state.selectedFloodData = {}
+        state.prevPeriodFloodData = {}
+        // state.tryAgain = true
+        console.log(payload)
+      })
   },
 })
 

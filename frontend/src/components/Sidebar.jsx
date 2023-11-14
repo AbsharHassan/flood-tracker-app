@@ -225,6 +225,12 @@ const Sidebar = () => {
     // console.log(location)
   }, [location])
 
+  useEffect(() => {
+    console.log(
+      'sidebarrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr'
+    )
+  }, [])
+
   return (
     // #162436
     <>

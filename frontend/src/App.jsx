@@ -20,7 +20,9 @@ import dayjs from 'dayjs'
 function App() {
   const location = useLocation()
   const dispatch = useDispatch()
-  const { tryAgain, selectedFloodData } = useSelector((state) => state.apiData)
+  const { tryAgain, selectedFloodData, defaultDateValue } = useSelector(
+    (state) => state.apiData
+  )
   const { isDarkMode } = useSelector((state) => state.sidebar)
 
   const bodyRef = useRef(document.body)
@@ -37,21 +39,28 @@ function App() {
     }
   }, [isDarkMode])
 
-  useEffect(() => {
-    console.log(selectedFloodData)
-  }, [selectedFloodData])
+  // useEffect(() => {
+  //   console.log(selectedFloodData)
+  // }, [selectedFloodData])
 
   useEffect(() => {
     dispatch(getApiKey())
     dispatch(checkAdmin())
     dispatch(persistLogin())
-    dispatch(getFloodData('2022-08-01'))
-  }, [dispatch])
+    // console.log(defaultDateValue)
+    dispatch(getFloodData(defaultDateValue))
+    // console.log('app on mount method called')
+  }, [])
 
   useEffect(() => {
-    if (tryAgain) dispatch(getFloodData())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tryAgain])
+    console.log(process.env.REACT_APP_REACT_APP_RANDOM)
+  }, [])
+
+  // useEffect(() => {
+  //   console.log('try again block called')
+  //   if (tryAgain) dispatch(getFloodData(defaultDateValue))
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [tryAgain])
 
   return (
     <>

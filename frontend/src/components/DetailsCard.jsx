@@ -41,7 +41,7 @@ const DetailsCard = ({
               <span
                 className={`mr-1 text-sm xxs:text-lg xs:text-lg sm:text-xl md:text-2xl xl:text-2xl font-bold ${color}`}
               >
-                {Math.abs(value)}
+                {!isNaN(value) ? Math.abs(value) : 'N/A'}
               </span>
               <span className="text-base xs:text-xl">-</span>
               <span className="ml-1 mt-0.5 font-bold text-[10px] xs:text-sm">

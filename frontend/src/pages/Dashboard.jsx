@@ -60,6 +60,10 @@ const Dashboard = () => {
   }, [])
 
   useEffect(() => {
+    console.log('dashboard re mounted')
+  }, [])
+
+  useEffect(() => {
     if (mapAndChartViewRef.current) {
       mapAndChartViewRef.current.style.height = `${
         window.innerHeight -
@@ -101,7 +105,68 @@ const Dashboard = () => {
     <>
       {/* <SwitchTransition key={geoFormattedPolygons ? false : true}> */}
 
-      <SwitchTransition>
+      {/* <Loader isDarkMode={isDarkMode} /> */}
+      <div className="text-white"> hello workd</div>
+
+      {/* <div
+        className={`flex flex-col h-full `}
+        ref={dashboardRef}
+      >
+        <Header />
+        <div
+          className={`flex main-view pt-[50px] ${
+            isScreenLg ? `${sidebarIsOpen ? 'pl-48' : 'pl-[70px]'}` : 'pl-0'
+          }  duration-200 `}
+        >
+          <Sidebar />
+          <div className="w-full md:grow ">
+            <SelectedDistrict />
+            <DetailsOverview />
+            <div
+              style={{
+                height: `${
+                  isScreenLg
+                    ? `${
+                        window.innerHeight -
+                        (headerHeight +
+                          selectedDistrictHeight +
+                          overviewViewHeight +
+                          18)
+                      }px`
+                    : 'auto'
+                }`,
+              }}
+              ref={mapAndChartViewRef}
+              className="flex-col-reverse w-full px-3 pb-6 md:space-y-0 md:grid md:grid-cols-8 flex overflow-y-hidden min-h-[500px]"
+            >
+              <div className="col-start-1 col-end-4 px-2 pt-5 md:pt-0 md:pr-3 xl:pl-3 h-[500px] md:h-full  ">
+                <div
+                  className={`rounded-sm  md:my-0  h-full w-full px-3 ${
+                    isDarkMode
+                      ? 'bg-themeCardColorDark border border-themeBorderColorDark'
+                      : 'bg-themeCardColorLight border border-themeBorderColorLight'
+                  }`}
+                >
+                  <Charts key={someRerenderCounter + isDarkMode} />
+                </div>
+              </div>
+              <div className="col-start-4 col-end-9 px-2 md:pl-3 xl:pr-3 ">
+                <div
+                  className={`w-full rounded-sm border  h-[500px] md:h-full  ${
+                    isDarkMode
+                      ? 'border-themeBorderColorDark bg-themeBgColorDark'
+                      : 'border-themeBorderColorLight bg-themeCardColorLight'
+                  }`}
+                >
+                  <Map />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> */}
+
+      {/* <SwitchTransition>
         <CSSTransition
           key={loadingData}
           classNames="loading"
@@ -156,7 +221,6 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <div className="col-start-4 col-end-9 px-2 md:pl-3 xl:pr-3 ">
-                      {/* <div className="w-full rounded-sm bg-themeCardColorDark border border-themeBorderColorDark min-h-[500px] bg-[#0e1824]"> */}
                       <div
                         className={`w-full rounded-sm border  h-[500px] md:h-full  ${
                           isDarkMode
@@ -173,7 +237,7 @@ const Dashboard = () => {
             </div>
           )}
         </CSSTransition>
-      </SwitchTransition>
+      </SwitchTransition> */}
     </>
   )
 }

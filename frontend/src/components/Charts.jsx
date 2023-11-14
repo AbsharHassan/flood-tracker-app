@@ -38,6 +38,10 @@ const Charts = () => {
   }, [completeFloodData])
 
   useEffect(() => {
+    if (!selectedFloodData) {
+      return
+    }
+
     let apiData = [...selectedFloodData.resultsArray]
 
     apiData.sort((a, b) => {

@@ -137,6 +137,10 @@ const Map = ({ center, zoom, backendData }) => {
   }, [geoFormattedPolygons])
 
   useEffect(() => {
+    if (!selectedFloodData) {
+      return
+    }
+
     setApiFloodDataArray(selectedFloodData.resultsArray)
     setMaxFlood(selectedFloodData.maxFlood)
     setSelectedPeriodDates([
