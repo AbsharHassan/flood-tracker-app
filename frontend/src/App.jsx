@@ -54,6 +54,8 @@ function App() {
 
   useEffect(() => {
     console.log(process.env.REACT_APP_RANDOM)
+    console.log(process.env.EE_PRIVATE_KEY)
+    console.log(process.env.REACT_APP_EE_PRIVATE_KEY)
   }, [])
 
   // useEffect(() => {
