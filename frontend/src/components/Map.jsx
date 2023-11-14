@@ -358,7 +358,7 @@ const Map = ({ center, zoom, backendData }) => {
       >
         <GoogleMapReact
           bootstrapURLKeys={{
-            key: apiKey,
+            key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
           }}
           options={{
             // disableDefaultUI: true,

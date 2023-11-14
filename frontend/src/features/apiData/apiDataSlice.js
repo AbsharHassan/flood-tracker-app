@@ -6,8 +6,7 @@ import { geoFormattedPolygons } from '../../MapModification/geoFormattedPolygon'
 
 const initialState = {
   isLoadingPolygons: true,
-  isLoadingFloodData: true,
-  isLoading: true,
+  isFetchingApiData: true,
   geoFormattedPolygons: geoFormattedPolygons,
   districtNames: districtNames,
   // selectedPeriod: 8,
@@ -228,7 +227,7 @@ export const apiDataSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getFloodData.pending, (state) => {
-        state.isLoadingFloodData = true
+        state.isFetchingApiData = true
         // state.tryAgain = false
       })
       .addCase(getFloodData.fulfilled, (state, { payload }) => {
@@ -241,7 +240,7 @@ export const apiDataSlice = createSlice({
           state.prevPeriodFloodData.districts
         // delete state.prevPeriodFloodData.districts
 
-        state.isLoadingFloodData = false
+        state.isFetchingApiData = false
       })
       .addCase(getFloodData.rejected, (state, { payload }) => {
         state.completeFloodData = []

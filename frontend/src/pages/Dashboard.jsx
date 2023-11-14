@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
+import gsap from 'gsap'
 
 import { SwitchTransition, CSSTransition } from 'react-transition-group'
 import Loader from '../components/Loader'
@@ -23,29 +24,27 @@ const Dashboard = () => {
   )
 
   const { isDarkMode } = useSelector((state) => state.sidebar)
-  const { isLoadingPolygons, isLoadingFloodData, geoFormattedPolygons } =
-    useSelector((state) => state.apiData)
+  const { isFetchingApiData, geoFormattedPolygons } = useSelector(
+    (state) => state.apiData
+  )
   const { isAuthLoading } = useSelector((state) => state.auth)
   const { sidebarIsOpen } = useSelector((state) => state.sidebar)
 
-  const [loadingData, setLoadingData] = useState(
-    isLoadingPolygons || isLoadingFloodData
-  )
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
   const [innerHeight, setInnerHeight] = useState(window.innerWidth)
   const [isScreenLg, setIsScreenLg] = useState(innerWidth > 1024 ? true : false)
   const [someRerenderCounter, setSomeRerenderCounter] = useState(0)
+  const [mountLoader, setMountLoader] = useState(true)
 
   let dashboardRef = useRef()
+  let loaderRef = useRef()
   let mapAndChartViewRef = useRef()
+
+  let initialLoader = useRef(true)
 
   // useEffect(() => {
   //   setLoadingData(isLoadingPolygons || isLoadingPolygons || isAuthLoading)
   // }, [isLoadingPolygons, isLoadingFloodData, isAuthLoading])
-
-  useEffect(() => {
-    setLoadingData(isLoadingFloodData || isAuthLoading)
-  }, [isLoadingFloodData, isAuthLoading])
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,8 +68,6 @@ const Dashboard = () => {
         window.innerHeight -
         (headerHeight + selectedDistrictHeight + overviewViewHeight + 10)
       }px`
-
-      console.log(mapAndChartViewRef.current.style)
     }
   }, [mapAndChartViewRef])
 
@@ -101,14 +98,51 @@ const Dashboard = () => {
     }
   }, [innerHeight])
 
+  useEffect(() => {
+    console.log(isFetchingApiData)
+  }, [isFetchingApiData])
+
+  useEffect(() => {
+    if (isFetchingApiData) {
+      if (loaderRef.current) {
+        loaderRef.current.style.zIndex = '3000'
+      }
+    }
+
+    gsap.to(loaderRef.current, {
+      opacity: isFetchingApiData ? (initialLoader.current ? 1 : 0.7) : 0,
+      // opacity: isFetchingApiData ? 1 : 0,
+      duration: 0.3,
+      onComplete: () => {
+        if (!isFetchingApiData) {
+          // initialLoader.current = false
+          loaderRef.current.style.zIndex = '-3000'
+        }
+      },
+    })
+  }, [isFetchingApiData])
+
+  useEffect(() => {
+    initialLoader.current = false
+  }, [])
+
   return (
     <>
       {/* <SwitchTransition key={geoFormattedPolygons ? false : true}> */}
 
-      {/* <Loader isDarkMode={isDarkMode} /> */}
-      <div className="text-white"> hello workd</div>
+      {/* {mountLoader && (
+        <Loader
+          ref={loaderRef}
+          isDarkMode={isDarkMode}
+        />
+      )} */}
 
-      {/* <div
+      <Loader
+        ref={loaderRef}
+        isDarkMode={isDarkMode}
+      />
+
+      <div
         className={`flex flex-col h-full `}
         ref={dashboardRef}
       >
@@ -164,16 +198,16 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* <SwitchTransition>
         <CSSTransition
-          key={loadingData}
+          key={isFetchingApiData}
           classNames="loading"
           timeout={500}
           appear={false}
         >
-          {loadingData ? (
+          {isFetchingApiData ? (
             <Loader isDarkMode={isDarkMode} />
           ) : (
             <div
