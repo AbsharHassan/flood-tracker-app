@@ -7,6 +7,7 @@ const {
   landClassificationDataGenerator,
   checkNullEntries,
   deleteFloodData,
+  getTotalFloodedArray,
 } = require('../controllers/floodDataController')
 
 // Create and return mapId for flood pixels of district
@@ -14,6 +15,9 @@ router.post('/district', getMapID)
 
 // GET flood data
 router.get('/:after_START', getFloodData)
+
+// GET total flooded for all periods
+router.get('/totals/array', getTotalFloodedArray)
 
 // Compute add/update flood data for given time period
 router.post(

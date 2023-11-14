@@ -5,7 +5,10 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group'
 
 import { getApiKey } from './features/map/mapSlice'
 import { checkAdmin, persistLogin } from './features/auth/authSlice'
-import { getFloodData } from './features/apiData/apiDataSlice'
+import {
+  getFloodData,
+  getTotalFloodedArray,
+} from './features/apiData/apiDataSlice'
 
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
@@ -50,6 +53,7 @@ function App() {
     dispatch(persistLogin())
     // console.log(defaultDateValue)
     dispatch(getFloodData(defaultDateValue))
+    dispatch(getTotalFloodedArray())
     // console.log('app on mount method called')
   }, [])
 

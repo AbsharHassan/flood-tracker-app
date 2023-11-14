@@ -106,7 +106,7 @@ const Dashboard = () => {
   }, [isFetchingApiData])
 
   useEffect(() => {
-    console.log('yeah fetching data')
+    // console.log('yeah fetching data')
     if (isFetchingApiData) {
       if (loaderRef.current) {
         loaderRef.current.style.zIndex = '3000'

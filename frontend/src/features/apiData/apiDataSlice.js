@@ -21,6 +21,7 @@ const initialState = {
   tryAgain: false,
   selectedDate: '2022-03-01',
   defaultDateValue: '2022-03-01',
+  totalFloodedArray: [],
 }
 
 // Prepare API flood data for Google Maps API
@@ -171,6 +172,19 @@ export const getFloodData = createAsyncThunk(
   }
 )
 
+// Get an array containing total flooded percentages
+export const getTotalFloodedArray = createAsyncThunk(
+  'apiData/getTotalFloodedArray',
+  async (thunkAPI) => {
+    try {
+      return await apiDataService.getTotalFloodedArray()
+    } catch (error) {
+      const errorMessage = 'API failed to respond with array of totalFlooded'
+      return thunkAPI.rejectWithValue(errorMessage)
+    }
+  }
+)
+
 export const apiDataSlice = createSlice({
   name: 'apiData',
   initialState,
@@ -251,7 +265,20 @@ export const apiDataSlice = createSlice({
         state.completeFloodData = []
         state.selectedFloodData = {}
         state.prevPeriodFloodData = {}
-        // state.tryAgain = true
+        console.log(payload)
+      })
+
+      // GetTotalFloodedArray
+      .addCase(getTotalFloodedArray.pending, (state) => {
+        state.isFetchingApiData = true
+      })
+      .addCase(getTotalFloodedArray.fulfilled, (state, { payload }) => {
+        console.log(payload)
+        state.totalFloodedArray = payload
+        state.isFetchingApiData = false
+      })
+      .addCase(getTotalFloodedArray.rejected, (state, { payload }) => {
+        state.totalFloodedArray = []
         console.log(payload)
       })
   },

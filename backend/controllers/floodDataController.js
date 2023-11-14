@@ -159,6 +159,22 @@ const getFloodData = asyncHandler(async (req, res) => {
   res.send(districtData)
 })
 
+// @desc    Get total flooded for each period
+// @route   GET /api/flood-data/totals
+// @access  Public
+const getTotalFloodedArray = asyncHandler(async (req, res) => {
+  try {
+    const totalFloodedArray = await ProcessedFloodData.find(
+      {},
+      { totalFlooded: 1, after_START: 1, _id: 0 }
+    )
+
+    res.send(totalFloodedArray)
+  } catch (error) {
+    res.status(500).send('Error fetching data from DB')
+  }
+})
+
 // @desc    Check to see if dates in the request are valid
 // @route   N/A - Native Function
 // @access  N/A - Internal
@@ -769,6 +785,7 @@ module.exports = {
   getPreviousMonthDates,
   getMapID,
   getFloodData,
+  getTotalFloodedArray,
   landClassificationDataGenerator,
   checkNullEntries,
   deleteFloodData,
