@@ -273,7 +273,6 @@ export const apiDataSlice = createSlice({
         state.isFetchingApiData = true
       })
       .addCase(getTotalFloodedArray.fulfilled, (state, { payload }) => {
-        console.log(payload)
         state.totalFloodedArray = payload
         state.isFetchingApiData = false
       })

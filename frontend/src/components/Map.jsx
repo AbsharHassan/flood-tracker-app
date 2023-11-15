@@ -306,6 +306,9 @@ const Map = ({ center, zoom, backendData }) => {
       const floodDataObject = apiFloodDataArray.find((floodObj, index) => {
         return floodObj.name === geometryObject.name
       })
+      console.log(floodDataObject)
+
+      // console.log(floodDataObject.results.after.floodWater)
       return new maps.Polygon({
         paths: geometryObject.coordinates,
         strokeColor: '#00aaff',
