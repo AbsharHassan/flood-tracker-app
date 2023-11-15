@@ -254,6 +254,7 @@ const DateSelector = ({
               value={dateValue}
               onChange={(newDateValue) => {
                 setDateValue(newDateValue)
+                console.log(newDateValue)
 
                 const parsedStartDate = dayjs(newDateValue, 'YYYY-MM-DD', true)
                 const minDate = dayjs('2021-12-31')
@@ -264,6 +265,7 @@ const DateSelector = ({
                     parsedStartDate.isBefore(maxDate)) ||
                   parsedStartDate.date() === 1
                 ) {
+                  console.log(parsedStartDate)
                   setShowError(false)
                   dispatch(
                     getFloodData(dayjs(newDateValue).format('YYYY-MM-DD'))
