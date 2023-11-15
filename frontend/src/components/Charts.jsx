@@ -2,20 +2,8 @@ import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import LineChart from './LineChart'
 import BarChart from './BarChart'
-
-import { FloodData, DistrictData } from '../Data'
 import dayjs from 'dayjs'
-
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material'
-
-//// GENERAL
-// Bar Chart for top 10 districts by %age flooding
-// Line Chart for overall flooding for each month
-// Bar Chart for flooding percentage for each province
-
-//// DISTRICT
-// Bar Chart for land classification distribution post flood
-// Line Chart for district flooding for each month
+import { Select, MenuItem, FormControl } from '@mui/material'
 
 const Charts = () => {
   const { totalFloodedArray, selectedFloodData } = useSelector(
@@ -38,9 +26,6 @@ const Charts = () => {
           data: filteredData.map((d) => {
             return d.totalFlooded > 1 ? d.totalFlooded : 1
           }),
-          // backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          // borderColor: 'rgba(54, 162, 235, 1)',
-          // borderWidth: 1,
         },
       ],
     }
@@ -68,22 +53,8 @@ const Charts = () => {
   }, [yearArray])
 
   useEffect(() => {
-    // const data = totalFloodedArray.map((monthObj) => {
-    //   if (isNaN(monthObj.results.totalFlooded)) return 2
-    //   return monthObj.results.totalFlooded
-    // })
-
     setLineChartData(filterDataByYear(selectedYear))
-
-    // setLineChartData({
-    //   labels: FloodData.map((entry) => entry.month),
-    //   datasets: [
-    //     {
-    //       label: '% Flooding by Month (2022)',
-    //       data: data,
-    //     },
-    //   ],
-    // })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalFloodedArray, selectedYear])
 
   useEffect(() => {
@@ -107,9 +78,6 @@ const Charts = () => {
         datasets: [
           {
             label: '% of Land Flooded',
-            // data: truncatedArray.map((districtObj) => {
-            //   return districtObj.results.after.floodWater
-            // }),
             data: floodValuesArray,
             maxBarThickness: 15,
             minBarLength: 35,
@@ -127,29 +95,23 @@ const Charts = () => {
         ],
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFloodData])
 
   const [barChartData, setBarChartData] = useState({
-    // labels: DistrictData.map((entry) => entry.district),
     labels: null,
     datasets: [
       {
         label: '% of Land Flooded',
-        // data: DistrictData.map((entry) => entry.flooded),
         data: null,
         maxBarThickness: 15,
         minBarLength: 35,
-        backgroundColor: [
-          '#33aaff22',
-          // '#33aaffaa',
-          // '#33aaffaa',
-          // '#33aaffaa',
-          // '#33aaffaa',
-        ],
+        backgroundColor: ['#33aaff22'],
       },
     ],
   })
-  const [barChartOptions, setBarChartOptions] = useState({
+
+  const [barChartOptions] = useState({
     indexAxis: 'y',
     maintainAspectRatio: false,
     scales: {
@@ -183,9 +145,7 @@ const Charts = () => {
       legend: {
         labels: {
           // This more specific font property overrides the global property
-          font: {
-            // size: 14,
-          },
+
           color: isDarkMode ? 'rgb(203 213 225 / 0.75)' : 'rgb(91 105 125)',
         },
       },
@@ -197,19 +157,19 @@ const Charts = () => {
       },
     },
   })
+
   const [lineChartData, setLineChartData] = useState({
-    // labels: FloodData.map((entry) => entry.month),
     labels: null,
 
     datasets: [
       {
-        label: '% Flooding by Month (2022)',
-        // data: FloodData.map((entry) => entry.flooding),
+        label: '% Flooding by Month',
         data: null,
       },
     ],
   })
-  const [lineChartOptions, setLineChartOptions] = useState({
+
+  const [lineChartOptions] = useState({
     legend: {
       display: true,
       position: 'top',
@@ -247,15 +207,15 @@ const Charts = () => {
     },
     layout: {
       padding: {
-        top: 20, // Adjust this value as needed
+        top: 20,
       },
     },
     plugins: {
       legend: {
-        borderWidth: 0, // Set the border width to 0 to remove the border
+        borderWidth: 0,
         display: true,
         position: 'top',
-        align: 'center', // Aligns the legend to the start (left) of the top position
+        align: 'center',
         marginBottom: '20px',
         labels: {
           // This more specific font property overrides the global property
@@ -277,6 +237,7 @@ const Charts = () => {
       },
     },
   })
+
   return (
     <div className="flex flex-col justify-between h-full w-full py-5 space-y-2">
       <div className="basis-1/2 w-full h-[95%] relative">
@@ -369,14 +330,12 @@ const Charts = () => {
           </FormControl>
         </div>
         <LineChart
-          // height={220}
           chartData={lineChartData}
           chartOptions={lineChartOptions}
         />
       </div>
       <div className="basis-1/2 w-full h-[95%]">
         <BarChart
-          // height={250}
           chartData={barChartData}
           chartOptions={barChartOptions}
         />
