@@ -91,7 +91,6 @@ const Map = ({ center, zoom }) => {
         }
       )
       .then((response) => {
-        console.log(`${globalSelectedDistrict.name} data recieved`)
         const mapid = response.data
         const tileSource = new ee.layers.EarthEngineTileSource({
           mapid,
@@ -223,7 +222,6 @@ const Map = ({ center, zoom }) => {
         const floodDataObject = selectedFloodData.resultsArray.find(
           (floodObj) => floodObj.name === polygon.name
         )
-        console.log(floodDataObject)
         return polygon.setOptions({
           fillOpacity: floodDataObject
             ? floodDataObject.results.after.floodWater /

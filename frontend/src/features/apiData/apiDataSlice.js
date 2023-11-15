@@ -8,6 +8,8 @@ import dayjs from 'dayjs'
 const initialState = {
   isLoadingPolygons: true,
   isFetchingApiData: true,
+  isLoadingMainData: true,
+  isLoadingTotalFlooded: true,
   geoFormattedPolygons: geoFormattedPolygons,
   districtNames: districtNames,
   // selectedPeriod: 8,
@@ -243,7 +245,7 @@ export const apiDataSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getFloodData.pending, (state) => {
-        state.isFetchingApiData = true
+        state.isLoadingMainData = true
         // state.tryAgain = false
       })
       .addCase(getFloodData.fulfilled, (state, { payload }) => {
@@ -259,27 +261,28 @@ export const apiDataSlice = createSlice({
           state.prevPeriodFloodData.districts
         // delete state.prevPeriodFloodData.districts
 
-        state.isFetchingApiData = false
+        state.isLoadingMainData = false
       })
       .addCase(getFloodData.rejected, (state, { payload }) => {
         state.completeFloodData = []
         state.selectedFloodData = {}
         state.prevPeriodFloodData = {}
-        state.isFetchingApiData = false
+        state.isLoadingMainData = false
         console.log(payload)
       })
 
       // GetTotalFloodedArray
       .addCase(getTotalFloodedArray.pending, (state) => {
-        state.isFetchingApiData = true
+        state.isLoadingTotalFlooded = true
       })
       .addCase(getTotalFloodedArray.fulfilled, (state, { payload }) => {
         state.totalFloodedArray = payload
-        state.isFetchingApiData = false
+        state.isLoadingTotalFlooded = false
       })
       .addCase(getTotalFloodedArray.rejected, (state, { payload }) => {
         state.totalFloodedArray = []
-        state.isFetchingApiData = false
+        state.isLoadingTotalFlooded = false
+
         console.log(payload)
       })
   },

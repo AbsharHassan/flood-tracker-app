@@ -27,12 +27,12 @@ const Dashboard = () => {
   )
 
   const { isDarkMode } = useSelector((state) => state.sidebar)
-  const { isFetchingApiData, geoFormattedPolygons } = useSelector(
-    (state) => state.apiData
-  )
+  const { isLoadingMainData, isLoadingTotalFlooded, geoFormattedPolygons } =
+    useSelector((state) => state.apiData)
   const { isAuthLoading } = useSelector((state) => state.auth)
   const { sidebarIsOpen } = useSelector((state) => state.sidebar)
 
+  const [isFetchingApiData, setIsFetchingApiData] = useState(true)
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
   const [innerHeight, setInnerHeight] = useState(window.innerWidth)
   const [isScreenLg, setIsScreenLg] = useState(innerWidth > 1024 ? true : false)
@@ -62,8 +62,8 @@ const Dashboard = () => {
   }, [])
 
   useEffect(() => {
-    console.log('dashboard re mounted')
-  }, [])
+    setIsFetchingApiData(isLoadingMainData || isLoadingTotalFlooded)
+  }, [isLoadingMainData, isLoadingTotalFlooded])
 
   useEffect(() => {
     if (mapAndChartViewRef.current) {

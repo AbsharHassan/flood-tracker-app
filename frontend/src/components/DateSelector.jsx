@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import dayjs from 'dayjs'
-import isBetween from 'dayjs/plugin/isBetween'
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -244,8 +243,6 @@ const DateSelector = ({
         <>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDatePicker
-              // onOpen={() => setIsDateDialogOpen(true)}
-              // onClose={() => setIsDateDialogOpen(false)}
               onOpen={() => handleDateDialogState(true)}
               onClose={() => handleDateDialogState(false)}
               label="Select Date"
