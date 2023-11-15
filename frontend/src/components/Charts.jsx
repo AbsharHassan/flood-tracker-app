@@ -34,6 +34,7 @@ const Charts = () => {
   useEffect(() => {
     if (totalFloodedArray.length) {
       let tempYearArray = []
+      // eslint-disable-next-line array-callback-return
       totalFloodedArray.map((floodObj) => {
         if (
           !tempYearArray.find((year) => {
