@@ -126,7 +126,13 @@ const Map = ({ center, zoom }) => {
   }, [geoFormattedPolygons])
 
   useEffect(() => {
-    if (!selectedFloodData) {
+    if (
+      !(
+        selectedFloodData &&
+        selectedFloodData.resultsArray &&
+        selectedFloodData.resultsArray.length
+      )
+    ) {
       return
     }
 
