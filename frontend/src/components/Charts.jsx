@@ -50,10 +50,6 @@ const Charts = () => {
   }, [totalFloodedArray])
 
   useEffect(() => {
-    console.log(yearArray)
-  }, [yearArray])
-
-  useEffect(() => {
     setLineChartData(filterDataByYear(selectedYear))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalFloodedArray, selectedYear])
