@@ -208,7 +208,7 @@ const Charts = () => {
     },
     layout: {
       padding: {
-        top: 20,
+        top: 10,
       },
     },
     plugins: {
