@@ -1,12 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
-
-import { Provider, useSelector, useDispatch } from 'react-redux'
-
-import { store } from '../app/store'
-
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
+import { Provider, useSelector, useDispatch } from 'react-redux'
+import { store } from '../app/store'
 import axios from 'axios'
-
 import GoogleMapReact from 'google-map-react'
 import ee from '@google/earthengine'
 import { selectDistrict } from '../features/apiData/apiDataSlice'
@@ -17,7 +14,6 @@ import {
   setShowOverlay,
   setMapTheme,
 } from '../features/map/mapSlice'
-
 import mapStyles from '../MapModification/mapStyles'
 import RoadMarker from './RoadMarker'
 import MapSpinner from './MapSpinner'
@@ -25,7 +21,7 @@ import newCoordsPak from '../MapModification/newCoordsPak'
 import MapDistrictsLegend from './MapDistrictsLegend'
 import MapControlsUI from './MapControlsUI'
 
-const Map = ({ center, zoom, backendData }) => {
+const Map = ({ center, zoom }) => {
   const dispatch = useDispatch()
 
   const {
@@ -35,11 +31,11 @@ const Map = ({ center, zoom, backendData }) => {
     globalSelectedGeometry,
   } = useSelector((state) => state.apiData)
 
-  const { apiKey, showRoads, overlay, isInfoWindowOpen, mapTheme } =
-    useSelector((state) => state.map)
+  const { showRoads, isInfoWindowOpen, mapTheme } = useSelector(
+    (state) => state.map
+  )
   const { isDarkMode } = useSelector((state) => state.sidebar)
 
-  const [apiDataArray, setApiDataArray] = useState([])
   const [apiPolygonArray, setApiPolygonArray] = useState(
     geoFormattedPolygons ? geoFormattedPolygons : []
   )
@@ -54,20 +50,14 @@ const Map = ({ center, zoom, backendData }) => {
   const [roadSwitch, setRoadSwitch] = useState(showRoads)
   const [customZoom, setCustomZoom] = useState(null)
   const [customCenter, setCustomCenter] = useState({})
-  const [selectedDistrict, setSelectedDistrict] = useState(null)
   const [showMapSpinner, setShowMapSpinner] = useState(false)
   const [maxFlood, setMaxFlood] = useState(
     selectedFloodData ? selectedFloodData.maxFlood : 0
   )
-  const [selectedPeriodDates, setSelectedPeriodDates] = useState([
-    selectedFloodData ? selectedFloodData.after_START : '2022-08-01',
-    selectedFloodData ? selectedFloodData.after_END : '2022-08-31',
-  ])
 
   let mapDistrictsLegendElRef = useRef()
   let mapMarkersLegendElRef = useRef()
   let mapDivRef = useRef()
-
   let axiosAbortController = useRef()
 
   const MapControls = () => {
@@ -110,7 +100,6 @@ const Map = ({ center, zoom, backendData }) => {
         dispatch(setShowOverlay(true))
         dispatch(setOverlay(overlay))
         nativeMap.overlayMapTypes.push(overlay)
-        // setSelectedDistrict(null)
       })
       .catch((error) => {
         if (axios.isCancel(error)) {
@@ -124,8 +113,8 @@ const Map = ({ center, zoom, backendData }) => {
   }
 
   useEffect(() => {
-    // console.log(isInfoWindowOpen)
     nativeApiHandler(nativeMap, nativeMaps)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInfoWindowOpen])
 
   useEffect(() => {
@@ -143,10 +132,7 @@ const Map = ({ center, zoom, backendData }) => {
 
     setApiFloodDataArray(selectedFloodData.resultsArray)
     setMaxFlood(selectedFloodData.maxFlood)
-    setSelectedPeriodDates([
-      selectedFloodData.after_START,
-      selectedFloodData.after_END,
-    ])
+
     polygonArray.map((polygon) => {
       const floodDataObject = selectedFloodData.resultsArray.find(
         (floodObj) => floodObj.name === polygon.name
@@ -159,12 +145,7 @@ const Map = ({ center, zoom, backendData }) => {
           : 0,
       })
     })
-    // dispatch(selectDistrict(null))
     nativeMap?.overlayMapTypes?.clear()
-
-    // if (globalSelectedDistrict) {
-    //   getFloodPixels(selectedFloodData.after_START, selectedFloodData.after_END)
-    // }
 
     if (!globalSelectedDistrict && nativeMap) {
       polygonArray.forEach((district) => {
@@ -199,10 +180,8 @@ const Map = ({ center, zoom, backendData }) => {
       nativeMap.setZoom(8)
       setShowRoadsFor(globalSelectedGeometry.name)
       setCustomCenter(globalSelectedGeometry.center)
-      // console.log('this was called too')
       getFloodPixels(selectedFloodData.after_START, selectedFloodData.after_END)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFloodData, globalSelectedDistrict, globalSelectedGeometry])
 
   useEffect(() => {
@@ -226,9 +205,7 @@ const Map = ({ center, zoom, backendData }) => {
     dispatch(setMapTheme(isDarkMode ? 'dark' : 'light'))
     if (nativeMap) {
       nativeMap.data.setStyle({
-        // fillColor: '#020416', //main one rn
         fillColor: isDarkMode ? '#0e1824' : '#fff',
-        // fillColor: '#121e2d',
         strokeWeight: isDarkMode ? 1 : 0.25,
         fillOpacity: 1,
       })
@@ -251,31 +228,13 @@ const Map = ({ center, zoom, backendData }) => {
         })
       })
     }
+    // eslint-disable-next-line array-callback-return
     polygonArray.map((polygon) => {
       polygon.setMap(map)
       polygon.addListener('click', async () => {
         dispatch(selectDistrict(polygon.name))
-        const districtFloodObject = apiFloodDataArray.find(
-          (floodObj) => floodObj.name === polygon.name
-        )
-        setSelectedDistrict(districtFloodObject)
         map.overlayMapTypes.clear()
         dispatch(clearOverlay())
-        // // map.setZoom(8)
-        // setCustomZoom(8)
-        // map.setZoom(8)
-        // // console.log(customZoom)
-        // setShowRoadsFor(polygon.name)
-        // setCustomCenter(polygon.center)
-
-        // polygonArray.forEach((district) => {
-        //   district.setOptions({
-        //     visible: true,
-        //   })
-        // })
-        // polygon.setOptions({
-        //   visible: false,
-        // })
       })
     })
   }
@@ -307,9 +266,7 @@ const Map = ({ center, zoom, backendData }) => {
     })
 
     map.data.setStyle({
-      // fillColor: '#020416', //main one rn
       fillColor: isDarkMode ? '#0e1824' : '#fff',
-      // fillColor: '#121e2d',
       strokeWeight: 1,
       fillOpacity: 1,
     })
@@ -319,20 +276,15 @@ const Map = ({ center, zoom, backendData }) => {
     })
 
     const districtPolygons = apiPolygonArray.map((geometryObject) => {
-      const floodDataObject = apiFloodDataArray.find((floodObj, index) => {
+      const floodDataObject = apiFloodDataArray.find((floodObj) => {
         return floodObj.name === geometryObject.name
       })
-      console.log(floodDataObject)
 
-      // console.log(floodDataObject.results.after.floodWater)
       return new maps.Polygon({
         paths: geometryObject.coordinates,
         strokeColor: '#00aaff',
-        // strokeColor: 'black',
-
         strokeOpacity: 1,
         strokeWeight: 0.4,
-        // fillColor: '#00FFFF88',
         fillColor: '#33aaff',
         fillOpacity: floodDataObject
           ? floodDataObject.results.after.floodWater / maxFlood
@@ -380,15 +332,7 @@ const Map = ({ center, zoom, backendData }) => {
             key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
           }}
           options={{
-            // disableDefaultUI: true,
-            // disableDoubleClickZoom: true,
             styles: mapTheme === 'dark' ? mapStyles.labelDarkTheme : [],
-            // styles: isDarkMode
-            //   ? mapTheme === 'dark'
-            //     ? mapStyles.labelDarkTheme
-            //     : []
-            //   : [],
-
             restriction: {
               latLngBounds: {
                 north: 40,
@@ -415,7 +359,6 @@ const Map = ({ center, zoom, backendData }) => {
             />
           )}
           {roadSwitch &&
-            // !selectedDistrict &&
             showRoadsFor &&
             apiRoadCoords.map((coordinates, i) => (
               <RoadMarker
@@ -439,7 +382,3 @@ Map.defaultProps = {
 }
 
 export default Map
-
-//546
-//448
-//388
