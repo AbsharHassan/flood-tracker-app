@@ -52,7 +52,7 @@ const Map = ({ center, zoom }) => {
   const [customCenter, setCustomCenter] = useState({})
   const [showMapSpinner, setShowMapSpinner] = useState(false)
   const [maxFlood, setMaxFlood] = useState(
-    selectedFloodData ? selectedFloodData.maxFlood : 0
+    selectedFloodData ? selectedFloodData.maxFlood : 0.0
   )
 
   let mapDistrictsLegendElRef = useRef()
