@@ -265,6 +265,7 @@ export const apiDataSlice = createSlice({
         state.completeFloodData = []
         state.selectedFloodData = {}
         state.prevPeriodFloodData = {}
+        state.isFetchingApiData = false
         console.log(payload)
       })
 
