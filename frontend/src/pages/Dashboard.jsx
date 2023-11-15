@@ -204,7 +204,7 @@ const Dashboard = () => {
                       : 'border-themeBorderColorLight bg-themeCardColorLight'
                   }`}
                 >
-                  <Map key={isFetchingApiData} />
+                  <Map />
                 </div>
               </div>
             </div>

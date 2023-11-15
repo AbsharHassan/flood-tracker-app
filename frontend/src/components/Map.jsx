@@ -151,6 +151,7 @@ const Map = ({ center, zoom, backendData }) => {
       const floodDataObject = selectedFloodData.resultsArray.find(
         (floodObj) => floodObj.name === polygon.name
       )
+      console.log(floodDataObject)
       return polygon.setOptions({
         fillOpacity: floodDataObject
           ? floodDataObject.results.after.floodWater /
@@ -235,6 +236,21 @@ const Map = ({ center, zoom, backendData }) => {
   }, [isDarkMode])
 
   const nativeApiHandler = (map, maps) => {
+    console.log('native api handler called')
+    if (polygonArray && selectedFloodData) {
+      polygonArray.map((polygon) => {
+        const floodDataObject = selectedFloodData.resultsArray.find(
+          (floodObj) => floodObj.name === polygon.name
+        )
+        console.log(floodDataObject)
+        return polygon.setOptions({
+          fillOpacity: floodDataObject
+            ? floodDataObject.results.after.floodWater /
+              selectedFloodData.maxFlood
+            : 0,
+        })
+      })
+    }
     polygonArray.map((polygon) => {
       polygon.setMap(map)
       polygon.addListener('click', async () => {
