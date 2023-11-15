@@ -42,7 +42,6 @@ const DateSelector = ({
               showDaysOutsideCurrentMonth={true}
               value={dateValue}
               onChange={(newDateValue) => {
-                console.log(newDateValue)
                 setDateValue(newDateValue)
 
                 const parsedStartDate = dayjs(newDateValue, 'YYYY-MM-DD', true)
@@ -246,6 +245,7 @@ const DateSelector = ({
               label="Select Date"
               disableFuture={true}
               minDate={'2022/01/01'}
+              maxDate={dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
               // views={['day', 'month']}
               // views={['day']}
               views={['year', 'month']}
@@ -254,6 +254,23 @@ const DateSelector = ({
               value={dateValue}
               onChange={(newDateValue) => {
                 setDateValue(newDateValue)
+
+                const parsedStartDate = dayjs(newDateValue, 'YYYY-MM-DD', true)
+                const minDate = dayjs('2021-12-31')
+                const maxDate = dayjs()
+                if (
+                  parsedStartDate.isValid() ||
+                  (parsedStartDate.isAfter(minDate) &&
+                    parsedStartDate.isBefore(maxDate)) ||
+                  parsedStartDate.date() === 1
+                ) {
+                  setShowError(false)
+                  dispatch(
+                    getFloodData(dayjs(newDateValue).format('YYYY-MM-DD'))
+                  )
+                } else {
+                  setShowError(true)
+                }
               }}
               components={{
                 OpenPickerIcon: GoCalendar,

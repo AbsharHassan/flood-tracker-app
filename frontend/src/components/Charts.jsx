@@ -23,6 +23,7 @@ const Charts = () => {
   )
   const { isDarkMode } = useSelector((state) => state.sidebar)
 
+  const [yearArray, setYearArray] = useState([2022, 2023])
   const [selectedYear, setSelectedYear] = useState(2022)
 
   const filterDataByYear = (selectedYear) => {
@@ -33,7 +34,7 @@ const Charts = () => {
       labels: filteredData.map((d) => dayjs(d.after_START).format('MMM')),
       datasets: [
         {
-          label: 'Total Flooded',
+          label: '% Flooding by Month',
           data: filteredData.map((d) => {
             return d.totalFlooded > 1 ? d.totalFlooded : 1
           }),
@@ -44,6 +45,27 @@ const Charts = () => {
       ],
     }
   }
+
+  useEffect(() => {
+    if (totalFloodedArray.length) {
+      let tempYearArray = []
+      totalFloodedArray.map((floodObj) => {
+        if (
+          !tempYearArray.find((year) => {
+            return year === dayjs(floodObj.after_START).year()
+          })
+        ) {
+          tempYearArray.push(dayjs(floodObj.after_START).year())
+        }
+      })
+
+      setYearArray(tempYearArray)
+    }
+  }, [totalFloodedArray])
+
+  useEffect(() => {
+    console.log(yearArray)
+  }, [yearArray])
 
   useEffect(() => {
     // const data = totalFloodedArray.map((monthObj) => {
@@ -187,9 +209,11 @@ const Charts = () => {
       },
     ],
   })
-  const [lineChartOptions, setLinerChartOptions] = useState({
+  const [lineChartOptions, setLineChartOptions] = useState({
     legend: {
-      borderWidth: 0, // Set the borderWidth to 0 to remove the border
+      display: true,
+      position: 'top',
+      align: 'start', // Aligns the legend to the start (left) of the top position
     },
     maintainAspectRatio: false,
     tension: 0.25,
@@ -221,9 +245,18 @@ const Charts = () => {
         },
       },
     },
+    layout: {
+      padding: {
+        top: 20, // Adjust this value as needed
+      },
+    },
     plugins: {
       legend: {
         borderWidth: 0, // Set the border width to 0 to remove the border
+        display: true,
+        position: 'top',
+        align: 'center', // Aligns the legend to the start (left) of the top position
+        marginBottom: '20px',
         labels: {
           // This more specific font property overrides the global property
           font: {
@@ -247,92 +280,12 @@ const Charts = () => {
   return (
     <div className="flex flex-col justify-between h-full w-full py-5 space-y-2">
       <div className="basis-1/2 w-full h-[95%] relative">
-        <div className="absolute right-5 top-[6px] text-xs text-slate-400">
-          {/* Year:{' '}
-          <select
-            className="ml-1 bg-blue-50 bg-opacity-20 border-2 border-blue-300 border-opacity-30 text-gray-400 
-            hover:text-gray-200 focus:ring-2 focus:ring-blue-300 focus:border-blue-300 
-            shadow-md hover:shadow-lg transition duration-200 ease-in-out 
-            rounded-lg p-2 hover:bg-opacity-30 cursor-pointer"
-            value={selectedYear}
-            onChange={(e) => {
-              setSelectedYear(e.target.value)
-            }}
-          >
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
-          </select> */}
-
-          {/* <FormControl
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              minWidth: 120,
-            }}
-            size="small"
-          >
-            <InputLabel
-              id="demo-simple-select-label"
-              sx={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}
-            >
-              Year
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={selectedYear}
-              label="Year"
-              onChange={(e) => {
-                setSelectedYear(e.target.value)
-              }}
-              sx={{
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgb(0 130 255 / 0.3)',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgb(2 132 199 / 0.5)',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgb(2 132 199 / 0.8)',
-                },
-                '& .MuiSelect-select': {
-                  backgroundColor: 'rgb(25 120 200 / 0.2)',
-                  color: 'rgb(148 163 184)',
-                  fontSize: '0.8rem',
-                  padding: '5px',
-                },
-                '& .MuiMenu-paper': {
-                  backgroundColor: 'rgb(25 120 200 / 0.2)',
-                  color: 'rgb(148 163 184)',
-                  boxShadow: '0px 0px 10px 3px rgba(34, 76, 143, 0.5)',
-                  backdropFilter: 'blur(7px)',
-                },
-                // Add more custom styles as needed
-              }}
-            >
-              <MenuItem value={2022}>2022</MenuItem>
-              <MenuItem value={2023}>2023</MenuItem>
-            </Select>
-          </FormControl> */}
-
-          {/* // border: '2px solid rgb(71 85 105)', // Example border styling
-              // borderRadius: '4px', // Border radius
-              // transition: 'border ease 300ms',
-              // '&:hover': {
-              //   borderColor: '#33aaff55', // Border color on hover
-              // },
-              // // '&.Mui-focused': {
-              // //   borderColor: '#33aaff55', // Border color when focused
-              // // },
-              // '*': {
-              //   outline: 'none',
-              // }, */}
-
+        <div className="absolute right-0 top-[-10px] text-xs text-slate-400">
           <FormControl
             size="small"
             sx={{
-              minWidth: 80,
+              padding: 0,
+              maxWidth: 60,
               outline: 'none',
 
               color: 'rgb(148 163 184)',
@@ -369,9 +322,11 @@ const Charts = () => {
 
                 '.MuiSelect-select': {
                   outline: 'none',
-                  padding: '2px 10px',
+                  margin: '0px',
+                  padding: '2px 8px',
                   minHeight: '30px',
                   color: 'rgb(148 163 184)',
+                  fontSize: '12px',
                 },
 
                 '.MuiSelect-standard': {
@@ -381,6 +336,7 @@ const Charts = () => {
                 },
 
                 '.MuiSelect-iconStandard': {
+                  fontSize: '14px',
                   transition: 'transform ease 300ms',
                   color: 'rgb(148 163 184)',
                 },
@@ -390,9 +346,6 @@ const Charts = () => {
                 PaperProps: {
                   sx: {
                     marginTop: '5px',
-
-                    // style: { transform: 'translateY(15px)' },
-                    // transform: 'translateY(15px)',
                     backgroundColor: 'rgb(25 120 200 / 0.3)',
                     boxShadow: '0px 0px 10px 3px rgba(34, 76, 143, 0.5)',
                     color: 'white',
@@ -400,33 +353,18 @@ const Charts = () => {
                     overflow: 'hidden',
                     borderRadius: '12px',
                     border: '2px solid rgb(0 130 255 / 0.3)',
-                    // Add more styling as needed
                   },
                 },
               }}
-              // MenuProps={{
-              //   PaperProps: {
-              //     sx: {
-              //       style: { transform: 'translateX(50px)' },
-              //       '& .MuiPaper-root': {
-              //         maxHeight: '300px',
-              //         marginLeft: '75px',
-              //         marginTop: '5px',
-              //         backgroundColor: 'rgb(25 120 200 / 0.2)',
-              //         boxShadow: '0px 0px 10px 3px rgba(34, 76, 143, 0.5)',
-              //         color: 'rgb(148 163 184)',
-              //         backdropFilter: 'blur(7px)',
-              //         overflow: 'hidden',
-              //         borderRadius: '12px',
-              //         border: '2px solid rgb(0 130 255 / 0.3)',
-              //       },
-              //       // Include other styles as required
-              //     },
-              //   },
-              // }}
             >
-              <MenuItem value={2022}>2022</MenuItem>
-              <MenuItem value={2023}>2023</MenuItem>
+              {yearArray.map((year) => (
+                <MenuItem
+                  key={year}
+                  value={year}
+                >
+                  {year}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </div>
