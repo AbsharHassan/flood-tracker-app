@@ -102,10 +102,6 @@ const Dashboard = () => {
   }, [innerHeight])
 
   useEffect(() => {
-    console.log(isFetchingApiData)
-  }, [isFetchingApiData])
-
-  useEffect(() => {
     // console.log('yeah fetching data')
     if (isFetchingApiData) {
       if (loaderRef.current) {

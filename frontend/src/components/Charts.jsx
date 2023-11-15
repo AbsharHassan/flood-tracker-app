@@ -55,7 +55,11 @@ const Charts = () => {
   }, [totalFloodedArray, selectedYear])
 
   useEffect(() => {
-    if (selectedFloodData) {
+    if (
+      selectedFloodData &&
+      selectedFloodData.resultsArray &&
+      selectedFloodData.resultsArray.length
+    ) {
       let apiData = [...selectedFloodData.resultsArray]
 
       apiData.sort((a, b) => {
