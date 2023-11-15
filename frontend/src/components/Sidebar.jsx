@@ -6,82 +6,48 @@ import { selectDistrict } from '../features/apiData/apiDataSlice'
 import {
   toggleOverlayDisplay,
   setMapTheme,
-  setShowRoads,
   toggleShowRoads,
-  setFloodPixelOpacity,
 } from '../features/map/mapSlice'
-import { CSSTransition } from 'react-transition-group'
 import SearchBar from './SearchBar'
-
-import { TextField } from '@mui/material'
 import Box from '@mui/material/Box'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import ToggleButton from '@mui/material/ToggleButton'
 import Switch from '@mui/material/Switch'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
 import Slider from '@mui/material/Slider'
-
-import { BsArrowBarLeft, BsMapFill } from 'react-icons/bs'
-import { HiX, HiSearch } from 'react-icons/hi'
+import { BsArrowBarLeft } from 'react-icons/bs'
+import { HiX } from 'react-icons/hi'
 import { RiDashboardFill, RiPaletteFill, RiMap2Fill } from 'react-icons/ri'
 import { AiFillControl, AiFillInfoCircle } from 'react-icons/ai'
-import { GoCalendar } from 'react-icons/go'
 import { TbMapPins } from 'react-icons/tb'
 import { IoWater } from 'react-icons/io5'
-import { RxReset } from 'react-icons/rx'
-import { GrPowerReset } from 'react-icons/gr'
-import { IoRefreshOutline } from 'react-icons/io5'
 import { TiRefresh } from 'react-icons/ti'
-
-import { IoMdRefresh } from 'react-icons/io'
-import { MdRefresh } from 'react-icons/md'
-import { BsArrowClockwise } from 'react-icons/bs'
-import { AiOutlineSync } from 'react-icons/ai'
-
 import DateSelector from './DateSelector'
-
-import dayjs from 'dayjs'
 
 const Sidebar = () => {
   const location = useLocation()
+  const dispatch = useDispatch()
+
   const { isDarkMode, sidebarIsOpen } = useSelector((state) => state.sidebar)
-  const { map, showOverlay, mapTheme, showRoads, overlay } = useSelector(
+  const { showOverlay, mapTheme, showRoads, overlay } = useSelector(
     (state) => state.map
   )
   const { user } = useSelector((state) => state.auth)
 
-  const dispatch = useDispatch()
-
-  const [isSearchOpen, setIsSearchOpen] = useState(true)
-  const [dateValue, setDateValue] = useState(dayjs(new Date()))
-  const [startDate, setStartDate] = useState('2022/01/01')
   const [isDateDialogOpen, setIsDateDialogOpen] = useState(false)
   const [isSearchPopperOpen, setIsSearchPopperOpen] = useState(false)
-  const [isColorSelectorOpen, setIsColorSelectorOpen] = useState(false)
   const [overlaySwitch, setOverlaySwitch] = useState(showOverlay)
-  // const [endDate, setStartDate] = useState('2022/01/01')
-  // const [mapTheme, setMapTheme] = useState('dark')
+
   const [roadSwitch, setRoadSwitch] = useState(showRoads)
-  const [pixelsSwitch, setPixelsSwitch] = useState(true)
-  const [disableRoadSwitch, setDisableRoadSwitch] = useState(true)
-  const [floodColor, setFloodColor] = useState('blue')
   const [floodPixelOpacity, setFloodPixelOpacity] = useState(100)
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
-  const [innerHeight, setInnerHeight] = useState(window.innerHeight)
+  const [innerHeight] = useState(window.innerHeight)
   const [isScreenLg, setIsScreenLg] = useState(
     window.innerWidth > 1024 ? true : false
   )
   const [isScreenRectangular, setIsScreenRectangular] = useState(
     window.innerWidth > window.innerHeight ? true : false
   )
-  const [searchIsFocused, setSearchIsFocused] = useState(false)
-  const [menuLinks, setMenuLinks] = useState([
+  const [menuLinks] = useState([
     {
       title: 'Dashboard',
       icon: <RiDashboardFill />,
@@ -99,18 +65,6 @@ const Sidebar = () => {
     },
   ])
 
-  const handleMapThemeChange = (e, newTheme) => {
-    // if (mapTheme == 'dark') {
-    //   setMapTheme('light')
-    // } else {
-    //   setMapTheme('dark')
-    // }
-    console.log(newTheme)
-    if (newTheme !== null) {
-      setMapTheme(newTheme)
-    }
-  }
-
   const handleResetRequest = () => {
     dispatch(selectDistrict(null))
     if (sidebarIsOpen) {
@@ -126,10 +80,6 @@ const Sidebar = () => {
     }
   }
 
-  const handleColorChange = (e) => {
-    setFloodColor(e.target.value)
-  }
-
   const handleDateDialogState = (value) => {
     setIsDateDialogOpen(value)
   }
@@ -140,13 +90,9 @@ const Sidebar = () => {
 
   const handleFloodPixelOpacityChange = (e, newValue) => {
     setFloodPixelOpacity(newValue)
-    // map.overlayMapTypes.Vc[0]?.setOpacity(newValue / 100)
     overlay?.setOpacity(newValue / 100)
   }
 
-  let searchInputRef = useRef()
-  let searchInputRefClosed = useRef()
-  let mobileSidebarRef = useRef()
   let desktopSidebarRef = useRef()
   let resetIconRefOpen = useRef()
   let resetIconRefClosed = useRef()
@@ -168,7 +114,6 @@ const Sidebar = () => {
         sidebarIsOpen &&
         innerWidth < 1024 &&
         !isDateDialogOpen &&
-        !isColorSelectorOpen &&
         !isSearchPopperOpen
       ) {
         if (!desktopSidebarRef.current.contains(e.target)) {
@@ -187,7 +132,6 @@ const Sidebar = () => {
     innerWidth,
     dispatch,
     isDateDialogOpen,
-    isColorSelectorOpen,
     isSearchPopperOpen,
   ])
 
@@ -214,44 +158,14 @@ const Sidebar = () => {
   }, [showOverlay])
 
   useEffect(() => {
-    // dispatch(setFloodPixelOpacity(floodPixelOpacity))
-  }, [floodPixelOpacity])
-
-  useEffect(() => {
     setFloodPixelOpacity(100)
   }, [overlay])
 
-  useEffect(() => {
-    // console.log(location)
-  }, [location])
-
-  useEffect(() => {
-    console.log(
-      'sidebarrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr'
-    )
-  }, [])
-
   return (
-    // #162436
     <>
-      {/* <aside
-        key="desktop-sidemenu"
-        ref={desktopSidebarRef}
-        // style={{ backgroundColor: 'rgb(25 120 200 / 0.2)' }}
-        className={`${
-          isScreenLg
-            ? `hidden lg:block duration-500 border-r border-blue-600/20 bg-clip-padding backdrop-blur-md fixed left-0 top-12 h-full  ${
-                sidebarIsOpen ? 'w-48' : 'w-10'
-              }`
-            : `lg:hidden fixed top-0 right-0 duration-1000 z-50 h-[100vh] text-white bg-black/60 ${
-                sidebarIsOpen ? 'w-72 sm:w-72 px-2 ' : 'w-0 '
-              }  backdrop-blur-sm `
-        }`}
-      > */}
       <aside
         key="desktop-sidemenu"
         ref={desktopSidebarRef}
-        // style={{ backgroundColor: 'rgb(25 120 200 / 0.2)' }}
         className={`${
           isScreenLg
             ? `hidden lg:block duration-200 border-r border-[#162436] bg-clip-padding bg-[#121e2d] backdrop-blur-md fixed left-0 top-0 h-full  ${
@@ -293,12 +207,6 @@ const Sidebar = () => {
                 )}
               </h1>
             </Link>
-            {/* <span className="text-slate-300 text-[11px]  sm:text-sm font-semibold tracking-tighter">
-          {extraTitle && (
-            <span className="mx-0.5 sm:mx-1.5 text-[10px] sm:text-xl ">-</span>
-          )}
-          {extraTitle}
-        </span> */}
           </div>
         )}
 
@@ -313,7 +221,6 @@ const Sidebar = () => {
             <span
               onClick={() => {
                 dispatch(toggleSidebar())
-                setSearchIsFocused(false)
               }}
               className={`${
                 isScreenLg
@@ -385,11 +292,6 @@ const Sidebar = () => {
             ))}
           </ul>
 
-          {/* <hr
-            className={` mx-4 ${
-              sidebarIsOpen ? '' : 'scale-0'
-            }   bg-sky-800/50 h-[1px] border-none`}
-          /> */}
           <hr
             className={` mx-4 ${
               sidebarIsOpen ? '' : 'scale-0'
@@ -405,7 +307,6 @@ const Sidebar = () => {
                 }`
               : 'space-y-4 h-96 pl-3.5'
           } duration-200`}
-          //sidebar-tools-div
         >
           <div
             className={` text-slate-500 px-3 font-bold text-xs whitespace-nowrap overflow-hidden ${
@@ -521,7 +422,6 @@ const Sidebar = () => {
                 color="primary"
                 value={mapTheme}
                 exclusive
-                // onChange={handleMapThemeChange}
                 onChange={(e, newTheme) => {
                   if (newTheme !== null) {
                     dispatch(setMapTheme(newTheme))
@@ -627,13 +527,6 @@ const Sidebar = () => {
                       ? 'rgb(107 114 128)'
                       : 'rgb(107 114 128 / 0)',
                   },
-
-                  // '& .Mui-disabled': {
-                  //   '& .MuiSwitch-track': {
-                  //     backgroundColor: 'red',
-                  //     opacity: '1',
-                  //   },
-                  // },
                 }}
               />
             </div>
@@ -661,7 +554,6 @@ const Sidebar = () => {
                     : 'text-slate-400 text-2xl hover:cursor-pointer hover:text-sky-500/60'
                 } transition-all duration-200`}
                 onClick={() => {
-                  // setPixelsSwitch((v) => !v)
                   dispatch(toggleSidebar())
                 }}
               >
@@ -674,17 +566,12 @@ const Sidebar = () => {
               } duration-300 `}
             >
               <Switch
-                // onChange={() => setPixelsSwitch((v) => !v)}
                 onChange={() => dispatch(toggleOverlayDisplay())}
-                // value={pixelsSwitch}
-                // checked={pixelsSwitch}
                 value={overlaySwitch}
                 checked={overlaySwitch}
                 disableRipple
                 sx={{
-                  '&.MuiSwitch-root': {
-                    // width: '100px',
-                  },
+                  '&.MuiSwitch-root': {},
                   '& .MuiSwitch-track': {
                     transition: 'all 0.1s',
                     backgroundColor: sidebarIsOpen
@@ -702,13 +589,6 @@ const Sidebar = () => {
                       ? 'rgb(107 114 128)'
                       : 'rgb(107 114 128 / 0)',
                   },
-
-                  // '& .Mui-disabled': {
-                  //   '& .MuiSwitch-track': {
-                  //     backgroundColor: 'red',
-                  //     opacity: '1',
-                  //   },
-                  // },
                 }}
               />
             </div>
