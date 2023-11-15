@@ -27,6 +27,31 @@ const DateSelector = ({
   )
   const [showError, setShowError] = useState(false)
 
+  const handleDateChange = (newDateValue) => {
+    setDateValue(newDateValue)
+
+    const parsedStartDate = dayjs(newDateValue).date(1)
+    console.log(parsedStartDate)
+    const minDate = dayjs('2021-12-31')
+    const maxDate = dayjs()
+    if (
+      parsedStartDate.isValid() &&
+      parsedStartDate.isAfter(minDate) &&
+      parsedStartDate.isBefore(maxDate) &&
+      parsedStartDate.date() === 1
+    ) {
+      console.log(parsedStartDate)
+      setShowError(false)
+      dispatch(getFloodData(parsedStartDate.format('YYYY-MM-DD')))
+    } else {
+      setShowError(true)
+    }
+  }
+
+  useEffect(() => {
+    console.log(showError)
+  }, [showError])
+
   return (
     <>
       {isScreenLg ? (
@@ -41,26 +66,7 @@ const DateSelector = ({
               // views={['day']}
               showDaysOutsideCurrentMonth={true}
               value={dateValue}
-              onChange={(newDateValue) => {
-                setDateValue(newDateValue)
-
-                const parsedStartDate = dayjs(newDateValue, 'YYYY-MM-DD', true)
-                const minDate = dayjs('2021-12-31')
-                const maxDate = dayjs()
-                if (
-                  parsedStartDate.isValid() ||
-                  (parsedStartDate.isAfter(minDate) &&
-                    parsedStartDate.isBefore(maxDate)) ||
-                  parsedStartDate.date() === 1
-                ) {
-                  setShowError(false)
-                  dispatch(
-                    getFloodData(dayjs(newDateValue).format('YYYY-MM-DD'))
-                  )
-                } else {
-                  setShowError(true)
-                }
-              }}
+              onChange={handleDateChange}
               components={{
                 OpenPickerIcon: GoCalendar,
               }}
@@ -252,28 +258,7 @@ const DateSelector = ({
               inputFormat="MMM YYYY"
               showDaysOutsideCurrentMonth={true}
               value={dateValue}
-              onChange={(newDateValue) => {
-                setDateValue(newDateValue)
-                console.log(newDateValue)
-
-                const parsedStartDate = dayjs(newDateValue, 'YYYY-MM-DD', true)
-                const minDate = dayjs('2021-12-31')
-                const maxDate = dayjs()
-                if (
-                  parsedStartDate.isValid() ||
-                  (parsedStartDate.isAfter(minDate) &&
-                    parsedStartDate.isBefore(maxDate)) ||
-                  parsedStartDate.date() === 1
-                ) {
-                  console.log(parsedStartDate)
-                  setShowError(false)
-                  dispatch(
-                    getFloodData(dayjs(newDateValue).format('YYYY-MM-DD'))
-                  )
-                } else {
-                  setShowError(true)
-                }
-              }}
+              onChange={handleDateChange}
               components={{
                 OpenPickerIcon: GoCalendar,
               }}
