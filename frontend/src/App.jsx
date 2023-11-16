@@ -8,6 +8,7 @@ import { checkAdmin, persistLogin } from './features/auth/authSlice'
 import {
   getFloodData,
   getTotalFloodedArray,
+  selectDistrict,
 } from './features/apiData/apiDataSlice'
 
 import Dashboard from './pages/Dashboard'
@@ -62,6 +63,10 @@ function App() {
     console.log(process.env.EE_PRIVATE_KEY)
     console.log(process.env.REACT_APP_EE_PRIVATE_KEY)
   }, [])
+
+  useEffect(() => {
+    dispatch(selectDistrict(null))
+  }, [location])
 
   // useEffect(() => {
   //   console.log('try again block called')

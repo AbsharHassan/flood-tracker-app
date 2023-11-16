@@ -12,7 +12,6 @@ const About = () => {
   const { sidebarIsOpen, isDarkMode } = useSelector((state) => state.sidebar)
 
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
-  const [innerHeight, setInnerHeight] = useState(window.innerWidth)
   const [isScreenLg, setIsScreenLg] = useState(innerWidth > 1024 ? true : false)
 
   useEffect(() => {
@@ -53,7 +52,6 @@ const About = () => {
             style={{
               height: `${isScreenLg ? `${window.innerHeight - 76}px` : 'auto'}`,
             }}
-            // ref={mapAndChartViewRef}
             className="flex-col-reverse w-full px-3 pb-6 md:space-y-0 md:grid md:grid-cols-8 flex overflow-y-hidden min-h-[500px]"
           >
             <div className="col-start-1 col-end-4 px-2 pt-5 md:pt-0 md:pr-3 xl:pl-3 h-[500px] md:h-full  text-white ">
