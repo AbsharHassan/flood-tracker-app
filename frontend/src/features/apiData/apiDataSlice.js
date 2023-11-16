@@ -24,8 +24,26 @@ const initialState = {
 export const getFloodData = createAsyncThunk(
   'apiData/getFloodData',
   async (date, thunkAPI) => {
+    const parsedCurrentStartDate = dayjs(date)
+    const formattedCurrentDate = parsedCurrentStartDate.format('YYYY-MM-DD')
+    const parsedPreviousStartDate = dayjs(parsedCurrentStartDate).subtract(
+      1,
+      'month'
+    )
+
     try {
-      return await apiDataService.getFloodData(date)
+      if (
+        parsedCurrentStartDate.isAfter(dayjs('2022-01-01')) &&
+        parsedPreviousStartDate.isAfter('2021-12-31')
+      ) {
+        const formattedPrevDate = parsedPreviousStartDate.format('YYYY-MM-DD')
+        return await apiDataService.getFloodData(
+          formattedCurrentDate,
+          formattedPrevDate
+        )
+      } else {
+        return await apiDataService.getFloodData(formattedCurrentDate, null)
+      }
     } catch (error) {
       const errorMessage = 'API failed to respond with flood data'
       return thunkAPI.rejectWithValue(errorMessage)
