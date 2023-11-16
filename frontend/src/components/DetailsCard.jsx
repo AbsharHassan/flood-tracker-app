@@ -56,13 +56,6 @@ const DetailsCard = ({
                     : 'bg-[#f56e502e] text-[#f56e50]'
                 }`}
               >
-                {/* <i className="h-full flex items-center bg-yellow-400/0">
-                  <TiArrowUpThick
-                    className={`text-[10.5px] duration-200 ${
-                      difference.polarity ? 'rotate-180' : 'rotate-0'
-                    }`}
-                  />
-                </i> */}
                 {!isNaN(difference.value) && (
                   <i className="h-full flex items-center bg-yellow-400/0">
                     <TiArrowUpThick
