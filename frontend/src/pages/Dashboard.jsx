@@ -95,6 +95,7 @@ const Dashboard = () => {
     if (innerWidth > 640) {
       setChartsResizeReRender(chartsResizeReRender + 1)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [innerHeight])
 
   useEffect(() => {
@@ -188,9 +189,6 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-            {/* <div className="w-full h-28 bg-red-600 text-white z-[30000]">
-              Footer
-            </div> */}
             <Footer />
           </div>
         </div>
