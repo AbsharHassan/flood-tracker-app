@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import dayjs from 'dayjs'
 
@@ -30,7 +30,6 @@ const DateSelector = ({
     setDateValue(newDateValue)
 
     const parsedStartDate = dayjs(newDateValue).date(1)
-    console.log(parsedStartDate)
     const minDate = dayjs('2021-12-31')
     const maxDate = dayjs()
     if (
@@ -39,17 +38,12 @@ const DateSelector = ({
       parsedStartDate.isBefore(maxDate) &&
       parsedStartDate.date() === 1
     ) {
-      console.log(parsedStartDate)
       setShowError(false)
       dispatch(getFloodData(parsedStartDate.format('YYYY-MM-DD')))
     } else {
       setShowError(true)
     }
   }
-
-  useEffect(() => {
-    console.log(showError)
-  }, [showError])
 
   return (
     <>
@@ -62,7 +56,6 @@ const DateSelector = ({
               minDate={'2022/01/01'}
               maxDate={dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
               views={['year', 'month']}
-              // views={['day']}
               showDaysOutsideCurrentMonth={true}
               value={dateValue}
               onChange={handleDateChange}
@@ -91,9 +84,6 @@ const DateSelector = ({
                     ':hover': {
                       color: 'rgb(203 213 225)',
                     },
-                    // '&.MuiPickersCalendarHeader-switchViewButton': {
-                    //   color: 'red',
-                    // },
                   },
                   '& .MuiDayPicker-header': {
                     '& .MuiTypography-root': {
@@ -213,7 +203,6 @@ const DateSelector = ({
                       fontSize: '13px',
                       fontWeight: '1000',
                       transition: 'all 0.3s',
-                      // left: '8px',
                       top: '-2px',
                       '&.Mui-focused': {
                         color: !showError ? '#1976d2' : 'red',
@@ -240,7 +229,7 @@ const DateSelector = ({
           </div>
         </div>
       ) : (
-        <>
+        <div className="relative">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDatePicker
               onOpen={() => handleDateDialogState(true)}
@@ -249,8 +238,6 @@ const DateSelector = ({
               disableFuture={true}
               minDate={'2022/01/01'}
               maxDate={dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
-              // views={['day', 'month']}
-              // views={['day']}
               views={['year', 'month']}
               inputFormat="MMM YYYY"
               showDaysOutsideCurrentMonth={true}
@@ -266,10 +253,6 @@ const DateSelector = ({
                     overflowX: 'hidden',
                   },
                   '& .MuiPaper-root': {
-                    // maxHeight: '200px',
-                    // marginLeft: '75px',
-                    // marginTop: '5px',
-
                     backgroundColor: 'rgb(25 120 200 / 0.2)',
                     boxShadow: '0px 0px 10px 3px rgba(34, 76, 143, 0.5)',
                     color: 'rgb(148 163 184)',
@@ -288,9 +271,6 @@ const DateSelector = ({
                     ':hover': {
                       color: 'rgb(203 213 225)',
                     },
-                    // '&.MuiPickersCalendarHeader-switchViewButton': {
-                    //   color: 'red',
-                    // },
                   },
                   '& .MuiDayPicker-header': {
                     '& .MuiTypography-root': {
@@ -332,7 +312,6 @@ const DateSelector = ({
                     },
                   },
                 },
-                // hidden: true,
               }}
               InputProps={{
                 hidden: true,
@@ -388,7 +367,6 @@ const DateSelector = ({
                   sx={{
                     '&.MuiFormControl-root': {},
                     '& .MuiInputLabel-root': {
-                      // width: `${sidebarIsOpen ? '100%' : '0px'}`,
                       minWidth: '100%',
                       display: `${sidebarIsOpen ? 'block' : 'none'}`,
                       color: 'rgb(148 163 184)',
@@ -412,7 +390,14 @@ const DateSelector = ({
               )}
             />
           </LocalizationProvider>
-        </>
+          <div
+            className={`absolute w-full text-center text-xs font-semibold text-red-600 transition-opacity duration-300 ${
+              showError && sidebarIsOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            Incorrect date format
+          </div>
+        </div>
       )}
     </>
   )
