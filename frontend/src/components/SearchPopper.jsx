@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { HiX, HiSearch } from 'react-icons/hi'
 import { useSelector, useDispatch } from 'react-redux'
-
 import { selectDistrict } from '../features/apiData/apiDataSlice'
 import { toggleSidebar } from '../features/sidebar/sidebarSlice'
+import { HiX } from 'react-icons/hi'
 
 const SearchPopper = ({
   showPopper,
@@ -18,16 +17,9 @@ const SearchPopper = ({
 }) => {
   const dispatch = useDispatch()
 
-  const { districtNames } = useSelector((state) => state.apiData)
   const { isDarkMode } = useSelector((state) => state.sidebar)
 
   let dropdownRef = useRef(null)
-  let itemRef = useRef(null)
-
-  const handleSelect = (e) => {
-    // dispatch()
-    console.log(e)
-  }
 
   useEffect(() => {
     if (keyPressed === 'ArrowDown') {
@@ -43,9 +35,6 @@ const SearchPopper = ({
 
   return (
     <div
-      onKeyDown={() => {
-        console.log('key down')
-      }}
       ref={setPopperEl}
       style={styles.popper}
       {...attributes.popper}
@@ -62,9 +51,6 @@ const SearchPopper = ({
       </div>
       <div
         ref={dropdownRef}
-        onKeyDown={() => {
-          console.log('key down')
-        }}
         className={` border-2 border-[#114b81] rounded-md  backdrop-blur-md w-full absolute z-[60] overflow-y-scroll search-popper   ${
           showPopper
             ? 'max-h-[292px] pb-1 opacity-100'
@@ -73,12 +59,7 @@ const SearchPopper = ({
           isDarkMode ? 'bg-[#1978c822]' : 'bg-themeCardColorDark'
         } transition-all duration-1000`}
       >
-        <ul
-          onKeyDown={() => {
-            console.log('key down')
-          }}
-          className="h-full relative pt-[25px]"
-        >
+        <ul className="h-full relative pt-[25px]">
           {searchResults &&
             searchResults.map((result, index) => (
               <div
