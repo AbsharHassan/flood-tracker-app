@@ -3,13 +3,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import { usePopper } from 'react-popper'
 import { CSSTransition } from 'react-transition-group'
 
+import { selectDistrict } from '../features/apiData/apiDataSlice'
+import { toggleSidebar } from '../features/sidebar/sidebarSlice'
+
 import Portal from './Portal'
 import SearchPopper from './SearchPopper'
 
-import { HiX, HiSearch } from 'react-icons/hi'
-import { toggleSidebar } from '../features/sidebar/sidebarSlice'
-
-import { selectDistrict } from '../features/apiData/apiDataSlice'
+import { HiSearch } from 'react-icons/hi'
 
 const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
   const dispatch = useDispatch()
@@ -21,25 +21,13 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
   const [showPopper, setShowPopper] = useState(false)
   const [referenceEl, setReferenceEl] = useState()
   const [popperEl, setPopperEl] = useState()
-  const [searchableArray, setSearchableArray] = useState(
-    districtNames ? districtNames : []
-  )
+  const [searchableArray] = useState(districtNames ? districtNames : [])
   const [searchResults, setSearchResults] = useState([])
   const [selectedItemIndex, setSelectedItemIndex] = useState(-1)
   const [keyPressed, setKeyPressed] = useState(null)
-  const [searchDisabled, setSearchDisabled] = useState(false)
 
   let searchInputRef = useRef()
   let searchDivRef = useRef()
-
-  useEffect(() => {
-    handleSearchPopperState(showPopper)
-  }, [showPopper])
-
-  useEffect(() => {
-    if (location.pathname === '/about') {
-    }
-  })
 
   const { styles, attributes } = usePopper(referenceEl, popperEl, {
     modifiers: [
@@ -53,21 +41,8 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
     )
 
     setSearchResults(searchResultsArray)
-    // console.log(searchResultsArray)
     setShowPopper(searchResultsArray?.length ? true : false)
-
-    // console.log(searchResultsArray)
   }
-
-  // const handleSearchSubmit = (e) => {
-  //   e.preventDefault()
-  //   if (!searchResults?.length) {
-  //     console.log('no results found')
-  //     setError(true)
-  //     searchDivRef.current.classList.add('border-red-700')
-  //     console.log(searchDivRef.current.classList)
-  //   }
-  // }
 
   const handlePopperClose = () => {
     setShowPopper(false)
@@ -105,8 +80,9 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
   }
 
   useEffect(() => {
-    // console.log(selectedItemIndex)
-  }, [selectedItemIndex])
+    handleSearchPopperState(showPopper)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showPopper])
 
   useEffect(() => {
     if (!sidebarIsOpen) setShowPopper(false)
@@ -144,7 +120,6 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
               <HiSearch
                 className="hover:cursor-pointer"
                 onClick={() => {
-                  // setIsSearchOpen((v) => !v)
                   if (!sidebarIsOpen) {
                     dispatch(toggleSidebar())
                     searchInputRef.current.focus()
@@ -155,7 +130,6 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
             </div>
             <form
               className="flex items-center"
-              // onSubmit={handleSearchSubmit}
               onSubmit={(e) => e.preventDefault()}
             >
               <input
@@ -183,8 +157,6 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
             </form>
           </div>
         </CSSTransition>
-
-        {/* <div className="bg-red-700 w-[100px] h-[200px] absolute z-20"></div> */}
       </div>
 
       <Portal>
@@ -200,31 +172,6 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
           isScreenLg={isScreenLg}
         />
       </Portal>
-      {/* <Menu
-        id="long-menu"
-        MenuListProps={{
-          // 'aria-labelledby': 'long-button',
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          style: {
-            maxHeight: ITEM_HEIGHT * 4.5,
-            width: '20ch',
-          },
-        }}
-      >
-        {options.map((option) => (
-          <MenuItem
-            key={option}
-            selected={option === 'Pyxis'}
-            onClick={handleClose}
-          >
-            {option}
-          </MenuItem>
-        ))}
-      </Menu> */}
     </>
   )
 }
