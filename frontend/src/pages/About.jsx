@@ -6,6 +6,7 @@ import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import TechSection from '../components/TechSection'
 import AboutDetails from '../components/AboutDetails'
+import Footer from '../components/Footer'
 
 const About = () => {
   const { sidebarIsOpen, isDarkMode } = useSelector((state) => state.sidebar)
@@ -81,6 +82,7 @@ const About = () => {
               </div>
             </div>
           </div>
+          <Footer />
         </div>
       </div>
     </motion.div>

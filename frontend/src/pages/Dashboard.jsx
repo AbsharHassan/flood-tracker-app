@@ -115,7 +115,7 @@ const Dashboard = () => {
     gsap.to(loaderRef.current, {
       opacity: isFetchingApiData ? (initialLoader.current ? 1 : 0.7) : 0,
       // opacity: isFetchingApiData ? 1 : 0,
-      duration: 0.3,
+      duration: 0.5,
       onComplete: () => {
         if (!isFetchingApiData) {
           // initialLoader.current = false
