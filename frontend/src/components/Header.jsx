@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Link, BrowserRouter as Router, useLocation } from 'react-router-dom'
-import { CSSTransition } from 'react-transition-group'
+import { Link, useLocation } from 'react-router-dom'
 
 import { toggleSidebar } from '../features/sidebar/sidebarSlice'
 import { logoutUser } from '../features/auth/authSlice'
-import { HiSearch, HiMenu, HiX } from 'react-icons/hi'
-import { MdDarkMode } from 'react-icons/md'
+import { HiMenu } from 'react-icons/hi'
 import { FaMoon } from 'react-icons/fa'
 import { BsFillSunFill } from 'react-icons/bs'
 import { BiLogOut } from 'react-icons/bi'
@@ -18,17 +16,9 @@ const Header = ({ extraTitle }) => {
   const location = useLocation()
 
   const { isDarkMode, sidebarIsOpen } = useSelector((state) => state.sidebar)
-  const { geoFormattedPolygons } = useSelector((state) => state.apiData)
 
-  const [isFocused, setIsFocused] = useState(false)
-  const [isOpen, setIsOpen] = useState(true)
-  const [darkMode, setDarkMode] = useState(true)
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
-  const [blobVar, setBlobVar] = useState(geoFormattedPolygons)
   const [isScreenLg, setIsScreenLg] = useState(window.innerWidth < 1024)
-
-  // const [sidebarOpen, setSidebarOpen] = useState(false)
-  // const sidebarOpen = useSelector((state) => state.sidebar.isOpen)
 
   const handleLogout = async () => {
     dispatch(logoutUser())
@@ -46,12 +36,6 @@ const Header = ({ extraTitle }) => {
   }, [])
 
   useEffect(() => {
-    if (innerWidth < 640) {
-      setIsOpen(false)
-    } else {
-      setIsOpen(true)
-    }
-
     if (innerWidth < 1024) {
       setIsScreenLg(false)
     } else {
@@ -60,7 +44,6 @@ const Header = ({ extraTitle }) => {
   }, [innerWidth])
 
   return (
-    // <nav className="fixed h-[50px] top-0 left-0 right-0 z-50 flex items-center justify-between py-2  px-4 border-b sm:pr-7 sm:pl-4 border-blue-600/20 bg-opacity-80 bg-clip-padding backdrop-blur-md navbar">
     <nav
       className={`fixed h-[50px] top-0  right-0 z-50 flex items-center  py-2  px-4 border-b sm:pr-7 sm:pl-4 navbar ${
         isDarkMode
@@ -114,7 +97,7 @@ const Header = ({ extraTitle }) => {
             }}
           >
             <div
-              className={`absolute w-7 h-7 rounded-full bg-slate-800 bg-black border-[2px] border-[#225ad380] flex items-center justify-center  transition-all duration-2000 ${
+              className={`absolute w-7 h-7 rounded-full bg-black border-[2px] border-[#225ad380] flex items-center justify-center  transition-all duration-2000 ${
                 isDarkMode ? 'translate-x-full' : 'translate-x-0'
               }`}
             >
@@ -137,9 +120,7 @@ const Header = ({ extraTitle }) => {
             isDarkMode ? 'bg-slate-600/50' : 'bg-slate-800'
           }`}
           onClick={() => {
-            // setSidebarOpen(true)
             dispatch(toggleSidebar())
-            // document.body.style.overflow = 'hidden'
           }}
         >
           <HiMenu />
