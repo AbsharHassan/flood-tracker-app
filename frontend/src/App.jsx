@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Routes, Route, useLocation } from 'react-router-dom'
-import { CSSTransition, SwitchTransition } from 'react-transition-group'
+import { AnimatePresence } from 'framer-motion'
 
 import { getApiKey } from './features/map/mapSlice'
 import { checkAdmin, persistLogin } from './features/auth/authSlice'
@@ -18,16 +18,11 @@ import Register from './pages/Register'
 import ProtectedRoutes from './components/ProtectedRoutes'
 import About from './pages/About'
 
-import { AnimatePresence } from 'framer-motion'
-import axios from 'axios'
-import dayjs from 'dayjs'
-
 function App() {
   const location = useLocation()
   const dispatch = useDispatch()
-  const { tryAgain, selectedFloodData, defaultDateValue } = useSelector(
-    (state) => state.apiData
-  )
+
+  const { defaultDateValue } = useSelector((state) => state.apiData)
   const { isDarkMode } = useSelector((state) => state.sidebar)
 
   const bodyRef = useRef(document.body)
@@ -44,107 +39,51 @@ function App() {
     }
   }, [isDarkMode])
 
-  // useEffect(() => {
-  //   console.log(selectedFloodData)
-  // }, [selectedFloodData])
-
   useEffect(() => {
     dispatch(getApiKey())
     dispatch(checkAdmin())
     dispatch(persistLogin())
-    // console.log(defaultDateValue)
     dispatch(getFloodData(defaultDateValue))
     dispatch(getTotalFloodedArray())
-    // console.log('app on mount method called')
-  }, [])
-
-  useEffect(() => {
-    console.log(process.env.REACT_APP_RANDOM)
-    console.log(process.env.EE_PRIVATE_KEY)
-    console.log(process.env.REACT_APP_EE_PRIVATE_KEY)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     dispatch(selectDistrict(null))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location])
 
-  // useEffect(() => {
-  //   console.log('try again block called')
-  //   if (tryAgain) dispatch(getFloodData(defaultDateValue))
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [tryAgain])
-
   return (
-    <>
-      {/* <div className="scroll-container"> */}
-      {/* <div className="scroll-content"> */}
-      <AnimatePresence mode="wait">
-        <Routes
-          location={location}
-          key={location.pathname}
-        >
+    <AnimatePresence mode="wait">
+      <Routes
+        location={location}
+        key={location.pathname}
+      >
+        <Route
+          path="/"
+          element={<Dashboard />}
+        />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+        <Route
+          path="/about"
+          element={<About />}
+        />
+
+        <Route element={<ProtectedRoutes />}>
           <Route
-            path="/"
-            element={<Dashboard />}
+            path="/register"
+            element={<Register />}
           />
           <Route
-            path="/login"
-            element={<Login />}
+            path="/control-panel"
+            element={<ControlPanel />}
           />
-          <Route
-            path="/about"
-            element={<About />}
-          />
-
-          <Route element={<ProtectedRoutes />}>
-            <Route
-              path="/register"
-              element={<Register />}
-            />
-            <Route
-              path="/control-panel"
-              element={<ControlPanel />}
-            />
-          </Route>
-        </Routes>
-      </AnimatePresence>
-      {/* </div> */}
-
-      {/* <SwitchTransition>
-        <CSSTransition
-          key={location.pathname}
-          timeout={500}
-          classNames="routing"
-          appear={true}
-        >
-          <Routes location={location}>
-            <Route
-              path="/"
-              element={<Dashboard />}
-            />
-            <Route
-              path="/login"
-              element={<Login />}
-            />
-            <Route
-              path="/about"
-              element={<About />}
-            />
-
-            <Route element={<ProtectedRoutes />}>
-              <Route
-                path="/register"
-                element={<Register />}
-              />
-              <Route
-                path="/control-panel"
-                element={<ControlPanel />}
-              />
-            </Route>
-          </Routes>
-        </CSSTransition>
-      </SwitchTransition> */}
-    </>
+        </Route>
+      </Routes>
+    </AnimatePresence>
   )
 }
 
