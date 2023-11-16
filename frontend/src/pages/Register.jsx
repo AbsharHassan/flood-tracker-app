@@ -1,14 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { motion } from 'framer-motion'
 
-import {
-  registerUser,
-  reset,
-  toggleRegisterAllowed,
-  checkAdmin,
-} from '../features/auth/authSlice'
+import { registerUser, reset } from '../features/auth/authSlice'
 
 import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
@@ -16,7 +11,6 @@ import { BiArrowBack } from 'react-icons/bi'
 
 const Register = () => {
   const dispatch = useDispatch()
-  const location = useLocation()
   const navigate = useNavigate()
 
   const { isAuthLoading, isAuthSuccess, isAuthError, authMessage } =
@@ -38,7 +32,6 @@ const Register = () => {
 
   useEffect(() => {
     if (isAuthError) {
-      console.log(authMessage)
       if (authMessage === 'Please add all fields.') {
         setBorderRed({
           email: formData.email.length ? false : true,
@@ -57,12 +50,10 @@ const Register = () => {
     }
     if (isAuthSuccess) {
       navigate('/control-panel')
-
-      // dispatch(checkAdmin())
-      // dispatch(toggleRegisterAllowed(false))
     }
 
     dispatch(reset())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthSuccess, isAuthError, authMessage, navigate, dispatch])
 
   const handleRegisterSubmit = async (e) => {
@@ -164,9 +155,7 @@ const Register = () => {
               isLoading={isAuthLoading}
               handleClick={handleRegisterSubmit}
             />
-            {/* <div className="text-center text-xs font-medium text-cyan-700">
-            Or go <span>back?</span>
-          </div> */}
+
             <div className="text-center text-xs font-medium uppercase ">
               <span className="text-sky-700 hover:cursor-pointer hover:text-sky-600 duration-200">
                 <Link to="/"> click here to return</Link>
