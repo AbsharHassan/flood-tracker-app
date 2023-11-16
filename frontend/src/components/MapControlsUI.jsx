@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Switch, Box, Slider } from '@mui/material'
-import { AiFillWarning, AiFillStop } from 'react-icons/ai'
-import { TiRefresh } from 'react-icons/ti'
 
 import { toggleShowRoads, toggleOverlayDisplay } from '../features/map/mapSlice'
 import { selectDistrict } from '../features/apiData/apiDataSlice'
+
+import { AiFillWarning } from 'react-icons/ai'
+import { TiRefresh } from 'react-icons/ti'
 
 const MapControlsUI = () => {
   const dispatch = useDispatch()
@@ -54,13 +55,6 @@ const MapControlsUI = () => {
           : 'bg-themeCardColorLight/20 text-slate-700 border border-themeBorderColorLight'
       }`}
     >
-      {/* <div className="mb-1 sm:mb-3 text-[12px] sm:text-[15px] text-center">
-        Key
-      </div> */}
-      {/* <div className="mb-2 sm:mb-3 text-[12px] sm:text-[15px] text-center">
-        Map Controls
-      </div> */}
-
       <div className="w-full flex flex-col space-y-2 sm:space-y-2 mb-1 sm:mb-1">
         <div className="w-full flex items-center  ">
           <div className="w-5 flex items-center ">
@@ -75,17 +69,13 @@ const MapControlsUI = () => {
             }`}
           >
             <Switch
-              // onChange={() => setPixelsSwitch((v) => !v)}
-              // onChange={() => dispatch(toggleOverlayDisplay())}
               onChange={() => dispatch(toggleShowRoads())}
               value={roadSwitch}
               checked={roadSwitch}
               size="small"
               disableRipple
               sx={{
-                '&.MuiSwitch-root': {
-                  // width: '100px',
-                },
+                '&.MuiSwitch-root': {},
                 '& .MuiSwitch-track': {
                   transition: 'all 0.1s',
                   backgroundColor: 'rgb(55 65 81)',
@@ -99,13 +89,6 @@ const MapControlsUI = () => {
                   transition: 'all 0.1s',
                   color: 'rgb(107 114 128)',
                 },
-
-                // '& .Mui-disabled': {
-                //   '& .MuiSwitch-track': {
-                //     backgroundColor: 'red',
-                //     opacity: '1',
-                //   },
-                // },
               }}
             />
           </div>
@@ -129,9 +112,7 @@ const MapControlsUI = () => {
               size="small"
               disableRipple
               sx={{
-                '&.MuiSwitch-root': {
-                  // width: '100px',
-                },
+                '&.MuiSwitch-root': {},
                 '& .MuiSwitch-track': {
                   transition: 'all 0.1s',
                   backgroundColor: 'rgb(55 65 81)',
@@ -145,13 +126,6 @@ const MapControlsUI = () => {
                   transition: 'all 0.1s',
                   color: 'rgb(107 114 128)',
                 },
-
-                // '& .Mui-disabled': {
-                //   '& .MuiSwitch-track': {
-                //     backgroundColor: 'red',
-                //     opacity: '1',
-                //   },
-                // },
               }}
             />
           </div>
@@ -191,7 +165,6 @@ const MapControlsUI = () => {
             className={`mt-[6.5px] h-[18px] w-[40px] ml-[11px] rounded-full  hover:cursor-pointer flex items-center justify-center ${
               isDarkMode ? 'bg-slate-800' : 'bg-slate-200'
             }`}
-            // ref={resetIconRef}
             onClick={handleResetRequest}
           >
             <span ref={resetIconRef}>
