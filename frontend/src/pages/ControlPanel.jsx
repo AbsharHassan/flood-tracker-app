@@ -52,7 +52,7 @@ const ControlPanel = () => {
         parsedEndDate.format('YYYY-MM-DD') === endDateString
       )
     ) {
-      console.log('invalid date format, enter in the format YYYY-MM-DD')
+      alert('invalid date format, enter in the format YYYY-MM-DD')
       return false
     }
 
@@ -66,7 +66,7 @@ const ControlPanel = () => {
         parsedEndDate.isAfter(parsedStartDate)
       )
     ) {
-      console.log(
+      alert(
         'start date must be before end date and they must fall within the 2022-01-01 and present date'
       )
       return false
@@ -74,20 +74,20 @@ const ControlPanel = () => {
 
     // check if the dates are of the same month
     if (parsedStartDate.month !== parsedEndDate.month) {
-      console.log('currently, both dates must be of the same month')
+      alert('currently, both dates must be of the same month')
       return false
     }
 
     // check if start date is the first of a month
     if (parsedStartDate.date() !== 1) {
-      console.log('currently, start date must be the 1st of a month')
+      alert('currently, start date must be the 1st of a month')
       return false
     }
 
     // check if end date is the last date of a month
     const lastDayOfMonth = parsedEndDate.endOf('month')
     if (!parsedEndDate.isSame(lastDayOfMonth, 'day')) {
-      console.log('currently, the end date must be the last date of the month')
+      alert('currently, the end date must be the last date of the month')
       return false
     }
 
@@ -115,7 +115,7 @@ const ControlPanel = () => {
         console.log(error)
       }
     } else {
-      console.log('tests failed')
+      alert('tests failed')
     }
 
     setIsApiProcessing(false)
@@ -146,7 +146,7 @@ const ControlPanel = () => {
           console.log(error)
         }
       } else {
-        console.log('tests failed')
+        alert('tests failed')
       }
     }
 
