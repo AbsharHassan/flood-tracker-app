@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
-import { loginUser, reset, setAuthMessage } from '../features/auth/authSlice'
+import { loginUser, reset } from '../features/auth/authSlice'
 
 import Input from '../components/Input'
 import SubmitButton from '../components/SubmitButton'
@@ -11,7 +11,6 @@ import { BiArrowBack } from 'react-icons/bi'
 
 const Login = () => {
   const dispatch = useDispatch()
-  const location = useLocation()
   const navigate = useNavigate()
 
   const {
@@ -83,6 +82,7 @@ const Login = () => {
     }
 
     dispatch(reset())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthSuccess, isAuthError, authMessage, navigate, dispatch])
 
   return (
@@ -165,9 +165,6 @@ const Login = () => {
               isLoading={isAuthLoading}
               handleClick={handleLoginSubmit}
             />
-            {/* <div className="text-center text-xs font-medium text-cyan-700">
-            Or go <span>back?</span>
-          </div> */}
             <div className="text-center text-xs font-medium uppercase ">
               <span className="text-sky-700 hover:cursor-pointer hover:text-sky-600 duration-200">
                 <Link to="/"> click here to return</Link>
