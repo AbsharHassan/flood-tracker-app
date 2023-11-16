@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import { Select, MenuItem, FormControl } from '@mui/material'
 
 const Charts = () => {
-  const { totalFloodedArray, selectedFloodData } = useSelector(
+  const { totalFloodedArray, selectedFloodData, selectedDate } = useSelector(
     (state) => state.apiData
   )
   const { isDarkMode } = useSelector((state) => state.sidebar)
@@ -78,7 +78,7 @@ const Charts = () => {
         }),
         datasets: [
           {
-            label: '% of Land Flooded',
+            label: `% of Land Flooded During ${selectedDate}`,
             data: floodValuesArray,
             maxBarThickness: 15,
             minBarLength: 35,
@@ -97,7 +97,7 @@ const Charts = () => {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFloodData])
+  }, [selectedFloodData, selectedDate])
 
   const [barChartData, setBarChartData] = useState({
     labels: null,
