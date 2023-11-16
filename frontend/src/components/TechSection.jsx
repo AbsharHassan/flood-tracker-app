@@ -95,45 +95,6 @@ const TechSection = ({ isScreenLg, isDarkMode }) => {
             })}
           </div>
         ))}
-
-        {/* <div className="w-[75px] h-[75px]  hover:cursor-pointer">
-          <EarthEngineSVG
-            // className={`w-[75px] h-[75px]  hover:cursor-pointer`}
-            title="Google Earth Engine API"
-          />
-        </div>
-        <MapsSVG
-          className={`w-[75px] h-[75px]  hover:cursor-pointer`}
-          title="Google Maps Javascript API"
-        />
-        <CloudSVG
-          className={`w-[75px] h-[75px]  hover:cursor-pointer`}
-          title="Google Cloud Platform"
-        />
-        <MongoDbSVG
-          className={`w-[75px] h-[75px] -translate-x-1 hover:cursor-pointer`}
-          title="MongoDB"
-        />
-        <ExpressSVG
-          className={`w-[85px] h-[85px]  hover:cursor-pointer rounded-full bg-slate-700 p-1`}
-          title="ExpressJS"
-        />
-        <ReactSVG
-          className={`w-[75px] h-[75px]  hover:cursor-pointer`}
-          title="ReactJS"
-        />
-        <NodeSVG
-          className={`w-[75px] h-[75px]  hover:cursor-pointer`}
-          title="NodeJS"
-        />
-        <TailwindSVG
-          className={`w-[75px] h-[75px]  hover:cursor-pointer`}
-          title="TailwindCSS"
-        />
-        <MaterialUiSVG
-          className={`w-[75px] h-[75px]  hover:cursor-pointer`}
-          title="Material UI 5"
-        />{' '} */}
       </div>
     </div>
   )
