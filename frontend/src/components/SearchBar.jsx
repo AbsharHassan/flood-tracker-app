@@ -9,7 +9,7 @@ import { toggleSidebar } from '../features/sidebar/sidebarSlice'
 import Portal from './Portal'
 import SearchPopper from './SearchPopper'
 
-import { HiSearch } from 'react-icons/hi'
+import { HiSearch, HiX } from 'react-icons/hi'
 
 const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
   const dispatch = useDispatch()
@@ -25,6 +25,7 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
   const [searchResults, setSearchResults] = useState([])
   const [selectedItemIndex, setSelectedItemIndex] = useState(-1)
   const [keyPressed, setKeyPressed] = useState(null)
+  const [showClearBtn, setShowClearBtn] = useState(false)
 
   let searchInputRef = useRef()
   let searchDivRef = useRef()
@@ -36,6 +37,8 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
   })
 
   const handleSearchChange = (value) => {
+    setShowClearBtn(value ? true : false)
+
     const searchResultsArray = searchableArray.filter((entry) =>
       entry.toLowerCase().includes(value.toLowerCase())
     )
@@ -79,6 +82,13 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
     handleSearchChange(searchInputRef.current.value)
   }
 
+  const clearSearch = () => {
+    if (showClearBtn) {
+      searchInputRef.current.value = ''
+      setShowClearBtn(false)
+    }
+  }
+
   useEffect(() => {
     handleSearchPopperState(showPopper)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,16 +114,19 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
         >
           <div
             ref={searchDivRef}
-            className={`flex items-center py-0.5 border-transparent bg-slate-600/50 transition-all duration-200 ${
+            className={`flex items-center bg-slate-800 transition-all duration-500 border-2  ${
               isScreenLg ? `justify-between` : `overflow-hidden`
             } ${
               sidebarIsOpen
                 ? 'px-1.5 border-[2px] rounded-md'
                 : 'pl-[9px] w-full rounded-sm py-[4px]'
-            }`}
+            }
+            
+            ${searchIsFocused ? 'border-[#225ad380]' : 'border-transparent'}
+            `}
           >
             <div
-              className={`py-1 text-lg duration-200 md:text-xl text-slate-400 hover:text-slate-200 ${
+              className={` text-lg duration-200 md:text-xl text-slate-400 hover:text-slate-200 border-r-2 border-slate-600 pr-1 h-[20px] ${
                 sidebarIsOpen ? '' : 'translate-x-3.5'
               }`}
             >
@@ -128,33 +141,39 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
                 }}
               />
             </div>
-            <form
-              className="flex items-center"
-              onSubmit={(e) => e.preventDefault()}
+
+            <input
+              disabled={location.pathname === '/about' ? true : false}
+              ref={searchInputRef}
+              onChange={(e) => {
+                handleSearchChange(e.target.value)
+              }}
+              onFocus={handleSearchFocus}
+              onBlur={(e) => {
+                setSearchIsFocused(false)
+                handlePopperClose()
+                setSelectedItemIndex(-1)
+              }}
+              onKeyDown={handleInputKeyDown}
+              className={`inline-block h-[30px] text-xs py-0.5 text-slate-300 focus:outline-none bg-transparent ${
+                isScreenLg ? `` : `w-52`
+              } ${
+                sidebarIsOpen
+                  ? 'pl-1 ml-1 opacity-100 '
+                  : 'pl-1 ml-1 opacity-0 w-0 '
+              } transition-opacity duration-500 `}
+              placeholder="Search for a District..."
+            />
+
+            <button
+              type="button"
+              className={`w-[20px] h-[20px] pr-1 -translate-x-5 translate-y-[0px] bg-slate-800 text-lg text-slate-400 hover:text-slate-200 transition-all duration-200 ${
+                showClearBtn ? 'opacity-100' : 'opacity-0 cursor-default'
+              }`}
+              onClick={clearSearch}
             >
-              <input
-                disabled={location.pathname === '/about' ? true : false}
-                ref={searchInputRef}
-                onChange={(e) => {
-                  handleSearchChange(e.target.value)
-                }}
-                onFocus={handleSearchFocus}
-                onBlur={(e) => {
-                  setSearchIsFocused(false)
-                  handlePopperClose()
-                  setSelectedItemIndex(-1)
-                }}
-                onKeyDown={handleInputKeyDown}
-                className={`text-xs text-slate-300 focus:outline-none bg-transparent  ${
-                  isScreenLg ? `` : `w-52`
-                } ${
-                  sidebarIsOpen
-                    ? 'pl-1.5 ml-1 opacity-100 border-l-2 border-slate-600'
-                    : 'pl-1.5 ml-1 opacity-0 w-0 '
-                } transition-opacity duration-500 `}
-                placeholder="Search for a District..."
-              />
-            </form>
+              <HiX />
+            </button>
           </div>
         </CSSTransition>
       </div>
