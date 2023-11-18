@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { usePopper } from 'react-popper'
-import { CSSTransition } from 'react-transition-group'
 
 import { selectDistrict } from '../features/apiData/apiDataSlice'
 import { toggleSidebar } from '../features/sidebar/sidebarSlice'
@@ -106,76 +105,71 @@ const SearchBar = ({ isScreenLg, handleSearchPopperState, location }) => {
         } duration-200`}
         ref={setReferenceEl}
       >
-        <CSSTransition
-          in={searchIsFocused}
-          timeout={500}
-          classNames="search-border"
-          key="desktop"
-        >
-          <div
-            ref={searchDivRef}
-            className={`flex items-center bg-slate-800 transition-all duration-500 border-2  ${
-              isScreenLg ? `justify-between` : `overflow-hidden`
-            } ${
-              sidebarIsOpen
-                ? 'px-1.5 border-[2px] rounded-md'
-                : 'pl-[9px] w-full rounded-sm py-[4px]'
-            }
+        <div
+          ref={searchDivRef}
+          className={`flex items-center bg-slate-800 transition-all duration-500 border-2 text-slate-400 hover:text-slate-200  ${
+            isScreenLg ? `justify-between` : `overflow-hidden`
+          } ${
+            sidebarIsOpen
+              ? 'px-1.5 border-[2px] rounded-md'
+              : 'pl-[9px] w-full rounded-sm py-[4px] cursor-pointer'
+          }
             
             ${searchIsFocused ? 'border-[#225ad380]' : 'border-transparent'}
             `}
+          onClick={() => {
+            if (!sidebarIsOpen) {
+              dispatch(toggleSidebar())
+              searchInputRef.current.focus()
+              setSearchIsFocused(true)
+            }
+          }}
+        >
+          <div
+            className={`text-lg duration-200 md:text-xl h-[20px] ${
+              sidebarIsOpen
+                ? 'border-r-2 border-slate-600 pr-1'
+                : 'translate-x-3.5'
+            }`}
           >
-            <div
-              className={` text-lg duration-200 md:text-xl text-slate-400 hover:text-slate-200 border-r-2 border-slate-600 pr-1 h-[20px] ${
-                sidebarIsOpen ? '' : 'translate-x-3.5'
-              }`}
-            >
-              <HiSearch
-                className="hover:cursor-pointer"
-                onClick={() => {
-                  if (!sidebarIsOpen) {
-                    dispatch(toggleSidebar())
-                    searchInputRef.current.focus()
-                    setSearchIsFocused(true)
-                  }
-                }}
-              />
-            </div>
-
-            <input
-              disabled={location.pathname === '/about' ? true : false}
-              ref={searchInputRef}
-              onChange={(e) => {
-                handleSearchChange(e.target.value)
-              }}
-              onFocus={handleSearchFocus}
-              onBlur={(e) => {
-                setSearchIsFocused(false)
-                handlePopperClose()
-                setSelectedItemIndex(-1)
-              }}
-              onKeyDown={handleInputKeyDown}
-              className={`inline-block h-[30px] text-xs py-0.5 text-slate-300 focus:outline-none bg-transparent ${
-                isScreenLg ? `` : `w-52`
-              } ${
-                sidebarIsOpen
-                  ? 'pl-1 ml-1 opacity-100 '
-                  : 'pl-1 ml-1 opacity-0 w-0 '
-              } transition-opacity duration-500 `}
-              placeholder="Search for a District..."
-            />
-
-            <button
-              type="button"
-              className={`w-[20px] h-[20px] pr-1 -translate-x-5 translate-y-[0px] bg-slate-800 text-lg text-slate-400 hover:text-slate-200 transition-all duration-200 ${
-                showClearBtn ? 'opacity-100' : 'opacity-0 cursor-default'
-              }`}
-              onClick={clearSearch}
-            >
-              <HiX />
-            </button>
+            <HiSearch />
           </div>
-        </CSSTransition>
+
+          <input
+            disabled={location.pathname === '/about' ? true : false}
+            ref={searchInputRef}
+            onChange={(e) => {
+              handleSearchChange(e.target.value)
+            }}
+            onFocus={handleSearchFocus}
+            onBlur={(e) => {
+              setSearchIsFocused(false)
+              handlePopperClose()
+              setSelectedItemIndex(-1)
+            }}
+            onKeyDown={handleInputKeyDown}
+            className={`inline-block h-[30px] text-xs py-0.5 text-slate-300 focus:outline-none bg-transparent ${
+              isScreenLg ? `` : `w-52`
+            } ${
+              sidebarIsOpen
+                ? 'pl-1 ml-1 opacity-100 '
+                : 'pl-1 ml-1 opacity-0 w-0 '
+            } transition-opacity duration-500 `}
+            placeholder="Search for a District..."
+          />
+
+          <button
+            type="button"
+            className={`h-[20px] pr-1 -translate-x-5 translate-y-[0px] bg-slate-800 text-lg text-slate-400 hover:text-slate-200 transition-all duration-200 ${
+              showClearBtn ? 'opacity-100' : 'opacity-0 cursor-default'
+            }
+            ${sidebarIsOpen ? 'w-[20px]' : 'w-0 opacity-0'}
+            `}
+            onClick={clearSearch}
+          >
+            <HiX />
+          </button>
+        </div>
       </div>
 
       <Portal>
