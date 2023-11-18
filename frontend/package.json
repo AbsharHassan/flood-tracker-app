@@ -31,7 +31,6 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.4.4",
     "react-scripts": "5.0.1",
-    "react-secure-storage": "^1.0.21",
     "react-transition-group": "^4.4.5",
     "web-vitals": "^2.1.4"
   },
