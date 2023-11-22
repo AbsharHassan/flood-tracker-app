@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="Flood Tracker" src="./assets/circular_banner_cropped.png" width="30%" />
+  <img alt="Flood Tracker" src="./assets/circular_banner_cropped.png" width="20%" />
 </p>
 <h1 align="center">
   Flood Tracker
