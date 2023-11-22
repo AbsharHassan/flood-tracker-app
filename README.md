@@ -1,1 +1,1 @@
-![Project Banner](./assets/banner_raw.png)
+![Project Banner](./assets/circular_banner_cropped.png)
