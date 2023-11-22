@@ -1,1 +1,1 @@
-![Project Banner](./assets/banner.png)
+![Project Banner](./assets/banner_raw.png)
