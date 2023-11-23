@@ -1,5 +1,6 @@
 node_modules
 .env
+notes_for_readme.txt
 
 frontend/src/backups
 frontend/src/app_backup.txt
