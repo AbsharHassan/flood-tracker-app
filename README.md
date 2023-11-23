@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  A flood tracking and analysis web app leveraging the MERN Stack, machine learning, and computer vision techniques to provide environmental insights and damage assessments. 
+  An interactive web app for flood tracking and analysis, built with the MERN Stack, and employing machine learning and computer vision to provide environmental insights and damage assessments.
 </p>
 
 <p align="center">
