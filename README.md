@@ -5,6 +5,6 @@
   Flood Tracker
 </h1>
 <p align="center">
-  A flood tracking and analysis web app
+  A flood tracking and analysis web app leveraging the MERN Stack, machine learning, and computer vision techniques to provide environmental insights and damage assessments. 
 </p>
 <!-- Flood Tracker is a full-stack application designed to monitor and analyze flood data in real-time. Utilizing the power of the MERN stack, along with the Google Earth Engine API, this application processes satellite images to extract vital statistics about flood-affected areas. It offers insights into the impact on urban areas, farmlands, and road networks -->
