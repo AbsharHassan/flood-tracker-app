@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
-const asyncHandler = require('express-async-handler')
-const User = require('../models/userModel')
+import { verify, sign } from 'jsonwebtoken'
+import { genSalt, hash, compare } from 'bcrypt'
+import asyncHandler from 'express-async-handler'
+import { findOne, create, findById, deleteOne } from '../models/userModel'
 
 // @desc    Get Google Maps Api key (POST FOR SECURITY)
 // @route   POST /api/key
@@ -14,7 +14,7 @@ const getApiKey = (req, res) => {
 // @route   GET /api/check-user
 // @access  Public
 const userExists = asyncHandler(async (req, res) => {
-  const user = await User.findOne()
+  const user = await findOne()
 
   if (user) {
     res.json({
@@ -34,7 +34,7 @@ const userExists = asyncHandler(async (req, res) => {
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
   //Check if admin already exists
-  const admin = await User.findOne()
+  const admin = await findOne()
 
   if (!admin) {
     // Check if body data exits
@@ -50,11 +50,11 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // Hash password
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(req.body.password, salt)
+    const salt = await genSalt(10)
+    const hashedPassword = await hash(req.body.password, salt)
 
     // Create user
-    const user = await User.create({
+    const user = await create({
       email: req.body.email,
       password: hashedPassword,
     })
@@ -97,9 +97,9 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   // Authenticate email and password
-  const user = await User.findOne({ email: req.body.email })
+  const user = await findOne({ email: req.body.email })
 
-  if (user && (await bcrypt.compare(req.body.password, user.password))) {
+  if (user && (await compare(req.body.password, user.password))) {
     const { accessToken, refreshToken } = generateTokens(user._id)
 
     res.cookie('jwt', refreshToken, {
@@ -133,7 +133,7 @@ const refresh = (req, res) => {
   if (cookies?.jwt) {
     const refreshToken = cookies.jwt
 
-    jwt.verify(
+    verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
       asyncHandler(async (err, decoded) => {
@@ -141,7 +141,7 @@ const refresh = (req, res) => {
           res.status(403)
           throw new Error('Forbidden')
         } else {
-          const user = await User.findById(decoded.id)
+          const user = await findById(decoded.id)
 
           if (user) {
             const accessToken = generateAccessToken(user._id)
@@ -195,10 +195,10 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 
   // Authenticate email and password
-  const user = await User.findOne({ email: req.body.email })
+  const user = await findOne({ email: req.body.email })
 
-  if (user && (await bcrypt.compare(req.body.password, user.password))) {
-    await User.deleteOne({ email: req.body.email })
+  if (user && (await compare(req.body.password, user.password))) {
+    await deleteOne({ email: req.body.email })
     res.json({
       success: true,
       message: 'User has been deleted.',
@@ -215,11 +215,11 @@ const deleteUser = asyncHandler(async (req, res) => {
 // @route   N/A - Native function
 // @access  N/A
 const generateTokens = (id) => {
-  const accessToken = jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
+  const accessToken = sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: '20m',
   })
 
-  const refreshToken = jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET, {
+  const refreshToken = sign({ id }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: '1d',
   })
 
@@ -233,12 +233,12 @@ const generateTokens = (id) => {
 // @route   N/A - Native function
 // @access  N/A
 const generateAccessToken = (id) => {
-  return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
+  return sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: '20m',
   })
 }
 
-module.exports = {
+export default {
   userExists,
   registerUser,
   loginUser,
