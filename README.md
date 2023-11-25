@@ -33,3 +33,31 @@ The application operates by integrating the Earth Engine API to fetch satellite 
 - 📊 **React Dashboard**: User-friendly interface for intuitive data display.
 - 🔒 **Secure Access Admin Panel**: Control panel for API and data management, protected with JWT authentication.
 - 🎨 **Sleek UI**: Styled with Tailwind CSS and Material UI.
+
+## How It Works
+
+This section provides a high-level overview of the application's workflow. It is designed to give you a clear understanding of how the various components of the application interact with each other, from initial client requests to data processing and visualization. The Earth Engine processing pipeline will be discussed separately from the Client-Server Interaction.
+
+### Client-Server Interaction:
+
+The core of the application is the interaction between the client and the server. Below is a flowchart that illustrates this process.
+
+<p align="center">
+  <img alt="Application Flowchart" src="./assets/application-flowchart.png" width="100%" />
+</p>
+
+The client initiates the process by making a request over HTTP to the server. Depending on the nature of the request, the server either retrieves pre-processed data from the database or, if required, makes a call to the Earth Engine API to fetch or update the data. This could be triggered by the client or by a scheduled task, such as a monthly cron job. For operations that require real-time data, such as acquiring flood pixel map IDs, the server acts as an intermediary to ensure data security and integrity. It's important to note that administrative tasks, such as data management, are secured through JWT authentication, allowing only authorized admin users to access these features.
+
+### Earth Engine Processing Pipeline
+
+As previously mentioned, the Earth Engine API plays a crucial role in data processing. Let's explore this in the following flowchart.
+
+<p align="center">
+  <img alt="Earth Engine Processing Pipeline Flowchart" src="./assets/EE-api-pipeline-flowchart.png" width="100%" />
+</p>
+
+The Earth Engine processing pipeline involves several steps, starting from satellite imagery acquisition to the application of flood detection and land cover classification algorithms. This robust processing allows the application to generate detailed statistical data and visualization layers, such as flood extent maps, which are then made available to the client.
+
+<br/>
+
+This overview outlines the fundamental operations of the application. While it captures the essence of the app's functionality, each component is built on complex and sophisticated technology designed to provide reliable and timely flood data. For a more detailed understanding of each process, please refer to the detailed documentation sections.
