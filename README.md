@@ -19,9 +19,9 @@
 
 ## Basic Overview
 
-Flood Tracker was born out of a pressing need to address the escalating challenges posed by climate change, particularly in the realm of natural disasters such as floods. As extreme weather events become more frequent and severe, it is essential to have robust and reliable solutions for tracking and understanding flood situations. This application aims to meet that demand by leveraging cutting-edge technology to provide accurate, timely data that can aid in effective disaster management and mitigation efforts.
+Flood Tracker was born out of a pressing need to address challenges posed by climate change, particularly natural disasters such as floods. As extreme weather events become more frequent and severe, it is essential to have robust and reliable solutions for tracking and understanding flood situations. This app aims to meet that demand by leveraging cutting-edge technology to provide accurate, timely data that can aid in effective disaster management and documentation.
 
-The application operates by integrating the Earth Engine API to fetch satellite data, which is then processed using a custom flood detection algorithm. It also employs machine learning to classify land covers, helping to estimate the impact of floods on different land types, such as agricultural areas, urban regions, and roadways. The frontend, developed using React, presents this data in an interactive, user-friendly dashboard, making it an invaluable tool for disaster management and response teams.
+The application operates by integrating the Earth Engine API to fetch satellite data, which is then processed using a custom flood detection algorithm. It also employs machine learning to classify land covers, helping to estimate the impact of floods on different land types. The frontend, developed using React, presents this data in an interactive, user-friendly dashboard, making it an invaluable tool for disaster management.
 
 <!-- perhaps add a link to 'learn more' -->
 
@@ -38,7 +38,7 @@ The application operates by integrating the Earth Engine API to fetch satellite 
 
 This section provides a high-level overview of the application's workflow. It is designed to give you a clear understanding of how the various components of the application interact with each other, from initial client requests to data processing and visualization. The Earth Engine processing pipeline will be discussed separately from the Client-Server Interaction.
 
-### Client-Server Interaction:
+### Application Flow:
 
 The core of the application is the interaction between the client and the server. Below is a flowchart that illustrates this process.
 
@@ -46,7 +46,25 @@ The core of the application is the interaction between the client and the server
   <img alt="Application Flowchart" src="./assets/application-flowchart.png" width="100%" />
 </p>
 
-The client initiates the process by making a request over HTTP to the server. Depending on the nature of the request, the server either retrieves pre-processed data from the database or, if required, makes a call to the Earth Engine API to fetch or update the data. This could be triggered by the client or by a scheduled task, such as a monthly cron job. For operations that require real-time data, such as acquiring flood pixel map IDs, the server acts as an intermediary to ensure data security and integrity. It's important to note that administrative tasks, such as data management, are secured through JWT authentication, allowing only authorized admin users to access these features.
+<!-- The client initiates the process by making a request over HTTP to the server. Depending on the nature of the request, the server either retrieves pre-processed data from the database or, if required, makes a call to the Earth Engine API to fetch or update the data. This could be triggered by the client or by a scheduled task, such as a monthly cron job. For operations that require real-time data, such as acquiring flood pixel map IDs, the server acts as an intermediary to ensure data security and integrity. It's important to note that administrative tasks, such as data management, are secured through JWT authentication, allowing only authorized admin users to access these features. -->
+
+**Client-Server Interaction:**
+
+- Clients request data via HTTP; the server either fetches from the database or requests fresh data from the Earth Engine Processing Pipeline.
+- Data processing is decoupled from retrieval, with asynchronous server-side processing for efficiency.
+- A monthly cron job ensures regular data refreshes.
+
+**Earth Engine API Interaction:**
+
+- Server requests Earth Engine API processing with specific parameters, storing returned data for rapid access.
+
+**Database Storage:**
+
+- The database securely stores processed data and user credentials, enabling efficient data retrieval and admin management.
+
+**Admin Control Panel and Authentication:**
+
+- Admins use JWT authentication for control panel access, managing data and overseeing server-API interactions.
 
 ### Earth Engine Processing Pipeline
 
