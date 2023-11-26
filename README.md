@@ -98,6 +98,14 @@ This overview outlines the fundamental operations of the application. While it c
 
 ## Installing and running Flood Tracker
 
+Clone the repository to your local machine by running the following command in your terminal:
+
+```
+git clone https://github.com/AbsharHassan/flood-tracker-app.git
+
+cd flood-tracker-app
+```
+
 **Environment Variables:**
 
 Before installation, you'll need to set up the following environment variables. Here's a table outlining each one and where to obtain them:
