@@ -95,3 +95,18 @@ As previously mentioned, the Earth Engine API plays a crucial role in data proce
 <br/>
 
 This overview outlines the fundamental operations of the application. While it captures the essence of the app's functionality, each component is built on complex and sophisticated technology designed to provide reliable and timely flood data.
+
+## Installing and running Flood Tracker
+
+**Environment Variables**
+
+| Variable Name                   | Description                         | How to Obtain                                                                                                                                         |
+| ------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MONGO_URI`                     | MongoDB connection URI.             | Follow steps at [MongoDB Basics](https://www.mongodb.com/basics/create-database) to create a database and obtain the URI.                             |
+| `JWT_SECRET`                    | Secret key for JWT authentication.  | Generate a random string using tools like [RandomKeygen](https://randomkeygen.com/).                                                                  |
+| `ACCESS_TOKEN_SECRET`           | Secret for access token in JWT.     | Generate a random string, preferably different from `JWT_SECRET`, using [RandomKeygen](https://randomkeygen.com/).                                    |
+| `REFRESH_TOKEN_SECRET`          | Secret for refresh token in JWT.    | Generate another unique random string using [RandomKeygen](https://randomkeygen.com/).                                                                |
+| `EE_PRIVATE_KEY`                | API key for Earth Engine.           | Obtain by following instructions at [Earth Engine App Key](https://developers.google.com/earth-engine/guides/app_key#obtaining-an-api-key).           |
+| `REACT_APP_GOOGLE_MAPS_API_KEY` | Google Maps API key (for frontend). | Get the API key by following steps at [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key#create-api-keys). |
+
+Make sure to add `REACT_APP_GOOGLE_MAPS_API_KEY` in the `.env` file within your frontend folder, and the rest in the root folder `.env` file.
