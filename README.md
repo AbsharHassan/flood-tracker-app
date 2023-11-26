@@ -111,4 +111,4 @@ Before installation, you'll need to set up the following environment variables. 
 | `EE_PRIVATE_KEY`                | API key for Earth Engine.           | Obtain by following instructions at [Earth Engine App Key](https://developers.google.com/earth-engine/guides/app_key#obtaining-an-api-key).           |
 | `REACT_APP_GOOGLE_MAPS_API_KEY` | Google Maps API key (for frontend). | Get the API key by following steps at [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key#create-api-keys). |
 
-Make sure to add `REACT_APP_GOOGLE_MAPS_API_KEY` in the `.env` file within your frontend folder, and the rest in the root folder `.env` file.
+Make sure to add `REACT_APP_GOOGLE_MAPS_API_KEY` in the `.env` file within your **frontend** folder, and the rest in the root folder `.env` file.
