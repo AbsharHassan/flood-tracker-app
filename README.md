@@ -120,3 +120,45 @@ Before installation, you'll need to set up the following environment variables. 
 | `REACT_APP_GOOGLE_MAPS_API_KEY` | Google Maps API key (for frontend). | Get the API key by following steps at [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key#create-api-keys). |
 
 Make sure to add `REACT_APP_GOOGLE_MAPS_API_KEY` in the `.env` file within your **frontend** folder, and the rest in the root folder `.env` file.
+
+**Starting up the server:**
+
+Once the environment variables are set up, go ahead and install the dependencies and start the server:
+
+```
+npm install
+
+npm run server
+```
+
+This will install all the backend dependencies and start up the server on port `5000`.
+
+**Starting up frontend app:**
+
+After making sure you have created the required `.env` file in the frontend folder, open up another terminal and run the following to install dependencies and start the app:
+
+```
+cd frontend
+
+npm install
+
+npm run start
+```
+
+This will install all the frontend dependencies and launch your React app in development mode on port `3000`.
+
+You can also create an optimized production build for your React app by running the following command in a terminal inside the `frontend` folder:
+
+```
+npm run build
+```
+
+**Running server and React app concurrently:**
+
+If you wish to run your server and React app in the same terminal, you can do so by running the following command in the root of application:
+
+```
+npm run dev
+```
+
+This will start up both the server and React app in the same terminal. Make sure you have all required environment variables set up and dependencies installed.
