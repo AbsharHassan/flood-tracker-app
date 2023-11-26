@@ -135,7 +135,7 @@ This will install all the backend dependencies and start up the server on port `
 
 **Starting up frontend app:**
 
-After making sure you have created the required `.env` file in the frontend folder, open up another terminal and run the following to install dependencies and start the app:
+After making sure you have created the required `.env` file in the `frontend` folder, open up another terminal and run the following to install dependencies and start the app:
 
 ```
 cd frontend
@@ -145,7 +145,7 @@ npm install
 npm run start
 ```
 
-This will install all the frontend dependencies and launch your React app in development mode on port `3000`.
+This will install all the `frontend` dependencies and launch your React app in development mode on port `3000`.
 
 You can also create an optimized production build for your React app by running the following command in a terminal inside the `frontend` folder:
 
@@ -153,12 +153,26 @@ You can also create an optimized production build for your React app by running 
 npm run build
 ```
 
-**Running server and React app concurrently:**
+**Running the server and React app concurrently:**
 
-If you wish to run your server and React app in the same terminal, you can do so by running the following command in the root of application:
+If you wish to run the server and React app in the same terminal, you can do so by running the following command in the root of application:
 
 ```
 npm run dev
 ```
 
 This will start up both the server and React app in the same terminal. Make sure you have all required environment variables set up and dependencies installed.
+
+## Future Enhancements
+
+This is the first iteration of Flood Tracker. The application will continue to grow. Here are some of the planned enhancments and new features:
+
+- **AI-Based Prediction Feature**: Introducing an AI-based predictive model that utilizes NASA's datasets and other APIs to forecast potential flooding events. This feature will aim to identify areas more vulnerable to flooding based on historical data, enhancing proactive measures and preparedness.
+
+- **Improved Data Accuracy**: Implementing advanced algorithms for more precise flood detection and land classification.
+
+- **Expanded Geographic Coverage**: Extending the application’s capabilities to cover more regions and countries.
+
+- **More Frequent Data Updates**: Upgrading the system to release more frequent updates.
+
+- **API Development**: Creating a public API for wider access to Flood Tracker’s data and services.
