@@ -40,7 +40,7 @@ This section provides a high-level overview of the application's workflow. It is
 
 ### Application Flow:
 
-The core of the application is the interaction between the client and the server. Below is a flowchart that illustrates this process.
+The core of the application is the interaction between the client and the server. The server acts as buffer in order to decouple data retrieval from lengthy data processing. Below is a flowchart that illustrates this process.
 
 <p align="center">
   <img alt="Application Flowchart" src="./assets/application-flowchart.png" width="100%" />
@@ -74,8 +74,24 @@ As previously mentioned, the Earth Engine API plays a crucial role in data proce
   <img alt="Earth Engine Processing Pipeline Flowchart" src="./assets/EE-api-pipeline-flowchart.png" width="100%" />
 </p>
 
-The Earth Engine processing pipeline involves several steps, starting from satellite imagery acquisition to the application of flood detection and land cover classification algorithms. This robust processing allows the application to generate detailed statistical data and visualization layers, such as flood extent maps, which are then made available to the client.
+**Preprocessing:**
+
+- Retrieves images from Sentinel-1 SAR dataset based on date and location.
+- Acquires administrative polygons for region-specific processing.
+- Filters and mosaics images to represent the target area.
+
+**Flood Detection:**
+
+- Applies speckle filtering to smoothen images.
+- Compares pre-flood and current images to identify flooded pixels using brightness thresholds.
+- Creates a mask from flood-identified pixels, refining it against known water bodies datasets.
+
+**Land Cover Classification:**
+
+- Uses images from Sentinel-2 SAR for detailed land analysis.
+- Integrates road datasets and labeled training data for classification.
+- Smile Cart classifier categorizes land, comparing before-and-after images for damage assessment.
 
 <br/>
 
-This overview outlines the fundamental operations of the application. While it captures the essence of the app's functionality, each component is built on complex and sophisticated technology designed to provide reliable and timely flood data. For a more detailed understanding of each process, please refer to the detailed documentation sections.
+This overview outlines the fundamental operations of the application. While it captures the essence of the app's functionality, each component is built on complex and sophisticated technology designed to provide reliable and timely flood data.
