@@ -176,3 +176,7 @@ This is the first iteration of Flood Tracker. The application will continue to g
 - **More Frequent Data Updates**: Upgrading the system to release more frequent updates.
 
 - **API Development**: Creating a public API for wider access to Flood Tracker’s data and services.
+
+## License
+
+Flood Tracker is [MIT Licensed](LICENSE).
