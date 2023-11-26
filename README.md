@@ -99,6 +99,7 @@ This overview outlines the fundamental operations of the application. While it c
 ## Installing and running Flood Tracker
 
 **Environment Variables**
+Before installation, you'll need to set up the following environment variables. Here's a table outlining each one and where to obtain them:
 
 | Variable Name                   | Description                         | How to Obtain                                                                                                                                         |
 | ------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
