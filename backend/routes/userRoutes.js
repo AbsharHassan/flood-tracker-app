@@ -9,7 +9,7 @@ const {
   refresh,
   logoutUser,
   deleteUser,
-} = require('../controllers/userController').default
+} = require('../controllers/userController')
 
 // GET Google Maps API key (POST FOR SECURITY)
 router.post('/key', getApiKey)
