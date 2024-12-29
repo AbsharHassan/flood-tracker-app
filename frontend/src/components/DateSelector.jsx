@@ -31,7 +31,7 @@ const DateSelector = ({
 
     const parsedStartDate = dayjs(newDateValue).date(1)
     const minDate = dayjs('2021-12-31')
-    const maxDate = dayjs()
+    const maxDate = dayjs('2023-11-01')
     if (
       parsedStartDate.isValid() &&
       parsedStartDate.isAfter(minDate) &&
